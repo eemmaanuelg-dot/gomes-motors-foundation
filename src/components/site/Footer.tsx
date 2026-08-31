@@ -7,7 +7,7 @@ export function Footer() {
     <footer className="border-t border-border bg-secondary">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:grid-cols-2 sm:px-6 lg:grid-cols-4 lg:px-8">
         <div className="space-y-4">
-          <Logo />
+          <Logo className="h-16" />
           <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">
             A escolha certa começa aqui. Veículos selecionados com transparência
             e atendimento próximo em Campos dos Goytacazes, RJ.

@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import logoAsset from "../../assets/gomes-motors-logo.png.asset.json";
 
 /** Logo oficial da Gomes Motors. */
-export function Logo() {
+export function Logo({ className = "h-11" }: { className?: string }) {
   return (
     <Link
       to="/"
@@ -12,7 +12,7 @@ export function Logo() {
       <img
         src={logoAsset.url}
         alt="Gomes Motors"
-        className="h-11 w-auto"
+        className={`${className} w-auto`}
         width={640}
         height={620}
       />
