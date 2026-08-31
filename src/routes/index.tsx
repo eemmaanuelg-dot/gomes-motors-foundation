@@ -87,7 +87,7 @@ function HomePage() {
       <section className="border-t border-border bg-secondary">
         <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
           <h2 className="text-center text-2xl font-bold text-foreground sm:text-3xl">
-            O que você precisa hoje?
+            O que você procura hoje?
           </h2>
           <p className="mx-auto mt-3 max-w-lg text-center text-sm text-muted-foreground">
             Soluções completas para cada momento da sua jornada automotiva.
