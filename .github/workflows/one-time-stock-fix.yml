@@ -1,0 +1,96 @@
+name: One-time stock fix
+
+on:
+  push:
+    paths:
+      - .github/workflows/one-time-stock-fix.yml
+
+permissions:
+  contents: write
+
+jobs:
+  fix-stock:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Corrigir filtros do estoque
+        shell: python
+        run: |
+          from pathlib import Path
+
+          path = Path("src/routes/estoque.tsx")
+          content = path.read_text(encoding="utf-8")
+
+          old = '''  const temCarros = base.some((veiculo) => veiculo.categoria === "carros");
+  const temMotos = base.some((veiculo) => veiculo.categoria === "motos");
+
+  const grupos: FiltroGrupo[] = [
+'''
+          new = '''  const faixasPreco =
+    categoria === "motos" ? FAIXAS_PRECO_MOTOS : FAIXAS_PRECO_CARROS;
+  const faixasKm =
+    categoria === "motos" ? FAIXAS_KM_MOTOS : FAIXAS_KM_CARROS;
+
+  const grupos: FiltroGrupo[] = [
+'''
+          if old not in content:
+              raise SystemExit("Bloco de categorias de filtro não encontrado")
+          content = content.replace(old, new, 1)
+
+          old = '''    {
+      grupo: "Preço",
+      opcoes: [
+        ...(temCarros ? FAIXAS_PRECO_CARROS : []),
+        ...(temMotos ? FAIXAS_PRECO_MOTOS : []),
+      ],
+    },
+    {
+      grupo: "Quilometragem",
+      opcoes: [
+        ...(temCarros ? FAIXAS_KM_CARROS : []),
+        ...(temMotos ? FAIXAS_KM_MOTOS : []),
+      ],
+    },
+'''
+          new = '''    {
+      grupo: "Preço",
+      opcoes: faixasPreco,
+    },
+    {
+      grupo: "Quilometragem",
+      opcoes: faixasKm,
+    },
+'''
+          if old not in content:
+              raise SystemExit("Bloco de preço/km não encontrado")
+          content = content.replace(old, new, 1)
+
+          old = '''  const valor = extrairNumero(cilindrada);
+
+  if (filtro === "Até 400 cc") {
+'''
+          new = '''  if (!cilindrada) {
+    return false;
+  }
+
+  const valor = extrairNumero(cilindrada);
+
+  if (filtro === "Até 400 cc") {
+'''
+          if old not in content:
+              raise SystemExit("Bloco de cilindrada não encontrado")
+          content = content.replace(old, new, 1)
+
+          path.write_text(content, encoding="utf-8")
+
+      - name: Commitar correção e remover workflow temporário
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/routes/estoque.tsx
+          git rm .github/workflows/one-time-stock-fix.yml
+          git commit -m "Corrige filtros combinados do estoque"
+          git push origin HEAD:main
