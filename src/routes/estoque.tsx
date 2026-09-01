@@ -80,7 +80,8 @@ type Ordenacao =
   | "maior-preco"
   | "menor-km"
   | "maior-km"
-  | "mais-novo";
+  | "mais-novo"
+  | "mais-antigo";
 
 const FILTROS_VAZIOS: Filtros = {
   marca: "",
@@ -751,6 +752,11 @@ function EstoquePage() {
       case "mais-novo":
         return [...filtrados].sort(
           (a, b) => b.ano - a.ano,
+        );
+
+      case "mais-antigo":
+        return [...filtrados].sort(
+          (a, b) => a.ano - b.ano,
         );
 
       case "relevantes":
