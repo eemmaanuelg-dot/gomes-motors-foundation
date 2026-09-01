@@ -184,79 +184,23 @@ const CATEGORIAS: {
   { value: "motos", label: "Motos", icon: Bike },
 ];
 
-const FILTROS_CARROS: FiltroGrupo[] = [
-  {
-    grupo: "Marca",
-    opcoes: ["Chevrolet", "Honda", "Toyota", "Volkswagen"],
-  },
-  {
-    grupo: "Modelo",
-    opcoes: ["Civic", "Corolla", "Onix", "Polo"],
-  },
-  {
-    grupo: "Versão",
-    opcoes: ["EXL", "GLi", "Highline TSI", "LTZ"],
-  },
-  {
-    grupo: "Ano",
-    opcoes: ["2020", "2021", "2022", "2023"],
-  },
-  {
-    grupo: "Preço",
-    opcoes: [
-      "Até R$ 80 mil",
-      "R$ 80 mil a R$ 110 mil",
-      "Acima de R$ 110 mil",
-    ],
-  },
-  {
-    grupo: "Quilometragem",
-    opcoes: [
-      "Até 40.000 km",
-      "40.000 a 60.000 km",
-      "Acima de 60.000 km",
-    ],
-  },
-  {
-    grupo: "Câmbio",
-    opcoes: ["Manual", "Automático", "Automático CVT"],
-  },
-  {
-    grupo: "Combustível",
-    opcoes: ["Flex", "Gasolina", "Diesel"],
-  },
+const FAIXAS_PRECO_CARROS = [
+  "Até R$ 80 mil",
+  "R$ 80 mil a R$ 110 mil",
+  "Acima de R$ 110 mil",
 ];
 
-const FILTROS_MOTOS: FiltroGrupo[] = [
-  {
-    grupo: "Marca",
-    opcoes: ["Honda", "Yamaha"],
-  },
-  {
-    grupo: "Modelo",
-    opcoes: ["CB 500F", "MT-03"],
-  },
-  {
-    grupo: "Ano",
-    opcoes: ["2022", "2023"],
-  },
-  {
-    grupo: "Preço",
-    opcoes: ["Até R$ 32 mil", "Acima de R$ 32 mil"],
-  },
-  {
-    grupo: "Quilometragem",
-    opcoes: ["Até 20.000 km", "Acima de 20.000 km"],
-  },
-  {
-    grupo: "Cilindrada",
-    opcoes: ["Até 400 cc", "Acima de 400 cc"],
-  },
-  {
-    grupo: "Tipo",
-    opcoes: ["Naked", "Esportiva", "Custom"],
-  },
+const FAIXAS_PRECO_MOTOS = ["Até R$ 32 mil", "Acima de R$ 32 mil"];
+
+const FAIXAS_KM_CARROS = [
+  "Até 40.000 km",
+  "40.000 a 60.000 km",
+  "Acima de 60.000 km",
 ];
+
+const FAIXAS_KM_MOTOS = ["Até 20.000 km", "Acima de 20.000 km"];
+
+const FAIXAS_CILINDRADA = ["Até 400 cc", "Acima de 400 cc"];
 
 const VISIVEIS_INICIAL = 4;
 
@@ -272,32 +216,68 @@ function formatarKm(km: number) {
   return `${km.toLocaleString("pt-BR")} km`;
 }
 
-function obterFiltros(categoria: Categoria): FiltroGrupo[] {
-  if (categoria === "carros") {
-    return FILTROS_CARROS;
-  }
-
-  if (categoria === "motos") {
-    return FILTROS_MOTOS;
-  }
-
-  const grupos = new Map<string, Set<string>>();
-
-  for (const filtro of [...FILTROS_CARROS, ...FILTROS_MOTOS]) {
-    if (!grupos.has(filtro.grupo)) {
-      grupos.set(filtro.grupo, new Set());
-    }
-
-    filtro.opcoes.forEach((opcao) => {
-      grupos.get(filtro.grupo)!.add(opcao);
-    });
-  }
-
-  return [...grupos.entries()].map(([grupo, opcoes]) => ({
-    grupo,
-    opcoes: [...opcoes],
-  }));
+function unicos(valores: (string | undefined)[]) {
+  return [...new Set(valores.filter((valor): valor is string => Boolean(valor)))].sort(
+    (a, b) => a.localeCompare(b, "pt-BR"),
+  );
 }
+
+/**
+ * Opções derivadas dos dados reais dos veículos, coerentes com a
+ * categoria selecionada e com marca/modelo já escolhidos.
+ */
+function obterFiltros(categoria: Categoria, filtros: Filtros): FiltroGrupo[] {
+  const base = VEICULOS.filter(
+    (veiculo) => categoria === "todos" || veiculo.categoria === categoria,
+  );
+
+  const porMarca = filtros.marca
+    ? base.filter((veiculo) => veiculo.marca === filtros.marca)
+    : base;
+
+  const porModelo = filtros.modelo
+    ? porMarca.filter((veiculo) => veiculo.modelo === filtros.modelo)
+    : porMarca;
+
+  const temCarros = base.some((veiculo) => veiculo.categoria === "carros");
+  const temMotos = base.some((veiculo) => veiculo.categoria === "motos");
+
+  const grupos: FiltroGrupo[] = [
+    { grupo: "Marca", opcoes: unicos(base.map((v) => v.marca)) },
+    { grupo: "Modelo", opcoes: unicos(porMarca.map((v) => v.modelo)) },
+    { grupo: "Versão", opcoes: unicos(porModelo.map((v) => v.versao)) },
+    {
+      grupo: "Ano",
+      opcoes: [...new Set(base.map((v) => String(v.ano)))].sort((a, b) =>
+        b.localeCompare(a),
+      ),
+    },
+    {
+      grupo: "Preço",
+      opcoes: [
+        ...(temCarros ? FAIXAS_PRECO_CARROS : []),
+        ...(temMotos ? FAIXAS_PRECO_MOTOS : []),
+      ],
+    },
+    {
+      grupo: "Quilometragem",
+      opcoes: [
+        ...(temCarros ? FAIXAS_KM_CARROS : []),
+        ...(temMotos ? FAIXAS_KM_MOTOS : []),
+      ],
+    },
+    { grupo: "Câmbio", opcoes: unicos(base.map((v) => v.cambio)) },
+    { grupo: "Combustível", opcoes: unicos(base.map((v) => v.combustivel)) },
+    {
+      grupo: "Cilindrada",
+      opcoes: base.some((v) => v.cilindrada) ? FAIXAS_CILINDRADA : [],
+    },
+    { grupo: "Tipo", opcoes: unicos(base.map((v) => v.tipo)) },
+  ];
+
+  return grupos.filter((grupo) => grupo.opcoes.length > 0);
+}
+
 
 function obterChaveFiltro(grupo: string): keyof Filtros {
   const mapa: Record<string, keyof Filtros> = {
@@ -313,7 +293,7 @@ function obterChaveFiltro(grupo: string): keyof Filtros {
     Tipo: "tipo",
   };
 
-  return mapa[grupo];
+  return mapa[grupo] ?? "marca";
 }
 
 function extrairNumero(texto?: string) {
@@ -441,9 +421,10 @@ function FiltrosLaterais({
   const [expandido, setExpandido] = useState(false);
 
   const filtrosDisponiveis = useMemo(
-    () => obterFiltros(categoria),
-    [categoria],
+    () => obterFiltros(categoria, filtros),
+    [categoria, filtros],
   );
+
 
   const visiveis = expandido
     ? filtrosDisponiveis
@@ -599,21 +580,32 @@ function EstoquePage() {
   const [ordenacao, setOrdenacao] =
     useState<Ordenacao>("relevantes");
 
+  // A categoria é um controle separado: preserva busca e ordenação,
+  // mas zera filtros que podem não existir na nova categoria.
   const alterarCategoria = (novaCategoria: Categoria) => {
     setCategoria(novaCategoria);
     setFiltros(FILTROS_VAZIOS);
-    setBusca("");
-    setOrdenacao("relevantes");
   };
 
   const alterarFiltro = (
     chave: keyof Filtros,
     valor: string,
   ) => {
-    setFiltros((atual) => ({
-      ...atual,
-      [chave]: valor,
-    }));
+    setFiltros((atual) => {
+      const proximo = { ...atual, [chave]: valor };
+
+      // Dependência: marca redefine modelo/versão; modelo redefine versão.
+      if (chave === "marca") {
+        proximo.modelo = "";
+        proximo.versao = "";
+      }
+
+      if (chave === "modelo") {
+        proximo.versao = "";
+      }
+
+      return proximo;
+    });
   };
 
   const veiculos = useMemo(() => {
@@ -630,11 +622,16 @@ function EstoquePage() {
       }
 
       if (termoBusca) {
-        const camposBusca = [
+        const camposBusca: string[] = [
           veiculo.marca,
           veiculo.modelo,
           veiculo.versao,
-        ].filter(Boolean);
+          String(veiculo.ano),
+          veiculo.cambio,
+          veiculo.combustivel,
+          veiculo.cilindrada,
+          veiculo.tipo,
+        ].filter((valor): valor is string => Boolean(valor));
 
         const encontrou = camposBusca.some((valor) =>
           valor
@@ -646,6 +643,7 @@ function EstoquePage() {
           return false;
         }
       }
+
 
       if (
         filtros.marca &&
@@ -899,8 +897,12 @@ function EstoquePage() {
               Maior quilometragem
             </option>
             <option value="mais-novo">
-              Mais novo
+              Mais novos
             </option>
+            <option value="mais-antigo">
+              Mais antigos
+            </option>
+
           </select>
 
           <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
