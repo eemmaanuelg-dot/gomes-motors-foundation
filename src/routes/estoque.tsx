@@ -580,21 +580,32 @@ function EstoquePage() {
   const [ordenacao, setOrdenacao] =
     useState<Ordenacao>("relevantes");
 
+  // A categoria é um controle separado: preserva busca e ordenação,
+  // mas zera filtros que podem não existir na nova categoria.
   const alterarCategoria = (novaCategoria: Categoria) => {
     setCategoria(novaCategoria);
     setFiltros(FILTROS_VAZIOS);
-    setBusca("");
-    setOrdenacao("relevantes");
   };
 
   const alterarFiltro = (
     chave: keyof Filtros,
     valor: string,
   ) => {
-    setFiltros((atual) => ({
-      ...atual,
-      [chave]: valor,
-    }));
+    setFiltros((atual) => {
+      const proximo = { ...atual, [chave]: valor };
+
+      // Dependência: marca redefine modelo/versão; modelo redefine versão.
+      if (chave === "marca") {
+        proximo.modelo = "";
+        proximo.versao = "";
+      }
+
+      if (chave === "modelo") {
+        proximo.versao = "";
+      }
+
+      return proximo;
+    });
   };
 
   const veiculos = useMemo(() => {
@@ -611,11 +622,16 @@ function EstoquePage() {
       }
 
       if (termoBusca) {
-        const camposBusca = [
+        const camposBusca: string[] = [
           veiculo.marca,
           veiculo.modelo,
           veiculo.versao,
-        ].filter(Boolean);
+          String(veiculo.ano),
+          veiculo.cambio,
+          veiculo.combustivel,
+          veiculo.cilindrada,
+          veiculo.tipo,
+        ].filter((valor): valor is string => Boolean(valor));
 
         const encontrou = camposBusca.some((valor) =>
           valor
@@ -627,6 +643,7 @@ function EstoquePage() {
           return false;
         }
       }
+
 
       if (
         filtros.marca &&
