@@ -421,9 +421,10 @@ function FiltrosLaterais({
   const [expandido, setExpandido] = useState(false);
 
   const filtrosDisponiveis = useMemo(
-    () => obterFiltros(categoria),
-    [categoria],
+    () => obterFiltros(categoria, filtros),
+    [categoria, filtros],
   );
+
 
   const visiveis = expandido
     ? filtrosDisponiveis
