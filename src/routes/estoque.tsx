@@ -293,7 +293,7 @@ function obterChaveFiltro(grupo: string): keyof Filtros {
     Tipo: "tipo",
   };
 
-  return mapa[grupo];
+  return mapa[grupo] ?? "marca";
 }
 
 function extrairNumero(texto?: string) {
