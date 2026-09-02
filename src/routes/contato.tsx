@@ -2,6 +2,11 @@ import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { ArrowUpRight, Clock, Mail, MapPin, MessageCircle, Phone, X } from "lucide-react";
 
+import {
+  WHATSAPP_DISPLAY,
+  WHATSAPP_TELEFONE,
+  WHATSAPP_TELEFONE_HREF,
+} from "@/lib/contact";
 import { criarWhatsAppUrl } from "@/lib/vehicle-utils";
 
 export const Route = createFileRoute("/contato")({
@@ -22,9 +27,9 @@ const whatsappUrl = criarWhatsAppUrl("Olá! Gostaria de falar com a Gomes Motors
 
 const contato = {
   email: "contato@gomesmotors.com",
-  telefone: "+55 22 99999-08461",
-  telefoneHref: "tel:+55229999908461",
-  whatsapp: "(22) 99999-08461",
+  telefone: WHATSAPP_TELEFONE,
+  telefoneHref: WHATSAPP_TELEFONE_HREF,
+  whatsapp: WHATSAPP_DISPLAY,
   endereco: "Av. 28 de Março, 1500 — Parque Turf Club, Campos dos Goytacazes/RJ",
 };
 
