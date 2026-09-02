@@ -93,7 +93,46 @@ Objetivo da fase:
 4. integração gradual com o site público;
 5. validação arquitetural.
 
-**Estado atual:** somente a arquitetura/planta foi definida e documentada. A implementação dos contratos ainda não começou.
+### Etapa 5.1 — Contratos fundamentais
+**Implementação iniciada e estruturada.**
+
+Foram criados os primeiros contratos centrais, sem alterar as rotas ou a UX pública:
+
+- tipos compartilhados de domínio;
+- entidade e tipos de veículo;
+- regras de transição de status de veículo;
+- contrato de repositório de veículos;
+- contrato e regras iniciais de estoque;
+- entidade, tipos, histórico e regras de leads;
+- entidade e regras de avaliações;
+- entidade e regras de financiamento;
+- entidade e contrato de clientes;
+- contratos de repositório para estoque, leads, avaliações, financiamento e clientes.
+
+Regras importantes já centralizadas:
+
+- veículo vendido não retorna para fluxo comercial comum;
+- veículo vendido não deve permanecer publicado;
+- veículo reservado pode ser liberado ou vendido;
+- veículo vendido não aceita novas transições;
+- leads possuem fluxo de atendimento controlado;
+- tipos de lead que representam negociação de veículo podem exigir vínculo com veículo;
+- avaliações possuem fluxo separado de solicitação, análise e decisão;
+- financiamento separa simulação de proposta operacional;
+- entrada e prazo de financiamento possuem validação básica.
+
+**Ainda não foi feito:**
+
+- integração das rotas públicas com esses contratos;
+- repositório estático;
+- D1;
+- R2;
+- server-side operacional;
+- autenticação;
+- `/admin`;
+- migração dos dados atuais.
+
+O site público permanece funcionando pela estrutura anterior enquanto os contratos são preparados e validados.
 
 ## Estrutura atual
 
@@ -119,11 +158,17 @@ GOMES MOTORS
 │   ├── Logo
 │   └── componentes UI disponíveis
 │
-├── Camada de domínio atual
-│   ├── dados estáticos de veículos
-│   ├── utilitários comerciais
-│   ├── favoritos
-│   └── regras compartilhadas
+├── Domínio em preparação
+│   ├── shared
+│   ├── vehicles
+│   ├── inventory
+│   ├── leads
+│   ├── evaluations
+│   ├── financing
+│   └── customers
+│
+├── Dados atuais
+│   └── `src/data/vehicles.ts` — fonte estática pública durante a transição
 │
 ├── Rotas / aplicação
 │   ├── TanStack Router
@@ -153,7 +198,7 @@ A base pública ainda não possui:
 - autenticação;
 - painel administrativo;
 - usuários internos;
-- CRM de leads;
+- CRM de leads persistente;
 - avaliações persistentes;
 - negociações persistentes;
 - financiamento operacional real.
@@ -164,17 +209,20 @@ Esses itens não são pendências da fase pública. Eles pertencem às próximas
 
 Depois da preparação do domínio:
 
-1. contratos e implementação de domínio;
-2. D1 + R2 + camada server-side;
-3. autenticação e autorização;
-4. `/admin`;
-5. Dashboard;
-6. Estoque administrativo;
-7. migração dos seis veículos de demonstração;
-8. Leads e atendimento;
-9. Avaliações;
-10. Financiamento operacional;
-11. métricas e preparação para operação real.
+1. conclusão dos contratos e implementação inicial do domínio;
+2. repositório estático e casos de uso;
+3. integração gradual com o site público;
+4. validação arquitetural;
+5. D1 + R2 + camada server-side;
+6. autenticação e autorização;
+7. `/admin`;
+8. Dashboard;
+9. Estoque administrativo;
+10. migração dos seis veículos de demonstração;
+11. Leads e atendimento;
+12. Avaliações;
+13. Financiamento operacional;
+14. métricas e preparação para operação real.
 
 ## Regra para a evolução
 
