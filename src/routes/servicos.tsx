@@ -9,7 +9,7 @@ import {
   Repeat,
 } from "lucide-react";
 
-import { criarWhatsAppUrl, mensagemComercial } from "@/lib/vehicle-utils";
+import { criarWhatsAppUrl } from "@/lib/vehicle-utils";
 
 export const Route = createFileRoute("/servicos")({
   head: () => ({
