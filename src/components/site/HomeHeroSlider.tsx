@@ -16,6 +16,7 @@ const SLIDES = [
     title: "ACEITAMOS O SEU VEÍCULO NA TROCA",
     cta: "AVALIAR VEÍCULO",
     to: "/servicos",
+    hash: "trocar",
     image:
       "https://images.pexels.com/photos/7144207/pexels-photo-7144207.jpeg?auto=compress&cs=tinysrgb&w=1920",
     alt: "Cliente e consultor fechando acordo com troca de chave em concessionária",
@@ -25,6 +26,7 @@ const SLIDES = [
     title: "FINANCIE SEU PRÓXIMO VEÍCULO",
     cta: "SIMULAR FINANCIAMENTO",
     to: "/servicos",
+    hash: "financiar",
     image:
       "https://images.pexels.com/photos/4173196/pexels-photo-4173196.jpeg?auto=compress&cs=tinysrgb&w=1920",
     alt: "Cliente e consultor analisando documentação em showroom automotivo",
@@ -125,6 +127,7 @@ export function HomeHeroSlider() {
                 </h1>
                 <Link
                   to={slide.to}
+                  hash={slide.hash}
                   tabIndex={index === activeIndex ? 0 : -1}
                   className="mt-7 inline-flex items-center gap-2 rounded-sm border border-gold bg-gold px-6 py-3.5 text-sm font-bold text-black transition-opacity hover:opacity-90"
                 >
@@ -140,7 +143,7 @@ export function HomeHeroSlider() {
           type="button"
           aria-label="Destaque anterior"
           onClick={previous}
-          className="absolute left-3 top-1/2 z-30 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/30 bg-black/20 text-white backdrop-blur-sm transition-all hover:border-gold hover:bg-black/40 hover:text-gold sm:left-5 lg:left-7"
+          className="absolute left-2 top-1/2 z-30 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/30 bg-black/20 text-white backdrop-blur-sm transition-all hover:border-gold hover:bg-black/40 hover:text-gold sm:left-4 lg:left-6"
         >
           <ChevronLeft className="h-6 w-6" />
         </button>
@@ -148,7 +151,7 @@ export function HomeHeroSlider() {
           type="button"
           aria-label="Próximo destaque"
           onClick={next}
-          className="absolute right-3 top-1/2 z-30 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/30 bg-black/20 text-white backdrop-blur-sm transition-all hover:border-gold hover:bg-black/40 hover:text-gold sm:right-5 lg:right-7"
+          className="absolute right-2 top-1/2 z-30 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/30 bg-black/20 text-white backdrop-blur-sm transition-all hover:border-gold hover:bg-black/40 hover:text-gold sm:right-4 lg:right-6"
         >
           <ChevronRight className="h-6 w-6" />
         </button>
