@@ -85,24 +85,26 @@ Isso mantém os contratos do domínio independentes da implementação concreta.
 
 ## Wrangler
 
-`wrangler.jsonc` agora declara as bindings `DB` e `VEHICLE_IMAGES`.
+`wrangler.jsonc` declara as bindings `DB` e `VEHICLE_IMAGES`.
 
-Os recursos estão configurados para provisionamento sem IDs específicos no repositório. Wrangler/Cloudflare pode associar os recursos ao Worker no deploy; IDs de conta não são inventados nem versionados manualmente.
+Os recursos estão configurados para provisionamento automático sem IDs específicos no repositório. IDs de conta não são inventados nem versionados manualmente.
 
-## Ordem operacional
+## Ordem operacional segura
 
 Depois de autenticar o Wrangler no ambiente que fará o deploy:
 
 ```text
 1. npm run deploy
-2. npm run db:migrate:remote
-3. npm run r2:upload
+2. npm run r2:upload
+3. npm run db:migrate:remote
 4. npm run cf-typegen
-5. novo build/deploy
+5. novo npm run deploy
 6. validar /, /estoque e /estoque/:id
 ```
 
-A migration deve ser aplicada antes de o catálogo público depender dos registros D1. As imagens devem ser enviadas ao R2 antes de considerar a migração visual concluída.
+A ordem evita que D1 aponte para imagens R2 ainda inexistentes. O primeiro deploy provisiona/associa os recursos; o upload coloca as imagens no bucket; a migration então publica os seis veículos apontando para as imagens já disponíveis.
+
+A geração de tipos após a criação das bindings deixa o projeto pronto para substituir os contratos mínimos pelas definições reais do Wrangler quando isso trouxer benefício.
 
 ## Comandos disponíveis
 
@@ -112,6 +114,20 @@ A migration deve ser aplicada antes de o catálogo público depender dos registr
 - `npm run cf-typegen`
 - `npm run build`
 - `npm run deploy`
+
+## Validação obrigatória
+
+Depois da ativação remota, conferir:
+
+- Home carrega os destaques vindos do D1;
+- Estoque carrega os seis veículos;
+- filtros e favoritos continuam funcionando;
+- detalhe por ID carrega corretamente;
+- imagens `/media/*` retornam do R2;
+- WhatsApp continua usando o número centralizado;
+- nenhum dado de D1/R2 aparece diretamente em código de apresentação;
+- build oficial passa;
+- nenhum fluxo público aprovado foi alterado.
 
 ## Próxima etapa
 
