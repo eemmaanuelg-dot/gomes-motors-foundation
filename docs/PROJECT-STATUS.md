@@ -10,7 +10,7 @@ A versão pública do Gomes Motors foi **fechada como base estável**.
 
 ## Fase 5 — Preparação da camada de domínio
 
-**Etapas estruturais implementadas; validação final pendente.**
+**Implementação estrutural concluída; validação final de build e regressão pendente.**
 
 A fase está sendo construída antes de D1, R2, autenticação e `/admin`, preservando o site público como patrimônio estável.
 
@@ -57,72 +57,50 @@ Operações estruturadas:
 As transições passam pelas regras centrais do domínio, e publicação permanece separada do cadastro do veículo.
 
 ### 5.4 — Integração gradual com o site público
-**Fronteira de aplicação criada; migração das rotas públicas ainda pendente de validação.**
+**Concluída na camada de leitura pública de veículos.**
 
-Foi criado:
+Foi criado e adotado:
 
 - `src/application/vehicles/public-catalog.ts`.
 
-Esse arquivo é o ponto único para o catálogo público e impede que uma futura troca de repositório exija conhecimento da infraestrutura nas rotas.
+As rotas públicas que exibem veículos passaram a carregar seus dados por loaders do TanStack Router e consumir o catálogo público:
 
-A migração visual/funcional das rotas `/estoque` e `/estoque/:id` deve ser feita de forma controlada, porque essas páginas já estão aprovadas e não devem sofrer alteração de UX durante a preparação arquitetural.
+- `/`;
+- `/estoque`;
+- `/estoque/:id`.
+
+A UI existente foi preservada. Busca, filtros, favoritos, ordenação, detalhes, relacionados e ações de WhatsApp continuam na apresentação, enquanto a origem dos dados passou para a fronteira de aplicação.
 
 ### 5.5 — Validação arquitetural
-**Pendente.**
+**Implementação da validação concluída; aceite final depende do build pós-integração.**
 
-Antes de considerar a Fase 5 encerrada, é obrigatório validar:
-
-- `npm run build`;
-- TypeScript sem erros;
-- rotas públicas;
-- estoque e filtros;
-- detalhe de veículo;
-- favoritos;
-- WhatsApp;
-- navegação;
-- comportamento desktop/mobile;
-- ausência de regressões visuais e funcionais;
-- separação entre domínio, aplicação, infraestrutura e apresentação.
-
-Não considerar a fase validada apenas porque os arquivos foram criados. O build e o teste funcional são o critério de encerramento.
-
-## Estrutura atual relevante
+A revisão confirma a separação:
 
 ```text
-src/
-├── domain/
-│   ├── shared/
-│   ├── vehicles/
-│   ├── inventory/
-│   ├── leads/
-│   ├── evaluations/
-│   ├── financing/
-│   └── customers/
-│
-├── application/
-│   └── vehicles/
-│       ├── use-cases.ts
-│       └── public-catalog.ts
-│
-├── infrastructure/
-│   └── repositories/
-│       └── static/
-│           ├── vehicle-repository.ts
-│           └── inventory-repository.ts
-│
-├── data/
-│   └── vehicles.ts
-│
-├── routes/
-├── components/
-└── lib/
+apresentação
+    ↓
+route loaders
+    ↓
+public vehicle catalog
+    ↓
+casos de uso
+    ↓
+contratos de domínio
+    ↓
+repositórios
+    ↓
+dados estáticos de transição
 ```
+
+Também foram mantidos os critérios de preservação da versão pública: nenhuma reconstrução de UX, identidade ou funcionalidade foi necessária para concluir a integração.
+
+O checklist detalhado está em `docs/DOMAIN-AUDIT-2026-09-02.md`.
+
+Ainda é obrigatório executar o build oficial após estas últimas alterações e repetir a conferência funcional do site público. O build anterior passou após a correção de tipagem, mas não substitui a validação desta nova rodada de integração.
 
 ## Próximo marco
 
-O próximo passo é **validar a implementação e então concluir a integração gradual das rotas públicas**, sem redesenhar o site.
-
-Somente depois de a validação passar a sequência continua para:
+Após o build pós-integração e a conferência final:
 
 ```text
 Fase 5 validada
@@ -133,6 +111,8 @@ autenticação/autorização
       ↓
 /admin
 ```
+
+Nenhuma implementação de autenticação ou `/admin` deve ser iniciada antes desse marco.
 
 ## Regra para a evolução
 
