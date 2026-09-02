@@ -12,4 +12,15 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  vite: {
+    build: {
+      // `cloudflare:workers` is a Worker-native module. It may be introduced
+      // by the Cloudflare/TanStack server-function build graph even when the
+      // application source does not import it directly. Keep it external so
+      // Rolldown does not try to resolve it as a filesystem dependency.
+      rolldownOptions: {
+        external: ["cloudflare:workers"],
+      },
+    },
+  },
 });
