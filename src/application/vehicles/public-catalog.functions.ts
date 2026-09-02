@@ -27,17 +27,22 @@ function getPublicCatalogDependencies() {
   return createStaticDependencies();
 }
 
-export const publicVehicleCatalog = {
-  listar: createServerFn({ method: "GET" }).handler(async () => {
+const listarCatalogoPublico = createServerFn({ method: "GET" }).handler(
+  async () => {
     return listarVeiculosPublicos(getPublicCatalogDependencies());
-  }),
+  },
+);
 
-  obterPorId: createServerFn({ method: "GET" })
-    .validator((data: { id: string }) => data)
-    .handler(async ({ data }) => {
-      return obterVeiculoPublicoPorId(
-        getPublicCatalogDependencies(),
-        data.id,
-      );
-    }),
+const obterCatalogoPublicoPorId = createServerFn({ method: "GET" })
+  .validator((data: { id: string }) => data)
+  .handler(async ({ data }) => {
+    return obterVeiculoPublicoPorId(
+      getPublicCatalogDependencies(),
+      data.id,
+    );
+  });
+
+export const publicVehicleCatalog = {
+  listar: listarCatalogoPublico,
+  obterPorId: obterCatalogoPublicoPorId,
 };
