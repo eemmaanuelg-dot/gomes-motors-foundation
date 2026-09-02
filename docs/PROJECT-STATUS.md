@@ -57,7 +57,7 @@ Foram corrigidos problemas técnicos identificados, removidos artefatos comprova
 A auditoria está registrada em `docs/PROJECT-AUDIT-AND-ROADMAP.md`.
 
 ### Fase 4 — Marco público estável
-**Concluída agora.**
+**Concluída.**
 
 Critério de encerramento:
 
@@ -69,6 +69,31 @@ Critério de encerramento:
 - build Cloudflare aprovado;
 - nenhum problema crítico conhecido pendente;
 - decisões futuras separadas da base pública.
+
+### Fase 5 — Preparação da camada de domínio
+**Iniciada em 02/09/2026.**
+
+A planta arquitetural foi registrada em `docs/DOMAIN-ARCHITECTURE.md`.
+
+Objetivo da fase:
+
+- separar regras de negócio da apresentação;
+- criar contratos de domínio reutilizáveis;
+- preparar veículos, estoque, leads, avaliações, financiamento e clientes;
+- criar uma fronteira entre domínio e fonte de dados;
+- permitir começar com os dados estáticos atuais e migrar posteriormente para D1;
+- preparar o mesmo domínio para o futuro Painel Comercial;
+- preservar integralmente a experiência pública aprovada.
+
+### Etapas da Fase 5
+
+1. contratos fundamentais;
+2. repositório estático;
+3. casos de uso;
+4. integração gradual com o site público;
+5. validação arquitetural.
+
+**Estado atual:** somente a arquitetura/planta foi definida e documentada. A implementação dos contratos ainda não começou.
 
 ## Estrutura atual
 
@@ -114,7 +139,8 @@ GOMES MOTORS
 └── Documentação
     ├── PROJECT-AUDIT-AND-ROADMAP.md
     ├── FUTURE-ROADMAP.md
-    └── PROJECT-STATUS.md
+    ├── PROJECT-STATUS.md
+    └── DOMAIN-ARCHITECTURE.md
 ```
 
 ## O que ainda não existe — propositalmente
@@ -132,37 +158,15 @@ A base pública ainda não possui:
 - negociações persistentes;
 - financiamento operacional real.
 
-Esses itens não são pendências da fase pública. Eles pertencem à próxima fase do produto.
+Esses itens não são pendências da fase pública. Eles pertencem às próximas fases do produto.
 
-## Próxima fase
+## Próximas fases
 
-### Fase 5 — Preparação da camada de domínio
+Depois da preparação do domínio:
 
-Antes de criar D1, R2 ou `/admin`, vamos preparar os contratos de domínio que separarão a aplicação pública da futura persistência.
-
-Objetivo:
-
-```text
-ATUAL
-vehicles.ts → páginas públicas
-
-PRÓXIMO
-páginas públicas
-      ↓
-serviços/contratos de domínio
-      ↓
-fonte de dados
-```
-
-Isso permite trocar a fonte estática atual por D1 no futuro sem reconstruir a experiência pública.
-
-### Depois da camada de domínio
-
-A sequência planejada permanece:
-
-1. contratos de domínio;
+1. contratos e implementação de domínio;
 2. D1 + R2 + camada server-side;
-3. autenticação;
+3. autenticação e autorização;
 4. `/admin`;
 5. Dashboard;
 6. Estoque administrativo;
@@ -172,7 +176,7 @@ A sequência planejada permanece:
 10. Financiamento operacional;
 11. métricas e preparação para operação real.
 
-## Regra para a próxima fase
+## Regra para a evolução
 
 O site público estável é patrimônio do projeto.
 
