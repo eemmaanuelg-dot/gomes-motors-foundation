@@ -9,6 +9,8 @@ import {
   Repeat,
 } from "lucide-react";
 import heroImage from "../assets/hero-showroom.jpg";
+import { VEICULOS, obterTituloVeiculo } from "@/data/vehicles";
+import { formatarKm, formatarPreco } from "@/lib/vehicle-utils";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -39,6 +41,10 @@ const SERVICES = [
   { icon: KeyRound, title: "Consignar", description: "Deixe seu veículo com quem sabe vender, sem preocupação." },
   { icon: CreditCard, title: "Financiar", description: "Condições flexíveis com os principais bancos do mercado." },
 ];
+
+const VEICULOS_DESTAQUE = VEICULOS.filter(
+  (veiculo) => veiculo.destaque && veiculo.status !== "vendido",
+).slice(0, 3);
 
 function HomePage() {
   return (
@@ -112,7 +118,7 @@ function HomePage() {
         </div>
       </section>
 
-      {/* Veículos em destaque — área reservada */}
+      {/* Veículos em destaque */}
       <section className="border-t border-border">
         <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
           <div className="flex flex-wrap items-end justify-between gap-4">
@@ -123,6 +129,9 @@ function HomePage() {
               <h2 className="mt-2 text-2xl font-bold text-foreground sm:text-3xl">
                 Veículos em destaque
               </h2>
+              <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
+                Confira alguns dos veículos disponíveis em nosso estoque e encontre a opção que mais combina com você.
+              </p>
             </div>
             <Link
               to="/estoque"
@@ -132,47 +141,90 @@ function HomePage() {
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
-          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {[1, 2, 3].map((i) => (
-              <div
-                key={i}
-                className="flex aspect-[4/3] flex-col items-center justify-center gap-2 rounded-sm border border-dashed border-border bg-card text-muted-foreground"
+
+          <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {VEICULOS_DESTAQUE.map((veiculo) => (
+              <article
+                key={veiculo.id}
+                className="overflow-hidden rounded-sm border border-border bg-card"
               >
-                <Car className="h-8 w-8" />
-                <p className="text-sm">Veículo em destaque em breve</p>
-              </div>
+                <Link to="/estoque/$id" params={{ id: veiculo.id }} className="block">
+                  <img
+                    src={veiculo.imagem}
+                    alt={obterTituloVeiculo(veiculo)}
+                    width={800}
+                    height={600}
+                    className="aspect-[4/3] w-full object-cover transition-transform duration-300 hover:scale-[1.02]"
+                  />
+                </Link>
+                <div className="p-5">
+                  <p className="text-xs font-semibold uppercase tracking-[0.15em] text-gold">
+                    {veiculo.categoria === "carros" ? "Carro" : "Moto"}
+                  </p>
+                  <h3 className="mt-2 text-lg font-semibold text-foreground">
+                    {obterTituloVeiculo(veiculo)}
+                  </h3>
+                  <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                    <span>{veiculo.ano}</span>
+                    <span>{formatarKm(veiculo.km)}</span>
+                    {veiculo.cambio && <span>{veiculo.cambio}</span>}
+                  </div>
+                  <p className="mt-4 text-xl font-bold text-foreground">
+                    {formatarPreco(veiculo.preco)}
+                  </p>
+                  <Link
+                    to="/estoque/$id"
+                    params={{ id: veiculo.id }}
+                    className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-gold hover:text-foreground"
+                  >
+                    Ver detalhes
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </div>
+              </article>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Apresentação da Gomes Motors — área reservada */}
+      {/* Apresentação da Gomes Motors */}
       <section className="border-t border-border bg-secondary">
         <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
-          <div className="max-w-2xl">
-            <p className="text-sm font-semibold uppercase tracking-[0.25em] text-gold">
-              Sobre a Gomes Motors
-            </p>
-            <h2 className="mt-2 text-2xl font-bold text-foreground sm:text-3xl">
-              Confiança que se constrói em cada negociação
-            </h2>
-            <p className="mt-5 leading-relaxed text-muted-foreground">
-              Espaço reservado para a apresentação institucional da Gomes
-              Motors: nossa história, nossos valores e o compromisso com cada
-              cliente de Campos dos Goytacazes e região.
-            </p>
-            <Link
-              to="/sobre"
-              className="mt-7 inline-flex items-center gap-2 text-sm font-semibold text-gold transition-colors hover:text-foreground"
-            >
-              Conhecer a Gomes Motors
-              <ArrowRight className="h-4 w-4" />
-            </Link>
+          <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
+            <div className="max-w-2xl">
+              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-gold">
+                Sobre a Gomes Motors
+              </p>
+              <h2 className="mt-2 text-2xl font-bold text-foreground sm:text-3xl">
+                Confiança que se constrói em cada negociação
+              </h2>
+              <p className="mt-5 leading-relaxed text-muted-foreground">
+                A Gomes Motors nasceu com uma proposta simples: aproximar pessoas de boas oportunidades no mercado automotivo, com informação clara, atendimento próximo e uma negociação transparente.
+              </p>
+              <Link
+                to="/sobre"
+                className="mt-7 inline-flex items-center gap-2 text-sm font-semibold text-gold transition-colors hover:text-foreground"
+              >
+                Conhecer a Gomes Motors
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+            <div className="rounded-sm border border-border bg-card p-7 sm:p-8">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">
+                Nossa proposta
+              </p>
+              <ul className="mt-6 space-y-4 text-sm leading-6 text-muted-foreground">
+                <li>Informação objetiva sobre cada veículo.</li>
+                <li>Atendimento comercial próximo e sem complicação.</li>
+                <li>Soluções para comprar, vender, trocar ou consignar.</li>
+                <li>Orientação para uma decisão mais segura.</li>
+              </ul>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Localização e contato — área reservada */}
+      {/* Localização e contato */}
       <section className="border-t border-border">
         <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
           <div className="flex flex-col items-start justify-between gap-8 rounded-sm border border-border bg-card p-8 sm:p-12 lg:flex-row lg:items-center">
@@ -187,8 +239,11 @@ function HomePage() {
                 Campos dos Goytacazes, RJ
               </h2>
               <p className="mt-4 leading-relaxed text-muted-foreground">
-                Área reservada para endereço, mapa e canais de atendimento.
-                Estamos prontos para receber você.
+                Atendimento na região de 28 de Março. Para consultar veículos,
+                condições de negociação e disponibilidade da equipe, fale conosco.
+              </p>
+              <p className="mt-3 text-sm font-medium text-foreground">
+                WhatsApp: (22) 99999-08461
               </p>
             </div>
             <Link
