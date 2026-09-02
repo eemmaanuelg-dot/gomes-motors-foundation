@@ -334,7 +334,7 @@ function EstoquePage() {
             <p className="text-sm text-muted-foreground">{textoResultados}</p>
             <div className="flex items-center gap-4">
               {!favoritosNaUrl && favoritos.size > 0 && <Link to="/estoque" search={{ favoritos: true }} className="inline-flex items-center gap-1.5 text-sm font-medium text-gold hover:text-foreground"><Heart className="h-4 w-4" />Favoritos ({favoritos.size})</Link>}
-              {favoritosNaUrl && <Link to="/estoque" className="text-sm font-medium text-gold hover:text-foreground">Voltar ao estoque</Link>}
+              {favoritosNaUrl && <a href="/estoque" className="text-sm font-medium text-gold hover:text-foreground">Voltar ao estoque</a>}
               {possuiFiltrosAtivos && !favoritosNaUrl && <button type="button" onClick={limparFiltros} className="text-sm font-medium text-gold hover:text-foreground">Limpar filtros</button>}
             </div>
           </div>
