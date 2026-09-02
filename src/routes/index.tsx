@@ -1,13 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-  ArrowRight,
-  BadgeDollarSign,
-  Car,
-  CreditCard,
-  KeyRound,
-  MapPin,
-  Repeat,
-} from "lucide-react";
+import { ArrowRight, BadgeDollarSign, Car, CreditCard, KeyRound, MapPin, Repeat } from "lucide-react";
 import { HomeHeroSlider } from "@/components/site/HomeHeroSlider";
 import { VEICULOS, obterTituloVeiculo } from "@/data/vehicles";
 import { formatarKm, formatarPreco } from "@/lib/vehicle-utils";
@@ -16,17 +8,9 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Gomes Motors — A escolha certa começa aqui" },
-      {
-        name: "description",
-        content:
-          "Revenda de veículos em Campos dos Goytacazes, RJ. Compre, venda, troque, consigne ou financie seu veículo com a Gomes Motors.",
-      },
+      { name: "description", content: "Revenda de veículos em Campos dos Goytacazes, RJ. Compre, venda, troque, consigne ou financie seu veículo com a Gomes Motors." },
       { property: "og:title", content: "Gomes Motors — A escolha certa começa aqui" },
-      {
-        property: "og:description",
-        content:
-          "Veículos selecionados com transparência e atendimento próximo em Campos dos Goytacazes, RJ.",
-      },
+      { property: "og:description", content: "Veículos selecionados com transparência e atendimento próximo em Campos dos Goytacazes, RJ." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -42,9 +26,7 @@ const SERVICES = [
   { icon: CreditCard, title: "Financiar", id: "financiar", description: "Condições flexíveis com os principais bancos do mercado." },
 ];
 
-const VEICULOS_DESTAQUE = VEICULOS.filter(
-  (veiculo) => veiculo.destaque && veiculo.status !== "vendido",
-).slice(0, 3);
+const VEICULOS_DESTAQUE = VEICULOS.filter((veiculo) => veiculo.destaque && veiculo.status !== "vendido").slice(0, 3);
 
 function HomePage() {
   return (
@@ -59,10 +41,7 @@ function HomePage() {
             {SERVICES.map((service) => (
               <a key={service.title} href={`/servicos#${service.id}`} className="group flex flex-col items-center gap-4 rounded-sm border border-border bg-card p-6 text-center transition-colors hover:border-gold/50">
                 <service.icon className="h-8 w-8 text-gold transition-transform group-hover:scale-105" />
-                <div>
-                  <h3 className="font-semibold text-foreground">{service.title}</h3>
-                  <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">{service.description}</p>
-                </div>
+                <div><h3 className="font-semibold text-foreground">{service.title}</h3><p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">{service.description}</p></div>
               </a>
             ))}
           </div>
@@ -73,14 +52,11 @@ function HomePage() {
         <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.25em]"><span className="text-gold">Seleção Gomes</span> <span className="text-foreground">Motors</span></p>
+              <p className="text-sm font-semibold uppercase tracking-[0.25em]"><span className="text-foreground">Seleção </span><span className="text-gold">Gomes</span><span className="text-foreground"> Motors</span></p>
               <h2 className="mt-2 text-2xl font-bold text-foreground sm:text-3xl">Veículos em destaque</h2>
               <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">Confira alguns dos veículos disponíveis em nosso estoque e encontre a opção que mais combina com você.</p>
             </div>
-            <Link to="/estoque" className="inline-flex items-center gap-2 text-sm font-semibold text-gold transition-colors hover:text-foreground">
-              Ver estoque completo
-              <ArrowRight className="h-4 w-4" />
-            </Link>
+            <Link to="/estoque" className="inline-flex items-center gap-2 text-sm font-semibold text-gold transition-colors hover:text-foreground">Ver estoque completo<ArrowRight className="h-4 w-4" /></Link>
           </div>
 
           <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -92,16 +68,9 @@ function HomePage() {
                 <div className="p-5">
                   <p className="text-xs font-semibold uppercase tracking-[0.15em] text-gold">{veiculo.categoria === "carros" ? "Carro" : "Moto"}</p>
                   <h3 className="mt-2 text-lg font-semibold text-foreground">{obterTituloVeiculo(veiculo)}</h3>
-                  <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
-                    <span>{veiculo.ano}</span>
-                    <span>{formatarKm(veiculo.km)}</span>
-                    {veiculo.cambio && <span>{veiculo.cambio}</span>}
-                  </div>
+                  <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground"><span>{veiculo.ano}</span><span>{formatarKm(veiculo.km)}</span>{veiculo.cambio && <span>{veiculo.cambio}</span>}</div>
                   <p className="mt-4 text-xl font-bold text-foreground">{formatarPreco(veiculo.preco)}</p>
-                  <a href={`/estoque/${veiculo.id}`} aria-label={`Ver detalhes de ${obterTituloVeiculo(veiculo)} ${veiculo.ano}`} className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-gold hover:text-foreground">
-                    Ver detalhes
-                    <ArrowRight className="h-4 w-4" />
-                  </a>
+                  <a href={`/estoque/${veiculo.id}`} aria-label={`Ver detalhes de ${obterTituloVeiculo(veiculo)} ${veiculo.ano}`} className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-gold hover:text-foreground">Ver detalhes<ArrowRight className="h-4 w-4" /></a>
                 </div>
               </article>
             ))}
@@ -116,19 +85,11 @@ function HomePage() {
               <p className="text-sm font-semibold uppercase tracking-[0.25em]"><span className="text-gold">Sobre a Gomes</span> <span className="text-foreground">Motors</span></p>
               <h2 className="mt-2 text-2xl font-bold text-foreground sm:text-3xl">Confiança que se constrói em cada negociação</h2>
               <p className="mt-5 leading-relaxed text-muted-foreground">A Gomes Motors nasceu com uma proposta simples: aproximar pessoas de boas oportunidades no mercado automotivo, com informação clara, atendimento próximo e uma negociação transparente.</p>
-              <Link to="/sobre" className="mt-7 inline-flex items-center gap-2 text-sm font-semibold text-gold transition-colors hover:text-foreground">
-                Conhecer a Gomes Motors
-                <ArrowRight className="h-4 w-4" />
-              </Link>
+              <Link to="/sobre" className="mt-7 inline-flex items-center gap-2 text-sm font-semibold text-gold transition-colors hover:text-foreground">Conhecer a Gomes Motors<ArrowRight className="h-4 w-4" /></Link>
             </div>
             <div className="rounded-sm border border-border bg-card p-7 sm:p-8">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">Nossa proposta</p>
-              <ul className="mt-6 space-y-4 text-sm leading-6 text-muted-foreground">
-                <li>Informação objetiva sobre cada veículo.</li>
-                <li>Atendimento comercial próximo e sem complicação.</li>
-                <li>Soluções para comprar, vender, trocar ou consignar.</li>
-                <li>Orientação para uma decisão mais segura.</li>
-              </ul>
+              <ul className="mt-6 space-y-4 text-sm leading-6 text-muted-foreground"><li>Informação objetiva sobre cada veículo.</li><li>Atendimento comercial próximo e sem complicação.</li><li>Soluções para comprar, vender, trocar ou consignar.</li><li>Orientação para uma decisão mais segura.</li></ul>
             </div>
           </div>
         </div>
@@ -143,10 +104,7 @@ function HomePage() {
               <p className="mt-4 leading-relaxed text-muted-foreground">Atendimento na região de 28 de Março. Para consultar veículos, condições de negociação e disponibilidade da equipe, fale conosco.</p>
               <p className="mt-3 text-sm font-medium text-foreground">WhatsApp: (22) 99999-08461</p>
             </div>
-            <Link to="/contato" className="inline-flex items-center justify-center gap-2 rounded-sm bg-brand-red px-7 py-3.5 text-sm font-semibold text-brand-red-foreground transition-opacity hover:opacity-90">
-              Fale conosco
-              <ArrowRight className="h-4 w-4" />
-            </Link>
+            <Link to="/contato" className="inline-flex items-center justify-center gap-2 rounded-sm bg-brand-red px-7 py-3.5 text-sm font-semibold text-brand-red-foreground transition-opacity hover:opacity-90">Fale conosco<ArrowRight className="h-4 w-4" /></Link>
           </div>
         </div>
       </section>
