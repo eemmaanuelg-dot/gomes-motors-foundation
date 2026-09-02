@@ -35,11 +35,11 @@ export const Route = createFileRoute("/")({
 });
 
 const SERVICES = [
-  { icon: Car, title: "Comprar", description: "Veículos selecionados, revisados e com procedência garantida." },
-  { icon: BadgeDollarSign, title: "Vender", description: "Avaliação justa e pagamento rápido pelo seu veículo." },
-  { icon: Repeat, title: "Trocar", description: "Use seu carro atual como entrada e saia de veículo novo." },
-  { icon: KeyRound, title: "Consignar", description: "Deixe seu veículo com quem sabe vender, sem preocupação." },
-  { icon: CreditCard, title: "Financiar", description: "Condições flexíveis com os principais bancos do mercado." },
+  { icon: Car, title: "Comprar", id: "comprar", description: "Veículos selecionados, revisados e com procedência garantida." },
+  { icon: BadgeDollarSign, title: "Vender", id: "vender", description: "Avaliação justa e pagamento rápido pelo seu veículo." },
+  { icon: Repeat, title: "Trocar", id: "trocar", description: "Use seu carro atual como entrada e saia de veículo novo." },
+  { icon: KeyRound, title: "Consignar", id: "consignar", description: "Deixe seu veículo com quem sabe vender, sem preocupação." },
+  { icon: CreditCard, title: "Financiar", id: "financiar", description: "Condições flexíveis com os principais bancos do mercado." },
 ];
 
 const VEICULOS_DESTAQUE = VEICULOS.filter(
@@ -57,13 +57,13 @@ function HomePage() {
           <p className="mx-auto mt-3 max-w-lg text-center text-sm text-muted-foreground">Soluções completas para cada momento da sua jornada automotiva.</p>
           <div className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
             {SERVICES.map((service) => (
-              <Link key={service.title} to="/servicos" className="group flex flex-col items-center gap-4 rounded-sm border border-border bg-card p-6 text-center transition-colors hover:border-gold/50">
+              <a key={service.title} href={`/servicos#${service.id}`} className="group flex flex-col items-center gap-4 rounded-sm border border-border bg-card p-6 text-center transition-colors hover:border-gold/50">
                 <service.icon className="h-8 w-8 text-gold transition-transform group-hover:scale-105" />
                 <div>
                   <h3 className="font-semibold text-foreground">{service.title}</h3>
                   <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">{service.description}</p>
                 </div>
-              </Link>
+              </a>
             ))}
           </div>
         </div>
