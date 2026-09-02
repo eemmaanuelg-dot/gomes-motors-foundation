@@ -1,206 +1,108 @@
 # Gomes Motors Foundation
 
-Crie a fundação inicial do site da Gomes Motors, uma revenda de automóveis profissional localizada em Campos dos Goytacazes, RJ.
-
-Este é um projeto de treinamento profissional que será desenvolvido por etapas. Não crie o sistema inteiro ainda. Nesta primeira etapa, concentre-se exclusivamente na estrutura visual, identidade da marca e arquitetura inicial.
-
-IDENTIDADE
-
-Nome: Gomes Motors
-
-Conceito central:
-“A escolha certa começa aqui.”
-
-A marca deve transmitir confiança, estabilidade, conforto, precisão, proximidade e sofisticação acessível.
-
-Utilize a identidade visual:
-
-Preto profundo: #080808
-
-Grafite: #111111
-
-Cards: #181818
-
-Branco suave: #F5F5F5
-
-Dourado champagne: #C9A45C
-
-Vermelho profundo: #B5121B
-
-O dourado representa a identidade e sofisticação da marca.
-O vermelho deve ser reservado principalmente para ações, ofertas e CTAs comerciais.
-
-Utilize a logo da Gomes Motors fornecida como referência oficial da marca. Não redesenhe nem altere a logo.
-
-ESTILO
-
-Criar uma interface:
-
-limpa;
-
-elegante;
-
-profissional;
-
-automotiva;
-
-moderna;
-
-confortável visualmente;
-
-com bastante espaço negativo;
-
-sem aparência genérica de IA.
-
-Evitar:
-
-excesso de gradientes;
-
-neon;
-
-excesso de cores;
-
-bordas exageradamente arredondadas;
-
-sombras pesadas;
-
-animações excessivas;
-
-aparência de template.
-
-HEADER
-
-Criar um header profissional e responsivo contendo:
-
-Logo Gomes Motors — clicável e sempre retornando à Home.
-
-Menu:
-
-Estoque
-
-Serviços
-
-Sobre nós
-
-Contato
-
-No lado direito:
-
-Favoritos
-
-WhatsApp
-
-O header deve ser elegante, compacto e bem integrado à identidade visual.
-
-HOME — APENAS ESTRUTURA INICIAL
-
-Criar a estrutura visual inicial da Home contendo:
-
-Hero principal
-
-espaço para fotografia automotiva de alta qualidade;
-
-Gomes Motors;
-
-“A escolha certa começa aqui.”
-
-breve texto institucional;
-
-botão “Ver estoque”;
-
-botão “Vender meu veículo”.
-
-Acesso rápido aos principais serviços:
-
-Comprar
-
-Vender
-
-Trocar
-
-Consignar
-
-Financiar
-
-Área reservada para “Veículos em destaque”.
-
-Área reservada para apresentação da Gomes Motors.
-
-Área reservada para localização e contato.
-
-Footer profissional.
-
-ESTOQUE
-
-Criar apenas a estrutura inicial da página de estoque, sem banco de dados ainda.
-
-A página deverá estar preparada para trabalhar com:
-
-Carros
-
-Motos
-
-A área de estoque deverá futuramente possuir filtros laterais e veículos em destaque no centro da tela.
-
-Não criar uma lista enorme de filtros no topo.
-
-RESPONSIVIDADE
-
-O projeto deve ser pensado desde o início para:
-
-desktop;
-
-tablet;
-
-celular.
-
-No mobile, adaptar a navegação e transformar os filtros em uma interface adequada para telas pequenas.
-
-IMPORTANTE
-
-Não criar ainda:
-
-Supabase;
-
-login;
-
-painel administrativo;
-
-banco de dados;
-
-pagamentos;
-
-sistema de favoritos funcional;
-
-formulários completos;
-
-integração real com WhatsApp.
-
-Essas funcionalidades serão desenvolvidas nas próximas etapas.
-
-Nesta primeira etapa, queremos somente uma fundação visual profissional, organizada e escalável, preparada para receber essas funcionalidades posteriormente.
-
-Organize o projeto de maneira limpa e reutilizável, utilizando componentes consistentes.
-
-This project was built with [Lovable](https://lovable.dev).
-
-**Live app**: https://gomes-motors-foundation.lovable.app
-
-## Build with Lovable
-
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/6d35426c-b649-4803-a568-918e88e7fa1d).
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
-
-## Development
-
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+Projeto de treinamento profissional para uma revendedora fictícia de veículos em Campos dos Goytacazes, RJ.
+
+> **A escolha certa começa aqui.**
+
+## Estado atual
+
+O projeto já possui uma camada pública funcional composta por:
+
+- Home institucional e comercial;
+- Estoque de carros e motos;
+- filtros, busca, ordenação e favoritos persistentes no navegador;
+- página de detalhes de veículo com galeria, ficha técnica e simulador demonstrativo de financiamento;
+- fluxos de Comprar, Vender, Trocar, Consignar e Financiar;
+- integração comercial por WhatsApp;
+- páginas Sobre nós e Contato;
+- tratamento de erros de navegação e SSR;
+- layout responsivo para desktop, tablet e celular.
+
+O estoque atual é estático e serve como base de demonstração. Banco de dados, autenticação e painel administrativo ainda serão implementados em etapas futuras.
+
+## Identidade visual
+
+- Preto profundo: `#080808`
+- Grafite: `#111111`
+- Cards: `#181818`
+- Branco suave: `#F5F5F5`
+- Dourado champagne: `#C9A45C`
+- Vermelho profundo: `#B5121B`
+
+O dourado representa identidade e sofisticação. O vermelho é reservado principalmente para ações e CTAs comerciais.
+
+## Stack
+
+- React 19
+- TypeScript
+- TanStack Start
+- TanStack Router
+- TanStack Query
+- Tailwind CSS v4
+- Vite
+- Cloudflare Workers
+- Wrangler
+
+## Estrutura principal
+
+```text
+src/
+├── assets/              # Identidade, hero e imagens dos veículos
+├── components/
+│   ├── site/            # Header, Footer e Logo
+│   └── ui/              # Componentes Radix/shadcn disponíveis para evolução
+├── data/                # Modelo e dados estáticos atuais dos veículos
+├── hooks/               # Hooks compartilhados
+├── lib/                 # Regras de domínio, favoritos e tratamento de erros
+├── routes/              # Rotas file-based do TanStack Start
+├── routeTree.gen.ts     # Arquivo gerado pelo TanStack Router
+├── router.tsx           # Configuração do router
+├── server.ts            # Entrada SSR/Worker e normalização de erros
+├── start.ts             # Middleware do TanStack Start
+└── styles.css           # Sistema visual global
+```
+
+## Desenvolvimento
 
 ```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
+npm install
 npm run dev
 ```
+
+Build com validação TypeScript:
+
+```sh
+npm run build
+```
+
+Lint:
+
+```sh
+npm run lint
+```
+
+Deploy Cloudflare:
+
+```sh
+npm run deploy
+```
+
+## Fluxo de trabalho do projeto
+
+**GitHub `main` = fonte de verdade.**
+
+As mudanças são desenvolvidas e revisadas no GitHub/Lovable. O Cloudflare Workers é tratado como publicação, não como ambiente de edição. Alterações pequenas devem ser agrupadas em blocos coerentes antes de uma nova publicação.
+
+Não reescrever histórico publicado, não fazer force push e não remover código funcional sem justificativa.
+
+## Próxima evolução
+
+A visão de longo prazo é transformar a vitrine em uma pequena plataforma comercial:
+
+```text
+cliente → estoque → veículo → interesse → atendimento → negociação → venda
+```
+
+A primeira grande evolução será a preparação do domínio de dados e, depois, um **Painel Comercial Gomes Motors** com estoque administrativo, leads, avaliações, financiamento, mídia e conteúdo.
+
+O plano detalhado está em [`docs/PROJECT-AUDIT-AND-ROADMAP.md`](docs/PROJECT-AUDIT-AND-ROADMAP.md).
