@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import {
   ArrowLeft,
+  ArrowLeftRight,
   Bike,
   Calculator,
   Car,
@@ -12,6 +13,7 @@ import {
   Heart,
   MessageCircle,
   Share2,
+  ShoppingCart,
 } from "lucide-react";
 
 import { VEICULOS, obterTituloVeiculo } from "@/data/vehicles";
@@ -21,7 +23,6 @@ import {
   formatarKm,
   formatarPreco,
   mensagemComercial,
-  mensagemInteresse,
   obterVeiculosRelacionados,
 } from "@/lib/vehicle-utils";
 
@@ -146,12 +147,50 @@ function SimulacaoFinanciamento({ veiculo }: { veiculo: (typeof VEICULOS)[number
   );
 }
 
+function criarMensagemInteresse(veiculo: (typeof VEICULOS)[number], tipo: "comprar" | "trocar" | "financiar") {
+  const titulo = obterTituloVeiculo(veiculo);
+  const valor = formatarPreco(veiculo.preco);
+  const km = formatarKm(veiculo.km);
+
+  if (tipo === "comprar") {
+    return [
+      "INTERESSE EM COMPRA",
+      `Veículo: ${titulo} — ${veiculo.ano}`,
+      `Valor anunciado: ${valor}`,
+      `Quilometragem: ${km}`,
+      "",
+      "Olá! Tenho interesse neste veículo e gostaria de conversar sobre a compra.",
+    ].join("\n");
+  }
+
+  if (tipo === "trocar") {
+    return [
+      "INTERESSE EM TROCA",
+      `Veículo desejado: ${titulo} — ${veiculo.ano}`,
+      `Valor anunciado: ${valor}`,
+      `Quilometragem: ${km}`,
+      "",
+      "Olá! Tenho interesse neste veículo e gostaria de saber se posso utilizá-lo em uma negociação de troca. Tenho um veículo para oferecer.",
+    ].join("\n");
+  }
+
+  return [
+    "INTERESSE EM FINANCIAMENTO",
+    `Veículo: ${titulo} — ${veiculo.ano}`,
+    `Valor anunciado: ${valor}`,
+    `Quilometragem: ${km}`,
+    "",
+    "Olá! Tenho interesse em financiar este veículo e gostaria de saber quais condições estão disponíveis.",
+  ].join("\n");
+}
+
 function DetalhesVeiculoPage() {
   const { id } = Route.useParams();
   const veiculo = VEICULOS.find((item) => item.id === id);
   const { favoritos, alternarFavorito } = useFavoritos();
   const [imagemAtual, setImagemAtual] = useState(0);
   const [compartilhado, setCompartilhado] = useState(false);
+  const [mostrarOpcoesInteresse, setMostrarOpcoesInteresse] = useState(false);
 
   if (!veiculo) {
     return (
@@ -173,7 +212,6 @@ function DetalhesVeiculoPage() {
   const imagemSelecionada = imagens[Math.min(imagemAtual, imagens.length - 1)] ?? veiculo.imagem;
   const relacionados = obterVeiculosRelacionados(VEICULOS, veiculo);
   const favorito = favoritos.has(veiculo.id);
-  const whatsappInteresse = criarWhatsAppUrl(mensagemInteresse(veiculo));
 
   const compartilhar = async () => {
     const dados = {
@@ -290,16 +328,53 @@ function DetalhesVeiculoPage() {
             ))}
           </div>
 
-          <a
-            href={veiculo.status === "vendido" ? undefined : whatsappInteresse}
-            target={veiculo.status === "vendido" ? undefined : "_blank"}
-            rel={veiculo.status === "vendido" ? undefined : "noreferrer"}
-            aria-disabled={veiculo.status === "vendido"}
+          <button
+            type="button"
+            onClick={() => setMostrarOpcoesInteresse((aberto) => !aberto)}
+            disabled={veiculo.status === "vendido"}
             className={`mt-8 inline-flex w-full items-center justify-center gap-2 rounded-sm px-5 py-3 text-sm font-semibold transition-opacity ${veiculo.status === "vendido" ? "cursor-not-allowed bg-secondary text-muted-foreground" : "bg-brand-red text-brand-red-foreground hover:opacity-90"}`}
           >
             <MessageCircle className="h-5 w-5" />
             {veiculo.status === "disponivel" ? "Tenho interesse" : veiculo.status === "reservado" ? "Consultar disponibilidade" : "Veículo vendido"}
-          </a>
+          </button>
+
+          {mostrarOpcoesInteresse && veiculo.status !== "vendido" && (
+            <div className="mt-3 rounded-sm border border-border bg-secondary p-4" aria-label="Opções de interesse">
+              <p className="text-sm font-bold text-foreground">Como podemos ajudar?</p>
+              <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                O veículo já está identificado. Escolha uma opção e continue o atendimento diretamente pelo WhatsApp.
+              </p>
+              <div className="mt-4 grid gap-2 sm:grid-cols-3">
+                <a
+                  href={criarWhatsAppUrl(criarMensagemInteresse(veiculo, "comprar"))}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center justify-center gap-2 rounded-sm border border-border bg-card px-3 py-3 text-sm font-semibold text-foreground transition-colors hover:border-gold hover:text-gold"
+                >
+                  <ShoppingCart className="h-4 w-4" />
+                  Comprar
+                </a>
+                <a
+                  href={criarWhatsAppUrl(criarMensagemInteresse(veiculo, "trocar"))}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center justify-center gap-2 rounded-sm border border-border bg-card px-3 py-3 text-sm font-semibold text-foreground transition-colors hover:border-gold hover:text-gold"
+                >
+                  <ArrowLeftRight className="h-4 w-4" />
+                  Trocar
+                </a>
+                <a
+                  href={criarWhatsAppUrl(criarMensagemInteresse(veiculo, "financiar"))}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center justify-center gap-2 rounded-sm border border-border bg-card px-3 py-3 text-sm font-semibold text-foreground transition-colors hover:border-gold hover:text-gold"
+                >
+                  <Calculator className="h-4 w-4" />
+                  Financiar
+                </a>
+              </div>
+            </div>
+          )}
         </section>
       </div>
 
