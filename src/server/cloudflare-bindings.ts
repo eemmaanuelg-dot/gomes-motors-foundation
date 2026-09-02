@@ -2,12 +2,12 @@ import { env } from "cloudflare:workers";
 import type { AppBindings } from "@/infrastructure/cloudflare/bindings";
 
 /**
- * Resolve as bindings do exist only at Worker runtime.
+ * Resolve as bindings no runtime do Worker.
  *
- * This function must be called from server execution, never from components
- * or browser-only modules. The cast keeps the application independent from
- * generated Wrangler types while the bindings are still being provisioned.
+ * Durante a transição, D1/R2 podem ainda não estar vinculados ao ambiente.
+ * Por isso a camada retorna bindings parciais e a composição decide se deve
+ * usar Cloudflare ou o fallback estático.
  */
-export function getCloudflareBindings(): AppBindings {
-  return env as unknown as AppBindings;
+export function getCloudflareBindings(): Partial<AppBindings> {
+  return env as unknown as Partial<AppBindings>;
 }
