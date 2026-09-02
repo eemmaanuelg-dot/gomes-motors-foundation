@@ -41,6 +41,8 @@ export async function serveVehicleMedia(request: Request): Promise<Response | nu
   }
 
   const { VEHICLE_IMAGES } = getCloudflareBindings();
+  if (!VEHICLE_IMAGES) return new Response("Not Found", { status: 404 });
+
   const object = await VEHICLE_IMAGES.get(key);
   if (!object) return new Response("Not Found", { status: 404 });
 
