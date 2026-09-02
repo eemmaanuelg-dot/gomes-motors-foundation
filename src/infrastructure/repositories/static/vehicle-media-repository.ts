@@ -11,18 +11,17 @@ function criarMidiasIniciais(): VehicleMedia[] {
   const agora = new Date().toISOString();
 
   return VEICULOS.flatMap((veiculo) =>
-    veiculo.imagens.map((imagem, index) => ({
+    veiculo.imagens.map((_, index): VehicleMedia => ({
       id: `${veiculo.id}-media-${index + 1}`,
       vehicleId: veiculo.id,
       objectKey: `legacy/vehicles/${veiculo.id}/${index + 1}`,
-      mediaType: "image" as const,
+      mediaType: "image",
       mimeType: "image/jpeg",
       displayOrder: index,
       altText: `${veiculo.marca} ${veiculo.modelo}${veiculo.versao ? ` ${veiculo.versao}` : ""}`,
       createdAt: agora,
       updatedAt: agora,
-      sourceUrl: imagem,
-    })) as unknown as VehicleMedia[]
+    }))
   );
 }
 
