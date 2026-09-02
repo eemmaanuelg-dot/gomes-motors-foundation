@@ -1,4 +1,4 @@
-import { getCloudflareBindings } from "./cloudflare-bindings";
+import type { AppBindings } from "@/infrastructure/cloudflare/bindings";
 
 function contentTypeFor(key: string): string {
   const extension = key.split(".").pop()?.toLowerCase();
@@ -22,10 +22,14 @@ function contentTypeFor(key: string): string {
 /**
  * Entrega somente objetos sob /media/ a partir do bucket R2 privado.
  *
- * O navegador conhece apenas a URL pública do Worker; a binding do R2 fica
- * exclusivamente no runtime server-side.
+ * A binding do R2 é recebida pelo server entry point, que já possui acesso
+ * ao env real do Cloudflare Worker. Este módulo não importa
+ * `cloudflare:workers`, evitando contaminar o grafo de build do SSR.
  */
-export async function serveVehicleMedia(request: Request): Promise<Response | null> {
+export async function serveVehicleMedia(
+  request: Request,
+  bindings: Partial<AppBindings>,
+): Promise<Response | null> {
   const url = new URL(request.url);
   if (!url.pathname.startsWith("/media/")) return null;
   if (request.method !== "GET" && request.method !== "HEAD") {
@@ -40,14 +44,17 @@ export async function serveVehicleMedia(request: Request): Promise<Response | nu
     return new Response("Not Found", { status: 404 });
   }
 
-  const { VEHICLE_IMAGES } = getCloudflareBindings();
+  const { VEHICLE_IMAGES } = bindings;
   if (!VEHICLE_IMAGES) return new Response("Not Found", { status: 404 });
 
   const object = await VEHICLE_IMAGES.get(key);
   if (!object) return new Response("Not Found", { status: 404 });
 
   const headers = new Headers();
-  headers.set("content-type", object.httpMetadata?.["content-type"] ?? contentTypeFor(key));
+  headers.set(
+    "content-type",
+    object.httpMetadata?.["content-type"] ?? contentTypeFor(key),
+  );
   headers.set("cache-control", "public, max-age=31536000, immutable");
   if (object.httpEtag) headers.set("etag", object.httpEtag);
 
