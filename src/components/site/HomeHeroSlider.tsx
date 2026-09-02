@@ -129,8 +129,8 @@ export function HomeHeroSlider() {
 
             <div className="relative z-10 mx-auto flex min-h-[520px] max-w-7xl items-end px-4 pb-20 pt-28 sm:min-h-[570px] sm:px-6 sm:pb-24 lg:min-h-[610px] lg:px-8 lg:pb-28">
               <div className="max-w-3xl">
-                <p className="mb-4 text-xs font-semibold uppercase tracking-[0.3em] text-gold sm:text-sm">
-                  Gomes Motors
+                <p className="mb-4 text-xs font-semibold uppercase tracking-[0.3em] sm:text-sm">
+                  <span className="text-gold">Gomes</span>{" "}<span className="text-white">Motors</span>
                 </p>
                 <h1 className="max-w-3xl text-4xl font-bold uppercase leading-[1.04] tracking-tight text-white sm:text-5xl lg:text-6xl">
                   {slide.title}
