@@ -1,5 +1,4 @@
-import { env } from "cloudflare:workers";
-import { createServerFn, createServerOnlyFn } from "@tanstack/react-start";
+import { createServerFn } from "@tanstack/react-start";
 import {
   listarVeiculosPublicos,
   obterVeiculoPublicoPorId,
@@ -10,12 +9,12 @@ import {
 } from "@/infrastructure/composition";
 import type { AppBindings } from "@/infrastructure/cloudflare/bindings";
 
-const getCloudflareBindings = createServerOnlyFn(
-  (): Partial<AppBindings> => env as unknown as Partial<AppBindings>,
-);
+type PublicCatalogContext = {
+  bindings: Partial<AppBindings>;
+};
 
-function getPublicCatalogDependencies() {
-  const bindings = getCloudflareBindings();
+function getPublicCatalogDependencies(context: PublicCatalogContext) {
+  const bindings = context.bindings;
 
   if (bindings.DB && bindings.VEHICLE_IMAGES) {
     return createCloudflareDependencies({
@@ -28,16 +27,18 @@ function getPublicCatalogDependencies() {
 }
 
 const listarCatalogoPublico = createServerFn({ method: "GET" }).handler(
-  async () => {
-    return listarVeiculosPublicos(getPublicCatalogDependencies());
+  async ({ context }) => {
+    return listarVeiculosPublicos(
+      getPublicCatalogDependencies(context as PublicCatalogContext),
+    );
   },
 );
 
 const obterCatalogoPublicoPorId = createServerFn({ method: "GET" })
   .validator((data: { id: string }) => data)
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
     return obterVeiculoPublicoPorId(
-      getPublicCatalogDependencies(),
+      getPublicCatalogDependencies(context as PublicCatalogContext),
       data.id,
     );
   });
