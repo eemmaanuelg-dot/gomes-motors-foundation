@@ -2,25 +2,29 @@
 
 ## Objetivo
 
-Preparar a aplicação para sair da persistência estática sem alterar a interface dos contratos do domínio nem redesenhar o site público já aprovado.
+Preparar a aplicação para persistência real sem alterar os contratos do domínio nem reconstruir o site público já aprovado.
 
-## Regra arquitetural
+## Arquitetura efetiva
 
 ```text
-INTERFACE / ROTAS
+SITE PÚBLICO
+      ↓
+PUBLIC CATALOG
       ↓
 SERVER FUNCTIONS
       ↓
 APPLICATION / USE CASES
       ↓
-CONTRATOS DO DOMÍNIO
+DOMAIN CONTRACTS
       ↓
-REPOSITÓRIOS / STORAGE
+COMPOSITION ROOT
+      ↓
+D1 REPOSITORIES + R2 STORAGE
       ↓
 CLOUDFLARE D1 + R2
 ```
 
-A infraestrutura concreta não deve subir para o domínio. O composition root escolhe a implementação concreta.
+As rotas e componentes não conhecem D1 nem R2. As Server Functions atravessam a fronteira de execução e os casos de uso continuam concentrando as regras de negócio.
 
 ## D1
 
@@ -29,60 +33,98 @@ A infraestrutura concreta não deve subir para o domínio. O composition root es
 - `vehicles`: cadastro completo do veículo.
 - `inventory_entries`: publicação, ordem e entrada/saída do estoque.
 - `vehicle_status_history`: histórico das transições de status.
-- `media_assets`: relação entre veículo e objetos armazenados no R2.
+- `media_assets`: relação entre veículo e objeto armazenado no R2.
 
-### Decisões
+### Migration
 
-- Campos simples ficam em colunas próprias.
-- Estruturas aninhadas (`imagens`, `equipamentos`, `fichaTecnica`, `financiamento`) ficam em JSON para preservar o contrato atual sem criar dezenas de tabelas artificiais.
-- Chaves estrangeiras preservam a relação entre veículo, estoque e mídia.
-- Índices cobrem status, categoria, destaque, publicação/ordem e histórico/mídia.
+- `migrations/0001_initial_schema.sql`: estrutura das tabelas, restrições, foreign keys e índices.
+- `migrations/0002_seed_current_vehicles.sql`: carga inicial dos seis veículos atuais, seus registros de estoque e seus registros de mídia.
+
+As estruturas aninhadas do contrato (`imagens`, `equipamentos`, `fichaTecnica`, `financiamento`) continuam serializadas em JSON para preservar compatibilidade com o domínio atual.
 
 ## R2
 
-Binding planejado: `VEHICLE_IMAGES`.
+Binding: `VEHICLE_IMAGES`.
 
-Padrão de chave previsto:
+Bucket: `gomes-motors-vehicle-images`.
+
+Padrão de chave inicial:
 
 ```text
-vehicles/{vehicleId}/primary/{assetId}
-vehicles/{vehicleId}/gallery/{assetId}
+vehicles/{vehicleId}/0.jpg
 ```
 
-O banco guarda a referência (`r2_key`); o arquivo binário fica no R2. Isso evita colocar imagens grandes no D1.
+A URL pública da aplicação usa a fronteira `/media/vehicles/...`. O Worker busca o objeto pela binding R2 e entrega a resposta ao navegador, mantendo o bucket sem exposição direta pela aplicação.
+
+O script `scripts/upload-vehicle-images.mjs` sincroniza as seis imagens atuais do repositório para os respectivos objetos R2.
 
 ## Server-side
 
-`src/server/vehicles.ts` é a fronteira para o catálogo público. Ela:
+`src/server/vehicles.ts` é a fronteira de dados do catálogo público.
 
-1. recebe a chamada da aplicação;
-2. resolve as bindings do Worker no servidor;
-3. monta os repositórios D1 através do composition root;
+Ela:
+
+1. recebe a chamada via Server Function;
+2. resolve as bindings Cloudflare por request;
+3. monta `D1VehicleRepository` e `D1InventoryRepository` pelo composition root;
 4. chama os mesmos casos de uso já validados;
-5. devolve somente dados serializáveis ao cliente.
+5. devolve apenas dados serializáveis.
 
-A implementação não coloca D1 dentro dos componentes ou das rotas.
+`src/server/media.ts` é a fronteira de entrega das imagens R2 em `/media/*`.
 
-## Migração da fonte estática
+`src/server.ts` mantém o tratamento SSR existente e intercepta apenas as requisições de mídia antes de encaminhá-las ao TanStack Start.
 
-O site público continua usando a fonte estática até que D1 e R2 sejam realmente provisionados. Isso é intencional: não foram colocados IDs fictícios no `wrangler.jsonc`.
+## Composition Root
 
-Depois do provisionamento:
+`src/infrastructure/composition.ts` possui duas composições explícitas:
 
-1. gerar tipos reais com `wrangler types`;
-2. aplicar `migrations/0001_initial_schema.sql`;
-3. importar os seis veículos atuais para D1;
-4. enviar as imagens atuais para R2;
-5. criar os registros em `media_assets`;
-6. validar D1/R2 no ambiente remoto;
-7. trocar a composição pública de estática para Cloudflare;
-8. executar build e regressão completa;
-9. somente então avançar para autenticação e autorização.
+- `createStaticDependencies()`: fallback/transição e testes sem Cloudflare.
+- `createCloudflareDependencies(bindings)`: produção com D1.
 
-## Não fazer nesta etapa
+Isso mantém os contratos do domínio independentes da implementação concreta.
 
-- Não criar `/admin` ainda.
-- Não criar login ainda.
-- Não mover lógica de negócio para componentes.
-- Não apagar os dados estáticos atuais antes da migração ser validada.
-- Não alterar identidade visual ou páginas públicas já aprovadas.
+## Wrangler
+
+`wrangler.jsonc` agora declara as bindings `DB` e `VEHICLE_IMAGES`.
+
+Os recursos estão configurados para provisionamento sem IDs específicos no repositório. Wrangler/Cloudflare pode associar os recursos ao Worker no deploy; IDs de conta não são inventados nem versionados manualmente.
+
+## Ordem operacional
+
+Depois de autenticar o Wrangler no ambiente que fará o deploy:
+
+```text
+1. npm run deploy
+2. npm run db:migrate:remote
+3. npm run r2:upload
+4. npm run cf-typegen
+5. novo build/deploy
+6. validar /, /estoque e /estoque/:id
+```
+
+A migration deve ser aplicada antes de o catálogo público depender dos registros D1. As imagens devem ser enviadas ao R2 antes de considerar a migração visual concluída.
+
+## Comandos disponíveis
+
+- `npm run db:migrate:local`
+- `npm run db:migrate:remote`
+- `npm run r2:upload`
+- `npm run cf-typegen`
+- `npm run build`
+- `npm run deploy`
+
+## Próxima etapa
+
+Somente depois de D1, R2, server-side, build e regressão estarem confirmados:
+
+```text
+persistência real validada
+        ↓
+autenticação
+        ↓
+autorização
+        ↓
+/admin
+```
+
+Não há login ou `/admin` nesta etapa.
