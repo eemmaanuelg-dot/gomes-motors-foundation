@@ -134,7 +134,7 @@ A implementação existente mantém os comportamentos responsivos definidos na b
 - D1 provisionado no ambiente Cloudflare conforme validação realizada.
 
 ### 6.2 — R2 / mídia e arquivos
-**Tecnicamente concluída. Validação manual pendente.**
+**Tecnicamente concluída e validada pelo usuário.**
 
 Base criada sem alterar a UI pública:
 
@@ -145,9 +145,28 @@ Base criada sem alterar a UI pública:
 - abstração `src/infrastructure/storage/object-storage.ts` criada para desacoplar a aplicação do fornecedor de armazenamento;
 - adapter `src/infrastructure/storage/r2-object-storage.ts` criado para o binding R2;
 - tabela `vehicle_media` da fundação D1 já representa os metadados dos objetos;
-- build oficial do GitHub Actions validado com sucesso após a implementação da infraestrutura R2.
+- build oficial do GitHub Actions validado com sucesso após a implementação da infraestrutura R2;
+- build também foi executado com sucesso após o início da 6.3.
 
 A migração física das imagens estáticas atuais para o bucket R2 ainda não foi executada. Isso permanece deliberadamente separado para a migração controlada, evitando alterar a fonte visual do catálogo público antes da etapa apropriada.
+
+### 6.3 — Server-side
+**Tecnicamente concluída; validação manual pendente.**
+
+Foi criada uma fronteira explícita de execução server-side para o catálogo público:
+
+- `src/application/vehicles/server-functions.ts` criado;
+- leitura pública de veículos exposta por `createServerFn` do TanStack Start;
+- carregamento por ID recebe validação do payload antes da execução;
+- `src/application/vehicles/public-catalog.ts` permanece como contrato estável para as rotas, mas agora delega a execução às server functions;
+- repositórios e casos de uso permanecem atrás da fronteira server-side, sem serem importados diretamente pelas rotas públicas;
+- proteção CSRF das server functions permanece habilitada em `src/start.ts`;
+- nenhuma autenticação ou autorização foi antecipada para esta etapa;
+- nenhuma alteração visual foi feita no site público.
+
+O build oficial do GitHub Actions para o commit da 6.3 terminou com `success`, incluindo `npm ci`, `vite build` e `tsc --noEmit`.
+
+A etapa seguinte será a migração controlada da fonte estática para as infraestruturas D1/R2, mantendo os contratos de domínio e a UI pública estável.
 
 ## Observação comercial — simulador de financiamento
 
@@ -168,7 +187,7 @@ Essa melhoria foi registrada como requisito funcional/comercial e não será mis
 
 ## Estado de aceite
 
-**A Fase 6 está em implementação. A subetapa 6.2 está tecnicamente concluída e aguarda validação manual.**
+**A Fase 6 está em implementação. A subetapa 6.3 está tecnicamente concluída e aguarda validação manual.**
 
 Não confundir:
 
@@ -180,11 +199,9 @@ Cada subetapa da Fase 6 deverá passar por implementação, validação técnica
 
 ## Próximo marco
 
-Após validar manualmente a 6.2:
+Após validar manualmente a 6.3:
 
 ```text
-6.2 R2 / mídia
-      ↓
 6.3 server-side
       ↓
 6.4 migração controlada
