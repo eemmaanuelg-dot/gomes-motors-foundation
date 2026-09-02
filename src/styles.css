@@ -47,8 +47,9 @@
 /*
  * Gomes Motors — identidade visual
  * Preto profundo #080808 / Grafite #111111 / Cards #181818
- * Branco suave #F5F5F5 / Dourado champagne #C9A45C / Vermelho profundo #B5121B
- * Dourado = identidade e sofisticação. Vermelho = ações, ofertas e CTAs comerciais.
+ * Branco suave #F5F5F5 / Dourado champagne #C9A45C
+ * Identidade: dourado e branco, derivados diretamente do símbolo G dourado + M branco.
+ * Ações comerciais seguem a mesma assinatura dourada; vermelho não é usado como cor de marca.
  */
 :root {
   --radius: 0.375rem;
@@ -74,8 +75,9 @@
   --surface: oklch(0.18 0 0); /* grafite #111111 */
   --gold: oklch(0.73 0.096 78); /* #C9A45C */
   --gold-foreground: oklch(0.16 0 0);
-  --brand-red: oklch(0.47 0.198 27.5); /* #B5121B */
-  --brand-red-foreground: oklch(0.96 0 0);
+  /* Compatibilidade com componentes existentes: a antiga cor vermelha de marca passa a usar a assinatura dourada. */
+  --brand-red: oklch(0.73 0.096 78);
+  --brand-red-foreground: oklch(0.16 0 0);
 }
 
 @layer base {
