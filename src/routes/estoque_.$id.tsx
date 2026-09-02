@@ -23,6 +23,7 @@ import {
   formatarKm,
   formatarPreco,
   mensagemComercial,
+  mensagemInteressePorTipo,
   obterVeiculosRelacionados,
 } from "@/lib/vehicle-utils";
 
@@ -101,27 +102,13 @@ function SimulacaoFinanciamento({ veiculo }: { veiculo: (typeof VEICULOS)[number
       <div className="mt-6 grid gap-5 sm:grid-cols-2">
         <label className="block">
           <span className="mb-1.5 block text-sm font-semibold text-foreground">Entrada</span>
-          <input
-            type="number"
-            min={veiculo.financiamento.entradaMinima}
-            max={veiculo.preco}
-            step={500}
-            value={entradaSegura}
-            onChange={(event) => setEntrada(Number(event.target.value))}
-            className="w-full rounded-sm border border-border bg-secondary px-3 py-2.5 text-sm text-foreground outline-none focus:border-gold"
-          />
+          <input type="number" min={veiculo.financiamento.entradaMinima} max={veiculo.preco} step={500} value={entradaSegura} onChange={(event) => setEntrada(Number(event.target.value))} className="w-full rounded-sm border border-border bg-secondary px-3 py-2.5 text-sm text-foreground outline-none focus:border-gold" />
           <span className="mt-1 block text-xs text-muted-foreground">Mínimo sugerido: {formatarPreco(veiculo.financiamento.entradaMinima)}</span>
         </label>
         <label className="block">
           <span className="mb-1.5 block text-sm font-semibold text-foreground">Prazo</span>
-          <select
-            value={parcelas}
-            onChange={(event) => setParcelas(Number(event.target.value))}
-            className="w-full rounded-sm border border-border bg-secondary px-3 py-2.5 text-sm text-foreground outline-none focus:border-gold"
-          >
-            {veiculo.financiamento.parcelas.map((opcao) => (
-              <option key={opcao} value={opcao}>{opcao}x</option>
-            ))}
+          <select value={parcelas} onChange={(event) => setParcelas(Number(event.target.value))} className="w-full rounded-sm border border-border bg-secondary px-3 py-2.5 text-sm text-foreground outline-none focus:border-gold">
+            {veiculo.financiamento.parcelas.map((opcao) => <option key={opcao} value={opcao}>{opcao}x</option>)}
           </select>
         </label>
       </div>
@@ -129,59 +116,15 @@ function SimulacaoFinanciamento({ veiculo }: { veiculo: (typeof VEICULOS)[number
       <div className="mt-6 rounded-sm border border-border bg-secondary p-5">
         <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Parcela estimada</p>
         <p className="mt-1 text-3xl font-bold text-gold">{formatarPreco(parcela)} <span className="text-sm font-medium text-muted-foreground">/ mês</span></p>
-        <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-          Taxa indicativa de {veiculo.financiamento.taxaIndicativa.toFixed(2).replace(".", ",")} % a.m. Esta é uma estimativa educativa; condições reais dependem da análise de crédito e da instituição financeira.
-        </p>
+        <p className="mt-2 text-xs leading-relaxed text-muted-foreground">Taxa indicativa de {veiculo.financiamento.taxaIndicativa.toFixed(2).replace(".", ",")} % a.m. Esta é uma estimativa educativa; condições reais dependem da análise de crédito e da instituição financeira.</p>
       </div>
 
-      <a
-        href={criarWhatsAppUrl(mensagemComercial(veiculo, "uma proposta de financiamento"))}
-        target="_blank"
-        rel="noreferrer"
-        className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-sm bg-brand-red px-5 py-3 text-sm font-semibold text-brand-red-foreground transition-opacity hover:opacity-90"
-      >
+      <a href={criarWhatsAppUrl(mensagemComercial(veiculo, "uma proposta de financiamento"))} target="_blank" rel="noreferrer" className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-sm bg-brand-red px-5 py-3 text-sm font-semibold text-brand-red-foreground transition-opacity hover:opacity-90">
         <MessageCircle className="h-4 w-4" />
         Quero uma proposta real
       </a>
     </section>
   );
-}
-
-function criarMensagemInteresse(veiculo: (typeof VEICULOS)[number], tipo: "comprar" | "trocar" | "financiar") {
-  const titulo = obterTituloVeiculo(veiculo);
-  const valor = formatarPreco(veiculo.preco);
-  const km = formatarKm(veiculo.km);
-
-  if (tipo === "comprar") {
-    return [
-      "INTERESSE EM COMPRA",
-      `Veículo: ${titulo} — ${veiculo.ano}`,
-      `Valor anunciado: ${valor}`,
-      `Quilometragem: ${km}`,
-      "",
-      "Olá! Tenho interesse neste veículo e gostaria de conversar sobre a compra.",
-    ].join("\n");
-  }
-
-  if (tipo === "trocar") {
-    return [
-      "INTERESSE EM TROCA",
-      `Veículo desejado: ${titulo} — ${veiculo.ano}`,
-      `Valor anunciado: ${valor}`,
-      `Quilometragem: ${km}`,
-      "",
-      "Olá! Tenho interesse neste veículo e gostaria de saber se posso utilizá-lo em uma negociação de troca. Tenho um veículo para oferecer.",
-    ].join("\n");
-  }
-
-  return [
-    "INTERESSE EM FINANCIAMENTO",
-    `Veículo: ${titulo} — ${veiculo.ano}`,
-    `Valor anunciado: ${valor}`,
-    `Quilometragem: ${km}`,
-    "",
-    "Olá! Tenho interesse em financiar este veículo e gostaria de saber quais condições estão disponíveis.",
-  ].join("\n");
 }
 
 function DetalhesVeiculoPage() {
@@ -195,14 +138,8 @@ function DetalhesVeiculoPage() {
   if (!veiculo) {
     return (
       <main className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <Link to="/estoque" className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground">
-          <ArrowLeft className="h-4 w-4" />
-          Voltar ao estoque
-        </Link>
-        <div className="mt-12 rounded-sm border border-border bg-card px-6 py-14 text-center">
-          <h1 className="text-2xl font-bold text-foreground">Veículo não encontrado</h1>
-          <p className="mt-2 text-sm text-muted-foreground">O veículo que você procura não está disponível no estoque.</p>
-        </div>
+        <Link to="/estoque" className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground"><ArrowLeft className="h-4 w-4" />Voltar ao estoque</Link>
+        <div className="mt-12 rounded-sm border border-border bg-card px-6 py-14 text-center"><h1 className="text-2xl font-bold text-foreground">Veículo não encontrado</h1><p className="mt-2 text-sm text-muted-foreground">O veículo que você procura não está disponível no estoque.</p></div>
       </main>
     );
   }
@@ -214,17 +151,10 @@ function DetalhesVeiculoPage() {
   const favorito = favoritos.has(veiculo.id);
 
   const compartilhar = async () => {
-    const dados = {
-      title: `${titulo} ${veiculo.ano} — Gomes Motors`,
-      text: veiculo.seoDescription,
-      url: window.location.href,
-    };
+    const dados = { title: `${titulo} ${veiculo.ano} — Gomes Motors`, text: veiculo.seoDescription, url: window.location.href };
     try {
-      if (navigator.share) {
-        await navigator.share(dados);
-      } else {
-        await navigator.clipboard.writeText(window.location.href);
-      }
+      if (navigator.share) await navigator.share(dados);
+      else await navigator.clipboard.writeText(window.location.href);
       setCompartilhado(true);
       window.setTimeout(() => setCompartilhado(false), 2200);
     } catch {
@@ -238,236 +168,56 @@ function DetalhesVeiculoPage() {
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-        <Link to="/" className="hover:text-foreground">Início</Link>
-        <span>/</span>
-        <Link to="/estoque" className="hover:text-foreground">Estoque</Link>
-        <span>/</span>
-        <span className="text-foreground">{titulo}</span>
-      </nav>
+      <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground"><Link to="/" className="hover:text-foreground">Início</Link><span>/</span><Link to="/estoque" className="hover:text-foreground">Estoque</Link><span>/</span><span className="text-foreground">{titulo}</span></nav>
 
       <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
-        <Link to="/estoque" className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
-          <ArrowLeft className="h-4 w-4" />
-          Voltar ao estoque
-        </Link>
+        <Link to="/estoque" className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"><ArrowLeft className="h-4 w-4" />Voltar ao estoque</Link>
         <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => alternarFavorito(veiculo.id)}
-            aria-pressed={favorito}
-            className="inline-flex items-center gap-2 rounded-sm border border-border px-3 py-2 text-sm font-semibold text-foreground hover:bg-accent"
-          >
-            <Heart className={`h-4 w-4 ${favorito ? "fill-brand-red text-brand-red" : ""}`} />
-            {favorito ? "Favoritado" : "Favoritar"}
-          </button>
-          <button
-            type="button"
-            onClick={compartilhar}
-            className="inline-flex items-center gap-2 rounded-sm border border-border px-3 py-2 text-sm font-semibold text-foreground hover:bg-accent"
-          >
-            {compartilhado ? <Check className="h-4 w-4" /> : <Share2 className="h-4 w-4" />}
-            {compartilhado ? "Link copiado" : "Compartilhar"}
-          </button>
+          <button type="button" onClick={() => alternarFavorito(veiculo.id)} aria-pressed={favorito} className="inline-flex items-center gap-2 rounded-sm border border-border px-3 py-2 text-sm font-semibold text-foreground hover:bg-accent"><Heart className={`h-4 w-4 ${favorito ? "fill-brand-red text-brand-red" : ""}`} />{favorito ? "Favoritado" : "Favoritar"}</button>
+          <button type="button" onClick={compartilhar} className="inline-flex items-center gap-2 rounded-sm border border-border px-3 py-2 text-sm font-semibold text-foreground hover:bg-accent">{compartilhado ? <Check className="h-4 w-4" /> : <Share2 className="h-4 w-4" />}{compartilhado ? "Link copiado" : "Compartilhar"}</button>
         </div>
       </div>
 
       <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.65fr)]">
         <div>
           <div className="relative overflow-hidden rounded-sm border border-border bg-card">
-            <img
-              src={imagemSelecionada}
-              alt={`${titulo} ${veiculo.ano}`}
-              width={1280}
-              height={960}
-              className="aspect-[4/3] h-auto w-full object-cover"
-            />
-            {imagens.length > 1 && (
-              <>
-                <button type="button" onClick={() => moverImagem(-1)} aria-label="Imagem anterior" className="absolute left-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-background/80 text-foreground hover:bg-background">
-                  <ChevronLeft className="h-5 w-5" />
-                </button>
-                <button type="button" onClick={() => moverImagem(1)} aria-label="Próxima imagem" className="absolute right-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-background/80 text-foreground hover:bg-background">
-                  <ChevronRight className="h-5 w-5" />
-                </button>
-              </>
-            )}
+            <img src={imagemSelecionada} alt={`${titulo} ${veiculo.ano}`} width={1280} height={960} className="aspect-[4/3] h-auto w-full object-cover" />
+            {imagens.length > 1 && <><button type="button" onClick={() => moverImagem(-1)} aria-label="Imagem anterior" className="absolute left-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-background/80 text-foreground hover:bg-background"><ChevronLeft className="h-5 w-5" /></button><button type="button" onClick={() => moverImagem(1)} aria-label="Próxima imagem" className="absolute right-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-background/80 text-foreground hover:bg-background"><ChevronRight className="h-5 w-5" /></button></>}
           </div>
-          <div className="mt-3 grid grid-cols-4 gap-2 sm:grid-cols-6">
-            {imagens.map((imagem, index) => (
-              <button key={`${imagem}-${index}`} type="button" onClick={() => setImagemAtual(index)} className={`overflow-hidden rounded-sm border ${index === imagemAtual ? "border-gold" : "border-border"}`} aria-label={`Selecionar imagem ${index + 1}`}>
-                <img src={imagem} alt="" width={320} height={240} className="aspect-[4/3] w-full object-cover" />
-              </button>
-            ))}
-          </div>
+          <div className="mt-3 grid grid-cols-4 gap-2 sm:grid-cols-6">{imagens.map((imagem, index) => <button key={`${imagem}-${index}`} type="button" onClick={() => setImagemAtual(index)} className={`overflow-hidden rounded-sm border ${index === imagemAtual ? "border-gold" : "border-border"}`} aria-label={`Selecionar imagem ${index + 1}`}><img src={imagem} alt="" width={320} height={240} className="aspect-[4/3] w-full object-cover" /></button>)}</div>
         </div>
 
         <section className="rounded-sm border border-border bg-card p-6 sm:p-8">
-          <div className="flex flex-wrap items-center gap-2 text-sm font-semibold uppercase tracking-wider text-gold">
-            {veiculo.categoria === "motos" ? <Bike className="h-4 w-4" /> : <Car className="h-4 w-4" />}
-            {veiculo.categoria === "motos" ? "Moto" : "Carro"}
-            <StatusBadge status={veiculo.status} />
-          </div>
+          <div className="flex flex-wrap items-center gap-2 text-sm font-semibold uppercase tracking-wider text-gold">{veiculo.categoria === "motos" ? <Bike className="h-4 w-4" /> : <Car className="h-4 w-4" />}{veiculo.categoria === "motos" ? "Moto" : "Carro"}<StatusBadge status={veiculo.status} /></div>
           <h1 className="mt-3 text-3xl font-bold text-foreground">{titulo}</h1>
           <p className="mt-3 text-2xl font-bold text-gold">{formatarPreco(veiculo.preco)}</p>
           <p className="mt-2 text-sm text-muted-foreground">{veiculo.ano} · {formatarKm(veiculo.km)}</p>
 
-          <div className="mt-8 grid grid-cols-2 gap-px overflow-hidden rounded-sm border border-border bg-border">
-            {[
-              ["Ano", String(veiculo.ano)],
-              ["Quilometragem", formatarKm(veiculo.km)],
-              ...(veiculo.cambio ? [["Câmbio", veiculo.cambio]] : []),
-              ...(veiculo.combustivel ? [["Combustível", veiculo.combustivel]] : []),
-              ...(veiculo.cilindrada ? [["Cilindrada", veiculo.cilindrada]] : []),
-              ...(veiculo.tipo ? [["Tipo", veiculo.tipo]] : []),
-            ].map(([label, value]) => (
-              <div key={label} className="bg-card p-4">
-                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{label}</p>
-                <p className="mt-1 text-sm font-semibold text-foreground">{value}</p>
-              </div>
-            ))}
-          </div>
+          <div className="mt-8 grid grid-cols-2 gap-px overflow-hidden rounded-sm border border-border bg-border">{[["Ano", String(veiculo.ano)], ["Quilometragem", formatarKm(veiculo.km)], ...(veiculo.cambio ? [["Câmbio", veiculo.cambio]] : []), ...(veiculo.combustivel ? [["Combustível", veiculo.combustivel]] : []), ...(veiculo.cilindrada ? [["Cilindrada", veiculo.cilindrada]] : []), ...(veiculo.tipo ? [["Tipo", veiculo.tipo]] : [])].map(([label, value]) => <div key={label} className="bg-card p-4"><p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{label}</p><p className="mt-1 text-sm font-semibold text-foreground">{value}</p></div>)}</div>
 
-          <button
-            type="button"
-            onClick={() => setMostrarOpcoesInteresse((aberto) => !aberto)}
-            disabled={veiculo.status === "vendido"}
-            className={`mt-8 inline-flex w-full items-center justify-center gap-2 rounded-sm px-5 py-3 text-sm font-semibold transition-opacity ${veiculo.status === "vendido" ? "cursor-not-allowed bg-secondary text-muted-foreground" : "bg-brand-red text-brand-red-foreground hover:opacity-90"}`}
-          >
-            <MessageCircle className="h-5 w-5" />
-            {veiculo.status === "disponivel" ? "Tenho interesse" : veiculo.status === "reservado" ? "Consultar disponibilidade" : "Veículo vendido"}
-          </button>
+          <button type="button" onClick={() => setMostrarOpcoesInteresse((aberto) => !aberto)} disabled={veiculo.status === "vendido"} className={`mt-8 inline-flex w-full items-center justify-center gap-2 rounded-sm px-5 py-3 text-sm font-semibold transition-opacity ${veiculo.status === "vendido" ? "cursor-not-allowed bg-secondary text-muted-foreground" : "bg-brand-red text-brand-red-foreground hover:opacity-90"}`}><MessageCircle className="h-5 w-5" />{veiculo.status === "disponivel" ? "Tenho interesse" : veiculo.status === "reservado" ? "Consultar disponibilidade" : "Veículo vendido"}</button>
 
-          {mostrarOpcoesInteresse && veiculo.status !== "vendido" && (
-            <div className="mt-3 rounded-sm border border-border bg-secondary p-4" aria-label="Opções de interesse">
-              <p className="text-sm font-bold text-foreground">Como podemos ajudar?</p>
-              <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                O veículo já está identificado. Escolha uma opção e continue o atendimento diretamente pelo WhatsApp.
-              </p>
-              <div className="mt-4 grid gap-2 sm:grid-cols-3">
-                <a
-                  href={criarWhatsAppUrl(criarMensagemInteresse(veiculo, "comprar"))}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center justify-center gap-2 rounded-sm border border-border bg-card px-3 py-3 text-sm font-semibold text-foreground transition-colors hover:border-gold hover:text-gold"
-                >
-                  <ShoppingCart className="h-4 w-4" />
-                  Comprar
-                </a>
-                <a
-                  href={criarWhatsAppUrl(criarMensagemInteresse(veiculo, "trocar"))}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center justify-center gap-2 rounded-sm border border-border bg-card px-3 py-3 text-sm font-semibold text-foreground transition-colors hover:border-gold hover:text-gold"
-                >
-                  <ArrowLeftRight className="h-4 w-4" />
-                  Trocar
-                </a>
-                <a
-                  href={criarWhatsAppUrl(criarMensagemInteresse(veiculo, "financiar"))}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center justify-center gap-2 rounded-sm border border-border bg-card px-3 py-3 text-sm font-semibold text-foreground transition-colors hover:border-gold hover:text-gold"
-                >
-                  <Calculator className="h-4 w-4" />
-                  Financiar
-                </a>
-              </div>
-            </div>
-          )}
+          {mostrarOpcoesInteresse && veiculo.status !== "vendido" && <div className="mt-3 rounded-sm border border-border bg-secondary p-4" aria-label="Opções de interesse"><p className="text-sm font-bold text-foreground">Como podemos ajudar?</p><p className="mt-1 text-xs leading-relaxed text-muted-foreground">O veículo já está identificado. Escolha uma opção e continue o atendimento diretamente pelo WhatsApp.</p><div className="mt-4 grid gap-2 sm:grid-cols-3">
+            <a href={criarWhatsAppUrl(mensagemInteressePorTipo(veiculo, "comprar"))} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 rounded-sm border border-border bg-card px-3 py-3 text-sm font-semibold text-foreground transition-colors hover:border-gold hover:text-gold"><ShoppingCart className="h-4 w-4" />Comprar</a>
+            <a href={criarWhatsAppUrl(mensagemInteressePorTipo(veiculo, "trocar"))} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 rounded-sm border border-border bg-card px-3 py-3 text-sm font-semibold text-foreground transition-colors hover:border-gold hover:text-gold"><ArrowLeftRight className="h-4 w-4" />Trocar</a>
+            <a href={criarWhatsAppUrl(mensagemInteressePorTipo(veiculo, "financiar"))} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 rounded-sm border border-border bg-card px-3 py-3 text-sm font-semibold text-foreground transition-colors hover:border-gold hover:text-gold"><Calculator className="h-4 w-4" />Financiar</a>
+          </div></div>}
         </section>
       </div>
 
       <div className="mt-10 grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
         <div className="space-y-8">
-          <section className="rounded-sm border border-border bg-card p-6 sm:p-8">
-            <h2 className="text-xl font-bold text-foreground">Sobre este veículo</h2>
-            <p className="mt-4 text-sm leading-7 text-muted-foreground">{veiculo.descricao}</p>
-          </section>
-
-          <section className="rounded-sm border border-border bg-card p-6 sm:p-8">
-            <h2 className="text-xl font-bold text-foreground">Equipamentos</h2>
-            <div className="mt-5 grid gap-3 sm:grid-cols-2">
-              {veiculo.equipamentos.map((equipamento) => (
-                <div key={equipamento} className="flex items-start gap-2 text-sm text-muted-foreground">
-                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-gold" />
-                  {equipamento}
-                </div>
-              ))}
-            </div>
-          </section>
-
-          <section className="rounded-sm border border-border bg-card p-6 sm:p-8">
-            <h2 className="text-xl font-bold text-foreground">Ficha técnica</h2>
-            <dl className="mt-5 grid gap-px overflow-hidden rounded-sm border border-border bg-border sm:grid-cols-2">
-              {Object.entries(veiculo.fichaTecnica).map(([chave, valor]) => (
-                <div key={chave} className="bg-card p-4">
-                  <dt className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{chave.replace(/^./, (letra) => letra.toUpperCase())}</dt>
-                  <dd className="mt-1 text-sm font-semibold text-foreground">{valor}</dd>
-                </div>
-              ))}
-            </dl>
-          </section>
-
-          <section className="rounded-sm border border-border bg-card p-6 sm:p-8">
-            <h2 className="text-xl font-bold text-foreground">Outras formas de negociar</h2>
-            <div className="mt-5 grid gap-3 sm:grid-cols-2">
-              {[
-                ["Financiar", "uma proposta de financiamento"],
-                ["Trocar", "uma troca pelo seu veículo"],
-                ["Consignar", "deixar seu veículo em consignação"],
-                ["Vender", "avaliar seu veículo para venda"],
-              ].map(([label, assunto]) => (
-                <a key={label} href={criarWhatsAppUrl(mensagemComercial(veiculo, assunto))} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 rounded-sm border border-border px-4 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-accent">
-                  <MessageCircle className="h-4 w-4 text-gold" />
-                  {label}
-                </a>
-              ))}
-            </div>
-          </section>
+          <section className="rounded-sm border border-border bg-card p-6 sm:p-8"><h2 className="text-xl font-bold text-foreground">Sobre este veículo</h2><p className="mt-4 text-sm leading-7 text-muted-foreground">{veiculo.descricao}</p></section>
+          <section className="rounded-sm border border-border bg-card p-6 sm:p-8"><h2 className="text-xl font-bold text-foreground">Equipamentos</h2><div className="mt-5 grid gap-3 sm:grid-cols-2">{veiculo.equipamentos.map((equipamento) => <div key={equipamento} className="flex items-start gap-2 text-sm text-muted-foreground"><Check className="mt-0.5 h-4 w-4 shrink-0 text-gold" />{equipamento}</div>)}</div></section>
+          <section className="rounded-sm border border-border bg-card p-6 sm:p-8"><h2 className="text-xl font-bold text-foreground">Ficha técnica</h2><dl className="mt-5 grid gap-px overflow-hidden rounded-sm border border-border bg-border sm:grid-cols-2">{Object.entries(veiculo.fichaTecnica).map(([chave, valor]) => <div key={chave} className="bg-card p-4"><dt className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{chave.replace(/^./, (letra) => letra.toUpperCase())}</dt><dd className="mt-1 text-sm font-semibold text-foreground">{valor}</dd></div>)}</dl></section>
+          <section className="rounded-sm border border-border bg-card p-6 sm:p-8"><h2 className="text-xl font-bold text-foreground">Outras formas de negociar</h2><div className="mt-5 grid gap-3 sm:grid-cols-2">{[["Financiar", "uma proposta de financiamento"], ["Trocar", "uma troca pelo seu veículo"], ["Consignar", "deixar seu veículo em consignação"], ["Vender", "avaliar seu veículo para venda"]].map(([label, assunto]) => <a key={label} href={criarWhatsAppUrl(mensagemComercial(veiculo, assunto))} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 rounded-sm border border-border px-4 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-accent"><MessageCircle className="h-4 w-4 text-gold" />{label}</a>)}</div></section>
         </div>
-
-        <aside>
-          <SimulacaoFinanciamento veiculo={veiculo} />
-        </aside>
+        <aside><SimulacaoFinanciamento veiculo={veiculo} /></aside>
       </div>
 
-      {relacionados.length > 0 && (
-        <section className="mt-12" aria-labelledby="relacionados">
-          <div className="flex items-end justify-between gap-4">
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gold">Você também pode gostar</p>
-              <h2 id="relacionados" className="mt-2 text-2xl font-bold text-foreground">Veículos relacionados</h2>
-            </div>
-            <Link to="/estoque" className="hidden text-sm font-semibold text-gold hover:text-foreground sm:inline-flex">Ver todo o estoque</Link>
-          </div>
-          <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            {relacionados.map((relacionado) => (
-              <Link key={relacionado.id} to="/estoque/$id" params={{ id: relacionado.id }} className="group overflow-hidden rounded-sm border border-border bg-card">
-                <div className="aspect-[4/3] overflow-hidden">
-                  <img src={relacionado.imagem} alt={`${obterTituloVeiculo(relacionado)} ${relacionado.ano}`} width={640} height={480} loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]" />
-                </div>
-                <div className="p-5">
-                  <h3 className="font-bold text-foreground">{obterTituloVeiculo(relacionado)}</h3>
-                  <p className="mt-1 text-sm text-muted-foreground">{relacionado.ano} · {formatarKm(relacionado.km)}</p>
-                  <p className="mt-3 font-bold text-gold">{formatarPreco(relacionado.preco)}</p>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
+      {relacionados.length > 0 && <section className="mt-12" aria-labelledby="relacionados"><div className="flex items-end justify-between gap-4"><div><p className="text-sm font-semibold uppercase tracking-[0.2em] text-gold">Você também pode gostar</p><h2 id="relacionados" className="mt-2 text-2xl font-bold text-foreground">Veículos relacionados</h2></div><Link to="/estoque" className="hidden text-sm font-semibold text-gold hover:text-foreground sm:inline-flex">Ver todo o estoque</Link></div><div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{relacionados.map((relacionado) => <Link key={relacionado.id} to="/estoque/$id" params={{ id: relacionado.id }} className="group overflow-hidden rounded-sm border border-border bg-card"><div className="aspect-[4/3] overflow-hidden"><img src={relacionado.imagem} alt={`${obterTituloVeiculo(relacionado)} ${relacionado.ano}`} width={640} height={480} loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]" /></div><div className="p-5"><h3 className="font-bold text-foreground">{obterTituloVeiculo(relacionado)}</h3><p className="mt-1 text-sm text-muted-foreground">{relacionado.ano} · {formatarKm(relacionado.km)}</p><p className="mt-3 font-bold text-gold">{formatarPreco(relacionado.preco)}</p></div></Link>)}</div></section>}
 
-      <div className="mt-10 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-6">
-        <Link to="/estoque" className="inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-foreground">
-          <ArrowLeft className="h-4 w-4" />
-          Voltar ao estoque
-        </Link>
-        <button type="button" onClick={compartilhar} className="inline-flex items-center gap-2 text-sm font-semibold text-gold hover:text-foreground">
-          {compartilhado ? <Copy className="h-4 w-4" /> : <Share2 className="h-4 w-4" />}
-          {compartilhado ? "Link copiado" : "Compartilhar veículo"}
-        </button>
-      </div>
+      <div className="mt-10 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-6"><Link to="/estoque" className="inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-foreground"><ArrowLeft className="h-4 w-4" />Voltar ao estoque</Link><button type="button" onClick={compartilhar} className="inline-flex items-center gap-2 text-sm font-semibold text-gold hover:text-foreground">{compartilhado ? <Copy className="h-4 w-4" /> : <Share2 className="h-4 w-4" />}{compartilhado ? "Link copiado" : "Compartilhar veículo"}</button></div>
     </main>
   );
 }
