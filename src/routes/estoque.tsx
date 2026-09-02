@@ -24,8 +24,8 @@ import {
 } from "@/lib/vehicle-utils";
 
 export const Route = createFileRoute("/estoque")({
-  validateSearch: (search) => ({
-    favoritos: search.favoritos === true || search.favoritos === "true",
+  validateSearch: (search): { favoritos?: boolean } => ({
+    favoritos: search["favoritos"] === true || search["favoritos"] === "true",
   }),
   head: () => ({
     meta: [
