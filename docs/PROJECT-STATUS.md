@@ -119,3 +119,7 @@ Nenhuma implementação de autenticação ou `/admin` deve ser iniciada antes de
 O site público estável é patrimônio do projeto.
 
 Nenhuma nova camada deve exigir a perda de funcionalidades, identidade ou UX já aprovadas. A evolução deve acontecer por extensão da arquitetura, não por reconstrução desnecessária.
+
+## Recuperação da base funcional — 02/09/2026
+
+A branch `main` foi restaurada para o commit funcional `91171da5514dc7675faa6007618e255f5e8ae826`, correspondente à última base funcional confirmada antes da sequência de alterações que introduziu falhas nas Server Functions. Este registro existe apenas para documentar a recuperação e disparar uma nova publicação da `main`; nenhuma alteração de código da aplicação foi realizada nesta recuperação.
