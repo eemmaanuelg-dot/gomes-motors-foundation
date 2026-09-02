@@ -4,7 +4,9 @@ Data: 02/09/2026
 
 ## Resultado
 
-A auditoria foi realizada sobre a estrutura atual da branch `main`, que permanece como fonte de verdade do projeto. O objetivo desta etapa foi corrigir problemas reais, alinhar a base para crescimento e remover artefatos comprovadamente obsoletos, sem desmontar funcionalidades aprovadas.
+A auditoria técnica foi concluída sobre a estrutura atual da branch `main`, que permanece como fonte de verdade do projeto. A revisão considerou código, estrutura, dependências, legado, SSR/client, navegação, acessibilidade, responsividade, SEO, performance e impacto arquitetural futuro.
+
+O critério foi corrigir problemas reais e remover apenas artefatos comprovadamente obsoletos, preservando funcionalidades aprovadas e evitando decisões que criem dívida técnica para a próxima fase.
 
 ## Correções aplicadas
 
@@ -12,76 +14,117 @@ A auditoria foi realizada sobre a estrutura atual da branch `main`, que permanec
 - A página de Contato deixou de manter uma constante de WhatsApp duplicada; o número continua centralizado no utilitário de domínio.
 - A página de erro SSR foi localizada em português e alinhada visualmente à identidade Gomes Motors, mantendo dependência mínima para funcionar mesmo quando o React não consegue renderizar.
 - O README foi atualizado para representar o estado real do projeto e sua arquitetura atual.
-- Foi removido o artefato `hero-key-handover.svg`, que não possui referência ativa e representa uma direção visual descartada.
-- Foi removido `src/assets/gomes-motors-logo.png.asset.json`, metadata de um asset antigo do editor que não é consumido pela aplicação atual.
-- Foi removido `.bolt/mcp.json`, configuração legada do Bolt que não participa do runtime, build ou fluxo atual do projeto.
-- Nenhuma funcionalidade pública aprovada foi removida.
+- O hero descartado `hero-key-handover.svg` foi removido por não possuir referência ativa e representar uma direção visual abandonada.
+- `src/assets/gomes-motors-logo.png.asset.json` foi removido por ser metadata de asset antigo sem consumo pela aplicação atual.
+- `.bolt/mcp.json` foi removido por ser configuração legada do Bolt sem participação no runtime, build ou fluxo atual.
+- `public/favicon.png` foi removido por estar sem referência ativa; o favicon atual é o `gomes-motors-mark.svg` importado pelo shell global.
+- O sistema de favoritos foi corrigido para sincronizar múltiplas instâncias do hook na mesma aba, além da sincronização entre abas, sem alterar a persistência existente em `localStorage`.
+- A navegação dos cards de veículos na Home foi padronizada com a navegação direta já validada no Estoque, evitando repetir o problema de navegação dinâmica observado no Cloudflare.
+- A imagem principal do hero recebeu prioridade de carregamento e `decoding="async"`; imagens de conteúdo receberam carregamento tardio quando apropriado.
+- As mensagens de interesse Comprar/Trocar/Financiar foram centralizadas em `src/lib/vehicle-utils.ts`, eliminando duplicação entre Estoque e Detalhe.
+- O botão `Tenho interesse` do Estoque passou a seguir o mesmo fluxo já aprovado no Detalhe: escolha rápida entre Comprar, Trocar e Financiar, com o veículo já identificado e mensagem específica no WhatsApp.
+- A documentação foi atualizada para refletir a conclusão da auditoria.
 - Nenhum deploy foi realizado no Cloudflare durante esta revisão.
 
-## Arquitetura preservada
+## Código revisado
 
-- React + TypeScript.
-- TanStack Start.
-- TanStack Router com file-based routing.
-- `src/routes/__root.tsx` como shell global.
-- `src/components/site` para componentes compartilhados.
-- `src/data` para os dados estáticos atuais.
-- `src/lib` para regras de domínio e utilitários.
-- Tailwind CSS v4.
-- Vite.
-- Cloudflare Workers.
+Foram verificados os pontos de maior impacto da aplicação pública:
 
-## Funcionalidades protegidas
+- imports e responsabilidades dos módulos;
+- tipagem estrita e modelo de veículo;
+- utilitários de domínio e mensagens comerciais;
+- estado e persistência dos favoritos;
+- navegação interna e rotas dinâmicas;
+- formulários e fluxos comerciais;
+- SSR e fronteira client/server;
+- tratamento de erros;
+- estados vazios e estados de indisponibilidade;
+- acessibilidade estrutural, labels e estados ARIA existentes;
+- responsividade dos fluxos principais;
+- imagens e carregamento;
+- metadados SEO por rota;
+- configuração de build e infraestrutura Cloudflare.
 
-- Home comercial/institucional.
-- Header e Footer globais.
-- Logo e identidade visual.
-- Estoque de carros e motos.
-- Busca, filtros, ordenação e estados vazios.
-- Favoritos persistentes no navegador.
-- Página de detalhes dinâmica.
-- Galeria e ficha técnica.
-- Simulador demonstrativo de financiamento.
-- Fluxos Comprar, Vender, Trocar, Consignar e Financiar.
-- Seletor de intenção Comprar/Trocar/Financiar no detalhe do veículo.
-- WhatsApp comercial.
-- Sobre nós.
-- Contato.
-- SEO existente e metadados das rotas.
-- Tratamento de erros SSR/runtime.
+O projeto continua deliberadamente sem backend, banco ou autenticação nesta etapa.
 
-## Pontos técnicos que não devem ser considerados “limpeza”
+## Estrutura
 
-### `src/components/ui`
+A organização atual permanece coerente com as responsabilidades:
 
-Há um conjunto de componentes Radix/shadcn que atualmente não aparece como parte principal da interface pública. Eles não foram apagados porque formam uma biblioteca de infraestrutura útil para a futura área administrativa e para componentes de interação mais complexos. Remover agora criaria retrabalho sem ganho comprovado.
+```text
+src/
+├── assets/          # imagens e identidade visual
+├── components/
+│   ├── site/        # Header, Footer e Logo
+│   └── ui/          # biblioteca Radix/shadcn disponível para evolução
+├── data/            # contrato estático atual dos veículos
+├── hooks/           # hooks compartilhados
+├── lib/             # domínio, favoritos e tratamento de erros
+└── routes/          # páginas e rotas do TanStack Start
+```
 
-### `.lovable/project.json`
+A infraestrutura do projeto permanece nos arquivos de configuração da raiz e em `src/start.ts`, `src/server.ts` e `wrangler.jsonc`.
 
-Foi preservado porque identifica o template e a integração do projeto com o ambiente Lovable.
+## Dependências
 
-### `routeTree.gen.ts`
+A revisão não removeu dependências apenas por falta de uso imediato. O projeto possui uma biblioteca de componentes Radix/shadcn que pode sustentar a futura área administrativa e interações mais complexas.
 
-É tratado como artefato gerado pelo TanStack Router. A estrutura atual contém uma solução específica de rota dinâmica que foi necessária para o funcionamento já validado do detalhe de veículo. Não será reestruturada durante uma limpeza cega.
+`@tanstack/react-query` também permanece porque já integra o contexto do router e deixa a base preparada para dados assíncronos futuros; não foi introduzido uso artificial apenas para justificar a dependência.
 
-### `bun.lock` e `package-lock.json`
+`bun.lock` e `package-lock.json` permanecem até que o gerenciador definitivo seja decidido. Não houve alteração de dependências nesta auditoria.
 
-Ambos permanecem porque fazem parte do histórico de ferramentas do projeto e a limpeza de gerenciadores de pacote precisa ser feita somente depois de confirmar o fluxo definitivo de instalação/build. O `package.json` e o `package-lock.json` continuam alinhados quanto às dependências declaradas; alterações de dependências não fazem parte desta etapa.
+## Arquivos legados
 
-## Pontos que foram deliberadamente mantidos para o futuro
+Foram removidos somente arquivos sem função atual ou futura comprovável:
 
-- Modelo estático de veículos como contrato inicial.
-- Componentes UI disponíveis para evolução.
-- Tratamento de erros do runtime.
-- Estrutura server-side do TanStack Start.
-- Configuração Cloudflare.
-- Sistema visual centralizado.
-- Helpers de WhatsApp e domínio de veículos.
+- `.bolt/mcp.json`
+- `src/assets/hero-key-handover.svg`
+- `src/assets/gomes-motors-logo.png.asset.json`
+- `public/favicon.png`
 
-A regra é: manter aquilo que tem valor arquitetural futuro e eliminar aquilo que é comprovadamente legado, abandonado ou sem função.
+Foram preservados deliberadamente:
 
-## Estado final esperado desta etapa
+- `.lovable/project.json`, pela integração ainda presente com o ambiente Lovable;
+- `src/components/ui`, pela utilidade arquitetural futura;
+- `src/lib/lovable-error-reporting.ts`, porque ainda participa do tratamento/telemetria do ambiente Lovable;
+- `routeTree.gen.ts`, porque é o artefato gerado pelo TanStack Router e atualmente representa corretamente as rotas validadas;
+- locks de dependências, até a definição do fluxo definitivo de pacote.
 
-O projeto deve ser considerado uma **base pública estabilizada**, não ainda uma aplicação administrativa.
+## SSR / client / server
 
-A próxima etapa de produto deverá nascer sobre esta base, sem reconstruí-la: primeiro preparar a camada de domínio; depois persistência; depois autenticação; depois painel comercial; depois estoque administrativo e CRM.
+A fronteira atual foi preservada:
+
+- regras estáticas e helpers ficam em `src/lib`;
+- armazenamento de favoritos usa APIs do navegador somente dentro de efeitos/eventos client-side;
+- o shell global permanece no `__root.tsx`;
+- `src/start.ts` mantém middleware de erro e proteção CSRF para futuras server functions;
+- `src/server.ts` mantém a normalização de respostas SSR catastróficas e a página de erro de contingência;
+- não foram introduzidas APIs server-side prematuramente.
+
+## Acessibilidade e responsividade
+
+A revisão confirmou labels explícitos nos principais campos, `aria-label`/`aria-pressed` nos controles relevantes, estados de diálogo no filtro móvel, navegação semântica e layouts responsivos nos fluxos públicos.
+
+Permanece como evolução futura a revisão visual detalhada com auditoria de contraste, teclado/foco e testes automatizados de acessibilidade em cada nova interface administrativa. Isso não justifica uma alteração estrutural arriscada na base pública já validada.
+
+## SEO
+
+As rotas públicas possuem títulos e descrições próprios, além de metadados Open Graph/Twitter e `noindex` para veículo inexistente.
+
+Canonical absoluto, sitemap, dados estruturados e domínio definitivo foram mantidos para a fase em que a URL pública final estiver definida. Implementá-los agora com um domínio provisório criaria configuração descartável.
+
+## Performance
+
+- Hero é carregado como imagem principal e recebeu prioridade explícita.
+- Imagens de estoque e conteúdo secundário usam `loading="lazy"` quando apropriado.
+- Dimensões de imagem estão declaradas nos principais pontos para reduzir mudanças de layout.
+- Não foi introduzida biblioteca de performance desnecessária.
+- O catálogo atual é pequeno e estático; não há necessidade de otimização prematura de busca ou virtualização.
+
+## Estado final
+
+A auditoria está **encerrada para esta fase**.
+
+O Gomes Motors está em condição de seguir para o próximo módulo sem reconstrução. A base pública foi limpa, os problemas técnicos identificados como seguros de corrigir foram tratados e os pontos que dependem de decisões futuras foram explicitamente preservados.
+
+A próxima etapa é produto, não saneamento: preparar a camada de domínio para persistência e, somente depois, evoluir para D1/R2, autenticação e painel comercial.
