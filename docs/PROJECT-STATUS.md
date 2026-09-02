@@ -104,26 +104,68 @@ Foram conferidos os contratos do domínio, regras de status, repositórios, caso
 ### Bloco 2 — Build oficial
 **Concluído com sucesso.**
 
-O workflow `build` do GitHub Actions executou `npm ci` e `npm run build` no commit `e12c5fd358a0c98dbd3404464f8db24dbb85f962` e terminou com `success` em 02/09/2026. O build executa `vite build` e `tsc --noEmit`.
+O workflow `build` do GitHub Actions executou `npm ci` e `npm run build` e terminou com `success` em 02/09/2026. O build executa `vite build` e `tsc --noEmit`.
 
 ### Bloco 3 — Deploy / publicação
 **Concluído tecnicamente.**
 
-Os checks do Cloudflare Workers para o commit `e12c5fd358a0c98dbd3404464f8db24dbb85f962` terminaram com `success`, confirmando a publicação automatizada pela integração do projeto. A validação registrada inclui os serviços `gomes-motors-foundation` e `gomes-motors-foundation1`.
+Os checks do Cloudflare Workers terminaram com `success`, confirmando a publicação automatizada pela integração do projeto.
 
 ### Bloco 4 — Regressão funcional
 **Revisão técnica concluída; validação manual pendente.**
 
-O código e os fluxos foram conferidos após a integração, sem alteração intencional da UX aprovada. A validação real de navegação, filtros, favoritos, detalhes, links e WhatsApp no ambiente publicado ainda depende do teste manual do usuário.
+O código e os fluxos foram conferidos após a integração, sem alteração intencional da UX aprovada. A validação real de navegação, filtros, favoritos, detalhes, links e WhatsApp no ambiente publicado depende do teste manual do usuário.
 
 ### Bloco 5 — Responsividade
 **Revisão estrutural concluída; validação visual manual pendente.**
 
-A implementação existente mantém os comportamentos responsivos definidos na base pública. A confirmação final em desktop, tablet e mobile precisa ser feita no ambiente publicado, pois essa etapa depende da observação visual real.
+A implementação existente mantém os comportamentos responsivos definidos na base pública. A confirmação final depende da observação visual real no ambiente publicado.
+
+## Fase 6 — Fundação operacional
+
+### 6.1 — D1 / fundação de dados
+**Tecnicamente concluída e publicada.**
+
+- migration inicial `db/migrations/0001_foundation.sql` criada;
+- binding `DB` configurado para `gomes-motors-db`;
+- estrutura inicial criada para veículos, estoque, preços, histórico de status, mídia e auditoria;
+- build validado pelo GitHub Actions;
+- deploy validado no Cloudflare;
+- D1 provisionado no ambiente Cloudflare conforme validação realizada.
+
+### 6.2 — R2 / mídia e arquivos
+**Em execução.**
+
+Base criada sem alterar a UI pública:
+
+- binding `MEDIA` configurado para o bucket `gomes-motors-media`;
+- contrato de domínio `src/domain/media/types.ts` criado;
+- contrato `src/domain/media/repository.ts` criado;
+- armazenamento permanece abstraído para permitir que o domínio não conheça diretamente a API do R2;
+- tabela `vehicle_media` da fundação D1 já representa os metadados dos objetos.
+
+Ainda não foi feita migração das imagens estáticas atuais para R2. Isso permanece deliberadamente separado para evitar misturar infraestrutura com a futura migração controlada do catálogo.
+
+## Observação comercial — simulador de financiamento
+
+Foi identificada uma melhoria importante na experiência de financiamento do detalhe do veículo.
+
+O botão **“Quero uma proposta real”** deverá preservar o contexto da simulação feita pelo cliente e enviar ao WhatsApp, junto com o veículo:
+
+- valor da entrada escolhido;
+- prazo escolhido;
+- taxa indicativa utilizada na simulação;
+- parcela estimada;
+- valor total estimado desembolsado no financiamento;
+- aviso de que os valores são estimativos e dependem de análise de crédito e instituição financeira.
+
+A interface também deverá apresentar explicitamente o **valor total estimado** da operação, além da parcela, para que o cliente compreenda a simulação como referência.
+
+Essa melhoria foi registrada como requisito funcional/comercial e não será misturada à fundação R2. A implementação será feita no bloco apropriado, preservando a experiência visual aprovada.
 
 ## Estado de aceite
 
-**A parte técnica sob responsabilidade do desenvolvimento está fechada. A Fase 5 ainda não deve ser marcada como definitivamente aprovada até o teste manual do usuário.**
+**A Fase 6 está em implementação.**
 
 Não confundir:
 
@@ -131,14 +173,20 @@ Não confundir:
 feito tecnicamente ≠ validado manualmente ≠ aprovado
 ```
 
+Cada subetapa da Fase 6 deverá passar por implementação, validação técnica e teste manual antes da próxima subetapa.
+
 ## Próximo marco
 
-Após o teste manual e o aceite da Fase 5:
+Após concluir e validar manualmente a 6.2:
 
 ```text
-Fase 5 aprovada
+6.2 R2 / mídia
       ↓
-D1 + R2 + server-side
+6.3 server-side
+      ↓
+6.4 migração controlada
+      ↓
+6.5 validação/fechamento
       ↓
 autenticação/autorização
       ↓
