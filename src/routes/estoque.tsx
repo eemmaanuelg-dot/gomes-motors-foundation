@@ -12,8 +12,18 @@ import {
 } from "lucide-react";
 
 import { VEICULOS, type Veiculo } from "@/data/vehicles";
+import { useFavoritos } from "@/lib/favorites";
+import {
+  criarWhatsAppUrl,
+  formatarKm,
+  formatarPreco,
+  mensagemInteresse,
+} from "@/lib/vehicle-utils";
 
 export const Route = createFileRoute("/estoque")({
+  validateSearch: (search) => ({
+    favoritos: search.favoritos === true || search.favoritos === "true",
+  }),
   head: () => ({
     meta: [
       { title: "Estoque — Gomes Motors" },
@@ -93,18 +103,6 @@ const FAIXAS_KM_MOTOS = ["Até 20.000 km", "Acima de 20.000 km"];
 const FAIXAS_CILINDRADA = ["Até 400 cc", "Acima de 400 cc"];
 const VISIVEIS_INICIAL = 4;
 
-function formatarPreco(valor: number) {
-  return valor.toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-    maximumFractionDigits: 0,
-  });
-}
-
-function formatarKm(km: number) {
-  return `${km.toLocaleString("pt-BR")} km`;
-}
-
 function unicos(valores: (string | undefined)[]) {
   return [...new Set(valores.filter((valor): valor is string => Boolean(valor)))].sort(
     (a, b) => a.localeCompare(b, "pt-BR"),
@@ -141,15 +139,10 @@ function obterFiltros(categoria: Categoria, filtros: Filtros): FiltroGrupo[] {
       opcoes: categoria === "motos" ? FAIXAS_KM_MOTOS : FAIXAS_KM_CARROS,
     },
     { grupo: "Câmbio", opcoes: unicos(base.map((veiculo) => veiculo.cambio)) },
-    {
-      grupo: "Combustível",
-      opcoes: unicos(base.map((veiculo) => veiculo.combustivel)),
-    },
+    { grupo: "Combustível", opcoes: unicos(base.map((veiculo) => veiculo.combustivel)) },
     {
       grupo: "Cilindrada",
-      opcoes: base.some((veiculo) => veiculo.cilindrada)
-        ? FAIXAS_CILINDRADA
-        : [],
+      opcoes: base.some((veiculo) => veiculo.cilindrada) ? FAIXAS_CILINDRADA : [],
     },
     { grupo: "Tipo", opcoes: unicos(base.map((veiculo) => veiculo.tipo)) },
   ];
@@ -216,7 +209,6 @@ function correspondeFaixaKm(km: number, filtro: string) {
 function correspondeCilindrada(cilindrada: string | undefined, filtro: string) {
   if (!filtro) return true;
   if (!cilindrada) return false;
-
   const valor = extrairNumero(cilindrada);
   if (filtro === "Até 400 cc") return valor <= 400;
   if (filtro === "Acima de 400 cc") return valor > 400;
@@ -309,6 +301,15 @@ function FiltrosLaterais({
   );
 }
 
+function StatusBadge({ status }: { status: Veiculo["status"] }) {
+  const labels = { disponivel: "Disponível", reservado: "Reservado", vendido: "Vendido" };
+  return (
+    <span className="rounded-sm border border-border bg-background/85 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-foreground backdrop-blur">
+      {labels[status]}
+    </span>
+  );
+}
+
 function CardVeiculo({
   veiculo,
   favorito,
@@ -325,10 +326,7 @@ function CardVeiculo({
   if (veiculo.tipo) detalhes.push(veiculo.tipo);
 
   const titulo = `${veiculo.marca} ${veiculo.modelo}${veiculo.versao ? ` ${veiculo.versao}` : ""}`;
-  const mensagem = encodeURIComponent(
-    `Olá, Gomes Motors! Tenho interesse no ${titulo} ${veiculo.ano}, anunciado por ${formatarPreco(veiculo.preco)}. Gostaria de mais informações.`,
-  );
-  const whatsappUrl = `https://wa.me/55229999908461?text=${mensagem}`;
+  const whatsappUrl = criarWhatsAppUrl(mensagemInteresse(veiculo));
 
   return (
     <article className="group overflow-hidden rounded-sm border border-border bg-card">
@@ -341,30 +339,22 @@ function CardVeiculo({
           loading="lazy"
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
         />
+        <div className="absolute left-3 top-3">
+          <StatusBadge status={veiculo.status} />
+        </div>
         <button
           type="button"
           onClick={onAlternarFavorito}
           aria-pressed={favorito}
-          aria-label={
-            favorito
-              ? `Remover ${veiculo.marca} ${veiculo.modelo} dos favoritos`
-              : `Favoritar ${veiculo.marca} ${veiculo.modelo}`
-          }
+          aria-label={favorito ? `Remover ${titulo} dos favoritos` : `Favoritar ${titulo}`}
           className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-background/70 text-foreground transition-colors hover:bg-background"
         >
-          <Heart
-            className={`h-5 w-5 ${favorito ? "fill-brand-red text-brand-red" : "text-foreground"}`}
-          />
+          <Heart className={`h-5 w-5 ${favorito ? "fill-brand-red text-brand-red" : "text-foreground"}`} />
         </button>
       </div>
 
       <div className="p-5">
-        <h2 className="truncate text-lg font-bold text-foreground">
-          {veiculo.marca} {veiculo.modelo}
-        </h2>
-        {veiculo.versao && (
-          <p className="mt-0.5 text-sm text-muted-foreground">{veiculo.versao}</p>
-        )}
+        <h2 className="truncate text-lg font-bold text-foreground">{titulo}</h2>
         <p className="mt-3 text-sm text-muted-foreground">{detalhes.join(" · ")}</p>
         <p className="mt-3 text-xl font-bold text-gold">{formatarPreco(veiculo.preco)}</p>
 
@@ -392,9 +382,10 @@ function CardVeiculo({
 }
 
 function EstoquePage() {
+  const { favoritos, alternarFavorito } = useFavoritos();
+  const { favoritos: favoritosNaUrl } = Route.useSearch();
   const [categoria, setCategoria] = useState<Categoria>("todos");
   const [filtrosAbertos, setFiltrosAbertos] = useState(false);
-  const [favoritos, setFavoritos] = useState<Set<string>>(new Set());
   const [filtros, setFiltros] = useState<Filtros>(FILTROS_VAZIOS);
   const [busca, setBusca] = useState("");
   const [ordenacao, setOrdenacao] = useState<Ordenacao>("relevantes");
@@ -420,7 +411,7 @@ function EstoquePage() {
     const termoBusca = busca.trim().toLocaleLowerCase("pt-BR");
     const filtrados = VEICULOS.filter((veiculo) => {
       if (categoria !== "todos" && veiculo.categoria !== categoria) return false;
-
+      if (favoritosNaUrl && !favoritos.has(veiculo.id)) return false;
       if (termoBusca) {
         const camposBusca = [
           veiculo.marca,
@@ -436,7 +427,6 @@ function EstoquePage() {
           return false;
         }
       }
-
       if (filtros.marca && veiculo.marca !== filtros.marca) return false;
       if (filtros.modelo && veiculo.modelo !== filtros.modelo) return false;
       if (filtros.versao && veiculo.versao !== filtros.versao) return false;
@@ -466,12 +456,10 @@ function EstoquePage() {
       default:
         return filtrados;
     }
-  }, [busca, categoria, filtros, ordenacao]);
+  }, [busca, categoria, favoritos, favoritosNaUrl, filtros, ordenacao]);
 
   const possuiFiltrosAtivos =
-    Object.values(filtros).some(Boolean) ||
-    busca.trim().length > 0 ||
-    ordenacao !== "relevantes";
+    Object.values(filtros).some(Boolean) || busca.trim().length > 0 || ordenacao !== "relevantes";
 
   const limparFiltros = () => {
     setFiltros(FILTROS_VAZIOS);
@@ -479,36 +467,23 @@ function EstoquePage() {
     setOrdenacao("relevantes");
   };
 
-  const alternarFavorito = (id: string) => {
-    setFavoritos((atual) => {
-      const novo = new Set(atual);
-      if (novo.has(id)) novo.delete(id);
-      else novo.add(id);
-      return novo;
-    });
-  };
-
   const textoResultados =
-    veiculos.length === 1
-      ? "1 veículo encontrado"
-      : `${veiculos.length} veículos encontrados`;
+    veiculos.length === 1 ? "1 veículo encontrado" : `${veiculos.length} veículos encontrados`;
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
       <header className="max-w-2xl">
-        <p className="text-sm font-semibold uppercase tracking-[0.25em] text-gold">
-          Gomes Motors
+        <p className="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Gomes Motors</p>
+        <h1 className="mt-2 text-3xl font-bold text-foreground sm:text-4xl">
+          {favoritosNaUrl ? "Meus favoritos" : "Estoque"}
+        </h1>
+        <p className="mt-3 text-muted-foreground">
+          {favoritosNaUrl ? "Veículos que você salvou para consultar depois." : "Encontre seu próximo veículo."}
         </p>
-        <h1 className="mt-2 text-3xl font-bold text-foreground sm:text-4xl">Estoque</h1>
-        <p className="mt-3 text-muted-foreground">Encontre seu próximo veículo.</p>
       </header>
 
       <div className="mt-8 flex flex-wrap items-center justify-between gap-3">
-        <div
-          className="flex rounded-sm border border-border bg-card p-1"
-          role="tablist"
-          aria-label="Categoria de veículos"
-        >
+        <div className="flex rounded-sm border border-border bg-card p-1" role="tablist" aria-label="Categoria de veículos">
           {CATEGORIAS.map((cat) => (
             <button
               key={cat.value}
@@ -517,9 +492,7 @@ function EstoquePage() {
               aria-selected={categoria === cat.value}
               onClick={() => alterarCategoria(cat.value)}
               className={`inline-flex items-center gap-2 rounded-sm px-4 py-2 text-sm font-medium transition-colors ${
-                categoria === cat.value
-                  ? "bg-gold text-gold-foreground"
-                  : "text-muted-foreground hover:text-foreground"
+                categoria === cat.value ? "bg-gold text-gold-foreground" : "text-muted-foreground hover:text-foreground"
               }`}
             >
               {cat.icon && <cat.icon className="h-4 w-4" />}
@@ -538,90 +511,67 @@ function EstoquePage() {
         </button>
       </div>
 
-      <div className="mt-8 grid gap-3 md:grid-cols-[minmax(0,1fr)_220px]">
-        <label className="relative block">
-          <span className="sr-only">Buscar no estoque</span>
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <input
-            type="search"
-            value={busca}
-            onChange={(event) => setBusca(event.target.value)}
-            placeholder="Buscar por marca, modelo, ano ou característica..."
-            className="w-full rounded-sm border border-border bg-secondary py-2.5 pl-10 pr-4 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-gold"
-          />
-        </label>
+      {!favoritosNaUrl && (
+        <div className="mt-8 grid gap-3 md:grid-cols-[minmax(0,1fr)_220px]">
+          <label className="relative block">
+            <span className="sr-only">Buscar no estoque</span>
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <input
+              type="search"
+              value={busca}
+              onChange={(event) => setBusca(event.target.value)}
+              placeholder="Buscar por marca, modelo, ano ou característica..."
+              className="w-full rounded-sm border border-border bg-secondary py-2.5 pl-10 pr-4 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-gold"
+            />
+          </label>
 
-        <label className="relative block">
-          <span className="sr-only">Ordenar veículos</span>
-          <select
-            value={ordenacao}
-            onChange={(event) => setOrdenacao(event.target.value as Ordenacao)}
-            className="w-full appearance-none rounded-sm border border-border bg-secondary px-3 py-2.5 pr-9 text-sm text-foreground outline-none transition-colors focus:border-gold"
-          >
-            <option value="relevantes">Mais relevantes</option>
-            <option value="menor-preco">Menor preço</option>
-            <option value="maior-preco">Maior preço</option>
-            <option value="menor-km">Menor quilometragem</option>
-            <option value="maior-km">Maior quilometragem</option>
-            <option value="mais-novo">Mais novos</option>
-            <option value="mais-antigo">Mais antigos</option>
-          </select>
-          <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-        </label>
-      </div>
+          <label className="relative block">
+            <span className="sr-only">Ordenar veículos</span>
+            <select
+              value={ordenacao}
+              onChange={(event) => setOrdenacao(event.target.value as Ordenacao)}
+              className="w-full appearance-none rounded-sm border border-border bg-secondary px-3 py-2.5 pr-9 text-sm text-foreground outline-none transition-colors focus:border-gold"
+            >
+              <option value="relevantes">Mais relevantes</option>
+              <option value="menor-preco">Menor preço</option>
+              <option value="maior-preco">Maior preço</option>
+              <option value="menor-km">Menor quilometragem</option>
+              <option value="maior-km">Maior quilometragem</option>
+              <option value="mais-novo">Mais novos</option>
+              <option value="mais-antigo">Mais antigos</option>
+            </select>
+            <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          </label>
+        </div>
+      )}
 
       <div className="mt-10 grid gap-10 lg:grid-cols-[240px_minmax(0,1fr)]">
         <aside className="hidden lg:block" aria-label="Filtros de estoque">
-          <FiltrosLaterais categoria={categoria} filtros={filtros} onChange={alterarFiltro} />
-          {possuiFiltrosAtivos && (
-            <button
-              type="button"
-              onClick={limparFiltros}
-              className="mt-5 text-sm font-medium text-brand-red hover:underline"
-            >
+          {!favoritosNaUrl && <FiltrosLaterais categoria={categoria} filtros={filtros} onChange={alterarFiltro} />}
+          {possuiFiltrosAtivos && !favoritosNaUrl && (
+            <button type="button" onClick={limparFiltros} className="mt-5 text-sm font-medium text-brand-red hover:underline">
               Limpar filtros
             </button>
           )}
         </aside>
 
-        {filtrosAbertos && (
-          <div
-            className="fixed inset-0 z-50 lg:hidden"
-            role="dialog"
-            aria-modal="true"
-            aria-label="Filtros"
-          >
-            <div
-              className="absolute inset-0 bg-background/80"
-              onClick={() => setFiltrosAbertos(false)}
-            />
+        {filtrosAbertos && !favoritosNaUrl && (
+          <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true" aria-label="Filtros">
+            <div className="absolute inset-0 bg-background/80" onClick={() => setFiltrosAbertos(false)} />
             <div className="absolute bottom-0 left-0 right-0 max-h-[80vh] overflow-y-auto rounded-t-lg border-t border-border bg-card p-6">
               <div className="mb-6 flex items-center justify-between">
                 <h2 className="text-lg font-semibold text-foreground">Filtros</h2>
-                <button
-                  type="button"
-                  aria-label="Fechar filtros"
-                  onClick={() => setFiltrosAbertos(false)}
-                  className="flex h-9 w-9 items-center justify-center rounded-sm text-muted-foreground hover:bg-accent"
-                >
+                <button type="button" aria-label="Fechar filtros" onClick={() => setFiltrosAbertos(false)} className="flex h-9 w-9 items-center justify-center rounded-sm text-muted-foreground hover:bg-accent">
                   <X className="h-5 w-5" />
                 </button>
               </div>
               <FiltrosLaterais categoria={categoria} filtros={filtros} onChange={alterarFiltro} />
               {possuiFiltrosAtivos && (
-                <button
-                  type="button"
-                  onClick={limparFiltros}
-                  className="mt-5 text-sm font-medium text-brand-red hover:underline"
-                >
+                <button type="button" onClick={limparFiltros} className="mt-5 text-sm font-medium text-brand-red hover:underline">
                   Limpar filtros
                 </button>
               )}
-              <button
-                type="button"
-                onClick={() => setFiltrosAbertos(false)}
-                className="mt-8 w-full rounded-sm bg-brand-red px-4 py-3 text-sm font-semibold text-brand-red-foreground transition-opacity hover:opacity-90"
-              >
+              <button type="button" onClick={() => setFiltrosAbertos(false)} className="mt-8 w-full rounded-sm bg-brand-red px-4 py-3 text-sm font-semibold text-brand-red-foreground transition-opacity hover:opacity-90">
                 Ver resultados
               </button>
             </div>
@@ -631,15 +581,24 @@ function EstoquePage() {
         <section aria-label="Veículos do estoque">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <p className="text-sm text-muted-foreground">{textoResultados}</p>
-            {possuiFiltrosAtivos && (
-              <button
-                type="button"
-                onClick={limparFiltros}
-                className="text-sm font-medium text-gold hover:text-foreground"
-              >
-                Limpar filtros
-              </button>
-            )}
+            <div className="flex items-center gap-4">
+              {!favoritosNaUrl && favoritos.size > 0 && (
+                <Link to="/estoque" search={{ favoritos: true }} className="inline-flex items-center gap-1.5 text-sm font-medium text-gold hover:text-foreground">
+                  <Heart className="h-4 w-4" />
+                  Favoritos ({favoritos.size})
+                </Link>
+              )}
+              {favoritosNaUrl && (
+                <Link to="/estoque" className="text-sm font-medium text-gold hover:text-foreground">
+                  Voltar ao estoque
+                </Link>
+              )}
+              {possuiFiltrosAtivos && !favoritosNaUrl && (
+                <button type="button" onClick={limparFiltros} className="text-sm font-medium text-gold hover:text-foreground">
+                  Limpar filtros
+                </button>
+              )}
+            </div>
           </div>
 
           {veiculos.length > 0 ? (
@@ -655,19 +614,18 @@ function EstoquePage() {
             </div>
           ) : (
             <div className="rounded-sm border border-border bg-card px-6 py-14 text-center">
-              <h2 className="text-lg font-semibold text-foreground">
-                Não encontramos veículos com esses critérios.
+              <Heart className="mx-auto h-8 w-8 text-muted-foreground" />
+              <h2 className="mt-4 text-lg font-semibold text-foreground">
+                {favoritosNaUrl ? "Você ainda não salvou veículos." : "Não encontramos veículos com esses critérios."}
               </h2>
               <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
-                Tente remover alguns filtros ou realizar uma nova busca.
+                {favoritosNaUrl ? "Use o coração nos cards para guardar os veículos que mais interessarem." : "Tente remover alguns filtros ou realizar uma nova busca."}
               </p>
-              <button
-                type="button"
-                onClick={limparFiltros}
-                className="mt-6 rounded-sm bg-brand-red px-5 py-2.5 text-sm font-semibold text-brand-red-foreground transition-opacity hover:opacity-90"
-              >
-                Limpar filtros
-              </button>
+              {!favoritosNaUrl && (
+                <button type="button" onClick={limparFiltros} className="mt-6 rounded-sm bg-brand-red px-5 py-2.5 text-sm font-semibold text-brand-red-foreground transition-opacity hover:opacity-90">
+                  Limpar filtros
+                </button>
+              )}
             </div>
           )}
         </section>
