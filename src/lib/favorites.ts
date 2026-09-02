@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 const STORAGE_KEY = "gomes-motors-favoritos";
+const FAVORITOS_EVENT = "gomes-motors:favoritos";
 
 function lerFavoritos() {
   if (typeof window === "undefined") return new Set<string>();
@@ -17,6 +18,10 @@ function lerFavoritos() {
   }
 }
 
+function notificarFavoritos() {
+  window.dispatchEvent(new Event(FAVORITOS_EVENT));
+}
+
 export function useFavoritos() {
   const [favoritos, setFavoritos] = useState<Set<string>>(new Set());
   const [hidratado, setHidratado] = useState(false);
@@ -29,12 +34,17 @@ export function useFavoritos() {
   useEffect(() => {
     if (!hidratado) return;
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify([...favoritos]));
+    notificarFavoritos();
   }, [favoritos, hidratado]);
 
   useEffect(() => {
     const sincronizar = () => setFavoritos(lerFavoritos());
     window.addEventListener("storage", sincronizar);
-    return () => window.removeEventListener("storage", sincronizar);
+    window.addEventListener(FAVORITOS_EVENT, sincronizar);
+    return () => {
+      window.removeEventListener("storage", sincronizar);
+      window.removeEventListener(FAVORITOS_EVENT, sincronizar);
+    };
   }, []);
 
   const alternarFavorito = (id: string) => {
