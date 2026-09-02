@@ -4,7 +4,7 @@ Data: 02/09/2026
 
 ## Escopo
 
-Auditoria realizada após a implementação inicial da preparação da camada de domínio e correção do contato comercial do WhatsApp.
+Auditoria realizada após a implementação da preparação da camada de domínio, correção do contato comercial do WhatsApp e integração gradual do catálogo público com os casos de uso e repositórios.
 
 ## 1. Camada de domínio
 
@@ -42,10 +42,11 @@ Implementados para veículos:
 
 Revisão aplicada:
 
-- a venda agora verifica a existência da entrada de estoque antes de alterar o status do veículo, evitando deixar o veículo como vendido quando a estrutura de estoque necessária não existe.
-- transições de status continuam passando pelas regras centrais do domínio.
-- veículo vendido não pode ser publicado nem destacado.
-- catálogo público considera simultaneamente status comercial e publicação do estoque.
+- a venda agora verifica a existência da entrada de estoque antes de alterar o status do veículo, evitando deixar o veículo como vendido quando a estrutura de estoque necessária não existe;
+- transições de status continuam passando pelas regras centrais do domínio;
+- veículo vendido não pode ser publicado nem destacado;
+- catálogo público considera simultaneamente status comercial e publicação do estoque;
+- os casos de uso aceitam o `DomainErrorCode` completo definido no domínio.
 
 ## 2. Contato comercial / WhatsApp
 
@@ -61,69 +62,79 @@ A correção remove o dígito `9` excedente presente na referência anterior `22
 
 O número foi centralizado em `src/lib/contact.ts`.
 
-`src/lib/vehicle-utils.ts` utiliza a mesma constante para gerar todos os links `wa.me`, preservando os fluxos de WhatsApp de veículos, serviços, cabeçalho e rodapé.
+`src/lib/vehicle-utils.ts` utiliza a mesma constante para gerar os links `wa.me`, preservando os fluxos de WhatsApp de veículos, serviços, cabeçalho e rodapé.
 
-A página de contato e a Home também passaram a utilizar as constantes centralizadas para a exibição e ligação telefônica.
+## 3. Integração 5.4 — Catálogo público
 
-## 3. Superfícies auditadas
+A fronteira de aplicação está em `src/application/vehicles/public-catalog.ts`.
 
-Foram conferidos os principais pontos de contato conhecidos da aplicação:
+As rotas públicas que exibem dados de veículos passaram a consumir o catálogo por meio de loaders do TanStack Router:
 
-- `src/lib/vehicle-utils.ts`;
-- `src/lib/contact.ts`;
-- `src/routes/contato.tsx`;
-- `src/routes/index.tsx`;
-- `src/components/site/Header.tsx`;
-- `src/components/site/Footer.tsx`;
-- fluxos de serviços que utilizam `criarWhatsAppUrl`.
+- `/` carrega os veículos públicos pelo catálogo e monta a seção de destaques a partir desse resultado;
+- `/estoque` carrega a lista pública pelo catálogo e aplica busca, filtros, favoritos e ordenação sobre o resultado;
+- `/estoque/:id` carrega o veículo pelo catálogo e obtém os relacionados a partir da mesma coleção pública.
 
-Header, Footer e fluxos de veículos/serviços dependem da função centralizada de geração de URL, evitando números duplicados nesses pontos.
+A apresentação não conhece os repositórios concretos. O fluxo agora é:
 
-## 4. Critérios para teste
+```text
+SITE PÚBLICO
+      ↓
+ROUTE LOADER
+      ↓
+PUBLIC VEHICLE CATALOG
+      ↓
+CASOS DE USO
+      ↓
+CONTRATOS DO DOMÍNIO
+      ↓
+REPOSITÓRIOS ESTÁTICOS
+      ↓
+DADOS DE TRANSIÇÃO
+```
 
-### Domínio
+A adoção dos loaders segue o mecanismo oficial do TanStack Router para carregar dados antes da renderização e consumi-los por `Route.useLoaderData()`. citeturn1search0turn1search3
 
-- listar somente veículos publicados e não vendidos;
-- obter veículo público existente;
-- rejeitar veículo público inexistente;
-- publicar veículo;
-- despublicar veículo;
-- destacar veículo disponível;
-- rejeitar destaque de vendido;
-- reservar veículo disponível;
-- liberar reserva;
-- vender veículo e retirar publicação;
-- rejeitar transição inválida;
-- rejeitar venda sem entrada de estoque.
+Nenhuma alteração de UX, identidade visual ou funcionalidade comercial foi planejada como parte dessa migração.
 
-### Público
+## 4. Validação arquitetural 5.5
 
-- `/` continua exibindo os veículos de destaque;
-- `/estoque` continua listando e filtrando os veículos;
-- `/estoque/:id` continua abrindo o detalhe;
-- favoritos continuam funcionando;
-- botões de WhatsApp continuam abrindo conversa contextualizada;
-- serviços continuam gerando mensagens contextualizadas;
-- contato exibe `(22) 99990-8461`;
-- telefone utiliza `tel:+5522999908461`.
+A revisão estrutural confirma:
 
-## 5. Validação pendente
+- separação entre domínio, aplicação, infraestrutura e apresentação;
+- rotas públicas sem dependência dos repositórios concretos;
+- publicação tratada como estado de estoque;
+- regras de status concentradas no domínio;
+- catálogo público como fronteira única da leitura pública de veículos;
+- preparação compatível com futura substituição dos repositórios estáticos por D1;
+- ausência de necessidade de alterar o contrato do domínio quando a persistência for introduzida.
 
-A revisão estrutural foi concluída, mas a validação final ainda depende da execução do build/teste no ambiente do projeto.
+O build anterior do projeto foi executado após a correção de tipagem dos casos de uso e aprovado pelo ambiente de deploy. As novas alterações de integração desta rodada ainda precisam passar pelo mesmo build final do ambiente do projeto.
 
-Comando oficial de build:
+### Checklist final de aceitação
+
+- [x] contratos fundamentais;
+- [x] repositórios estáticos;
+- [x] casos de uso;
+- [x] catálogo público;
+- [x] integração da Home;
+- [x] integração do Estoque;
+- [x] integração do detalhe de veículo;
+- [x] correção centralizada do WhatsApp;
+- [ ] `npm run build` após a integração 5.4;
+- [ ] teste funcional final após o novo deploy;
+- [ ] confirmação final de desktop/mobile após o novo deploy.
+
+O build oficial continua sendo:
 
 ```text
 npm run build
 ```
 
-Esse comando executa `vite build` e `tsc --noEmit`.
+que executa `vite build` e `tsc --noEmit`.
 
-Não considerar a Fase 5.5 concluída até que o build e os testes funcionais do site público sejam executados e aprovados.
+## 5. Próximo marco
 
-## 6. Próximo marco
-
-Após a validação:
+Depois que o build final e a conferência funcional desta integração forem aprovados:
 
 ```text
 5.5 Validação arquitetural
@@ -131,6 +142,10 @@ Após a validação:
 Fase 5 concluída
         ↓
 D1 + R2 + server-side
+        ↓
+autenticação/autorização
+        ↓
+/admin
 ```
 
 Nenhuma implementação de autenticação ou `/admin` deve ser iniciada antes desse marco.
