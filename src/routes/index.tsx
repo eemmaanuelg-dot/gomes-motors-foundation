@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, BadgeDollarSign, Car, CreditCard, KeyRound, MapPin, Repeat } from "lucide-react";
 import { HomeHeroSlider } from "@/components/site/HomeHeroSlider";
 import { VEICULOS, obterTituloVeiculo } from "@/data/vehicles";
+import { WHATSAPP_DISPLAY } from "@/lib/contact";
 import { formatarKm, formatarPreco } from "@/lib/vehicle-utils";
 
 export const Route = createFileRoute("/")({
@@ -102,7 +103,7 @@ function HomePage() {
               <div className="flex items-center gap-3 text-gold"><MapPin className="h-5 w-5" /><p className="text-sm font-semibold uppercase tracking-[0.25em]">Visite nossa loja</p></div>
               <h2 className="mt-3 text-2xl font-bold text-foreground sm:text-3xl">Campos dos Goytacazes, RJ</h2>
               <p className="mt-4 leading-relaxed text-muted-foreground">Atendimento na região de 28 de Março. Para consultar veículos, condições de negociação e disponibilidade da equipe, fale conosco.</p>
-              <p className="mt-3 text-sm font-medium text-foreground">WhatsApp: (22) 99999-08461</p>
+              <p className="mt-3 text-sm font-medium text-foreground">WhatsApp: {WHATSAPP_DISPLAY}</p>
             </div>
             <Link to="/contato" className="inline-flex items-center justify-center gap-2 rounded-sm bg-brand-red px-7 py-3.5 text-sm font-semibold text-brand-red-foreground transition-opacity hover:opacity-90">Fale conosco<ArrowRight className="h-4 w-4" /></Link>
           </div>
