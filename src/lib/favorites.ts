@@ -18,11 +18,18 @@ function lerFavoritos() {
 }
 
 export function useFavoritos() {
-  const [favoritos, setFavoritos] = useState<Set<string>>(() => lerFavoritos());
+  const [favoritos, setFavoritos] = useState<Set<string>>(new Set());
+  const [hidratado, setHidratado] = useState(false);
 
   useEffect(() => {
+    setFavoritos(lerFavoritos());
+    setHidratado(true);
+  }, []);
+
+  useEffect(() => {
+    if (!hidratado) return;
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify([...favoritos]));
-  }, [favoritos]);
+  }, [favoritos, hidratado]);
 
   useEffect(() => {
     const sincronizar = () => setFavoritos(lerFavoritos());
