@@ -3,6 +3,7 @@ import {
   listarVeiculosPublicos,
   obterVeiculoPublicoPorId,
 } from "@/application/vehicles/use-cases";
+import type { Vehicle } from "@/domain/vehicles/types";
 import {
   createCloudflareDependencies,
   createStaticDependencies,
@@ -11,6 +12,11 @@ import type { AppBindings } from "@/infrastructure/cloudflare/bindings";
 
 type PublicCatalogContext = {
   bindings: Partial<AppBindings>;
+};
+
+type PublicVehicleCatalog = {
+  listar: () => Promise<Vehicle[]>;
+  obterPorId: (options: { data: { id: string } }) => Promise<Vehicle | null>;
 };
 
 function getPublicCatalogDependencies(context: PublicCatalogContext) {
@@ -43,7 +49,7 @@ const obterCatalogoPublicoPorId = createServerFn({ method: "GET" })
     );
   });
 
-export const publicVehicleCatalog = {
+export const publicVehicleCatalog: PublicVehicleCatalog = {
   listar: listarCatalogoPublico,
   obterPorId: obterCatalogoPublicoPorId,
 };
