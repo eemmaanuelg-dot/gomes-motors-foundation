@@ -46,7 +46,7 @@ function SobrePage() {
       <section className="border-b border-border bg-card/50">
         <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
           <div className="max-w-3xl">
-            <p className="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Gomes Motors</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.25em]"><span className="text-gold">Gomes</span> <span className="text-foreground">Motors</span></p>
             <h1 className="mt-3 text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
               A escolha certa começa aqui.
             </h1>
