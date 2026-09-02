@@ -7,6 +7,7 @@ const SLIDES = [
     title: "SEU PRÓXIMO VEÍCULO ESTÁ AQUI",
     cta: "VER ESTOQUE",
     to: "/estoque",
+    hash: undefined,
     image:
       "https://images.pexels.com/photos/4173191/pexels-photo-4173191.jpeg?auto=compress&cs=tinysrgb&w=1920",
     alt: "Entrega de chave de veículo em showroom automotivo",
