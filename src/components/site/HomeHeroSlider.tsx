@@ -2,7 +2,17 @@ import { useEffect, useRef, useState, type TouchEvent } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 
-const SLIDES = [
+type HeroSlide = {
+  title: string;
+  cta: string;
+  to: "/estoque" | "/servicos";
+  hash?: string;
+  image: string;
+  alt: string;
+  position: string;
+};
+
+const SLIDES: readonly HeroSlide[] = [
   {
     title: "SEU PRÓXIMO VEÍCULO ESTÁ AQUI",
     cta: "VER ESTOQUE",
@@ -32,7 +42,7 @@ const SLIDES = [
     alt: "Cliente e consultor analisando documentação em showroom automotivo",
     position: "center",
   },
-] as const;
+];
 
 const AUTO_ADVANCE_MS = 6500;
 
