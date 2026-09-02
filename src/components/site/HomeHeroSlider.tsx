@@ -7,7 +7,6 @@ const SLIDES = [
     title: "SEU PRÓXIMO VEÍCULO ESTÁ AQUI",
     cta: "VER ESTOQUE",
     to: "/estoque",
-    hash: undefined,
     image:
       "https://images.pexels.com/photos/4173191/pexels-photo-4173191.jpeg?auto=compress&cs=tinysrgb&w=1920",
     alt: "Entrega de chave de veículo em showroom automotivo",
@@ -128,7 +127,7 @@ export function HomeHeroSlider() {
                 </h1>
                 <Link
                   to={slide.to}
-                  hash={slide.hash}
+                  {...(slide.hash ? { hash: slide.hash } : {})}
                   tabIndex={index === activeIndex ? 0 : -1}
                   className="mt-7 inline-flex items-center gap-2 rounded-sm border border-gold bg-gold px-6 py-3.5 text-sm font-bold text-black transition-opacity hover:opacity-90"
                 >
@@ -144,7 +143,7 @@ export function HomeHeroSlider() {
           type="button"
           aria-label="Destaque anterior"
           onClick={previous}
-          className="absolute left-2 top-1/2 z-30 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/30 bg-black/20 text-white backdrop-blur-sm transition-all hover:border-gold hover:bg-black/40 hover:text-gold sm:left-4 lg:left-6"
+          className="absolute left-1 top-1/2 z-30 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/30 bg-black/20 text-white backdrop-blur-sm transition-all hover:border-gold hover:bg-black/40 hover:text-gold sm:left-3 lg:left-4"
         >
           <ChevronLeft className="h-6 w-6" />
         </button>
@@ -152,7 +151,7 @@ export function HomeHeroSlider() {
           type="button"
           aria-label="Próximo destaque"
           onClick={next}
-          className="absolute right-2 top-1/2 z-30 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/30 bg-black/20 text-white backdrop-blur-sm transition-all hover:border-gold hover:bg-black/40 hover:text-gold sm:right-4 lg:right-6"
+          className="absolute right-1 top-1/2 z-30 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/30 bg-black/20 text-white backdrop-blur-sm transition-all hover:border-gold hover:bg-black/40 hover:text-gold sm:right-3 lg:right-4"
         >
           <ChevronRight className="h-6 w-6" />
         </button>
