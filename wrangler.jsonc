@@ -13,5 +13,11 @@
       "database_name": "gomes-motors-db",
       "migrations_dir": "db/migrations"
     }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "MEDIA",
+      "bucket_name": "gomes-motors-media"
+    }
   ]
 }
