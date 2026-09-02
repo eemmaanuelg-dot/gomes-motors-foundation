@@ -2,6 +2,8 @@ import type { Veiculo } from "@/data/vehicles";
 
 export const WHATSAPP_NUMERO = "55229999908461";
 
+export type TipoInteresse = "comprar" | "trocar" | "financiar";
+
 export function formatarPreco(valor: number) {
   return valor.toLocaleString("pt-BR", {
     style: "currency",
@@ -20,6 +22,43 @@ export function criarWhatsAppUrl(mensagem: string) {
 
 export function mensagemInteresse(veiculo: Veiculo) {
   return `Olá, Gomes Motors! Tenho interesse no ${veiculo.marca} ${veiculo.modelo}${veiculo.versao ? ` ${veiculo.versao}` : ""} ${veiculo.ano}, anunciado por ${formatarPreco(veiculo.preco)}. Gostaria de mais informações.`;
+}
+
+export function mensagemInteressePorTipo(veiculo: Veiculo, tipo: TipoInteresse) {
+  const titulo = obterTituloVeiculo(veiculo);
+  const valor = formatarPreco(veiculo.preco);
+  const km = formatarKm(veiculo.km);
+
+  if (tipo === "comprar") {
+    return [
+      "INTERESSE EM COMPRA",
+      `Veículo: ${titulo} — ${veiculo.ano}`,
+      `Valor anunciado: ${valor}`,
+      `Quilometragem: ${km}`,
+      "",
+      "Olá! Tenho interesse neste veículo e gostaria de conversar sobre a compra.",
+    ].join("\n");
+  }
+
+  if (tipo === "trocar") {
+    return [
+      "INTERESSE EM TROCA",
+      `Veículo desejado: ${titulo} — ${veiculo.ano}`,
+      `Valor anunciado: ${valor}`,
+      `Quilometragem: ${km}`,
+      "",
+      "Olá! Tenho interesse neste veículo e gostaria de saber se posso utilizá-lo em uma negociação de troca. Tenho um veículo para oferecer.",
+    ].join("\n");
+  }
+
+  return [
+    "INTERESSE EM FINANCIAMENTO",
+    `Veículo: ${titulo} — ${veiculo.ano}`,
+    `Valor anunciado: ${valor}`,
+    `Quilometragem: ${km}`,
+    "",
+    "Olá! Tenho interesse em financiar este veículo e gostaria de saber quais condições estão disponíveis.",
+  ].join("\n");
 }
 
 export function mensagemComercial(veiculo: Veiculo, assunto: string) {
@@ -41,4 +80,8 @@ export function obterVeiculosRelacionados(veiculos: Veiculo[], atual: Veiculo, l
       return pontuacaoB - pontuacaoA;
     })
     .slice(0, limite);
+}
+
+export function obterTituloVeiculo(veiculo: Veiculo) {
+  return `${veiculo.marca} ${veiculo.modelo}${veiculo.versao ? ` ${veiculo.versao}` : ""}`;
 }
