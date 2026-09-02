@@ -24,7 +24,6 @@ export const Route = createFileRoute("/contato")({
   component: ContatoPage,
 });
 
-const WHATSAPP = "55229999908461";
 const whatsappUrl = criarWhatsAppUrl(
   "Olá! Gostaria de falar com a Gomes Motors sobre um veículo e receber mais informações.",
 );
