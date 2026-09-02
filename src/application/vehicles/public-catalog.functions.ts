@@ -1,22 +1,43 @@
-import { createServerFn } from "@tanstack/react-start";
+import { env } from "cloudflare:workers";
+import { createServerFn, createServerOnlyFn } from "@tanstack/react-start";
 import {
-  listarCatalogoPublicoServer,
-  obterCatalogoPublicoPorIdServer,
-} from "./public-catalog.server";
+  listarVeiculosPublicos,
+  obterVeiculoPublicoPorId,
+} from "@/application/vehicles/use-cases";
+import {
+  createCloudflareDependencies,
+  createStaticDependencies,
+} from "@/infrastructure/composition";
+import type { AppBindings } from "@/infrastructure/cloudflare/bindings";
 
-/**
- * Fronteira RPC do catálogo público.
- *
- * Este módulo é seguro para importação pelas rotas públicas. A implementação
- * server-only fica isolada em public-catalog.server.ts e é removida do bundle
- * do cliente pelo compilador do TanStack Start.
- */
+const getCloudflareBindings = createServerOnlyFn(
+  (): Partial<AppBindings> => env as unknown as Partial<AppBindings>,
+);
+
+function getPublicCatalogDependencies() {
+  const bindings = getCloudflareBindings();
+
+  if (bindings.DB && bindings.VEHICLE_IMAGES) {
+    return createCloudflareDependencies({
+      DB: bindings.DB,
+      VEHICLE_IMAGES: bindings.VEHICLE_IMAGES,
+    });
+  }
+
+  return createStaticDependencies();
+}
+
 export const publicVehicleCatalog = {
-  listar: createServerFn({ method: "GET" }).handler(() =>
-    listarCatalogoPublicoServer(),
-  ),
+  listar: createServerFn({ method: "GET" }).handler(async () => {
+    return listarVeiculosPublicos(getPublicCatalogDependencies());
+  }),
 
   obterPorId: createServerFn({ method: "GET" })
     .validator((data: { id: string }) => data)
-    .handler(({ data }) => obterCatalogoPublicoPorIdServer(data.id)),
+    .handler(async ({ data }) => {
+      return obterVeiculoPublicoPorId(
+        getPublicCatalogDependencies(),
+        data.id,
+      );
+    }),
 };
