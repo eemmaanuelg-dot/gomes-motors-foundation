@@ -45,12 +45,17 @@ export class R2ObjectStorage implements ObjectStorage {
       return null;
     }
 
-    return {
+    const storedObject: StoredObject = {
       body: object.body,
       key: object.key,
       size: object.size,
-      httpMetadata: object.httpMetadata,
     };
+
+    if (object.httpMetadata) {
+      storedObject.httpMetadata = object.httpMetadata;
+    }
+
+    return storedObject;
   }
 
   async delete(key: string): Promise<void> {
