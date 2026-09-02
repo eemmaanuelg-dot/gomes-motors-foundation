@@ -19,9 +19,9 @@ export const listarCatalogoPublico = createServerFn({ method: "GET" }).handler(
   },
 );
 
-export const obterCatalogoPublicoPorId = createServerFn({ method: "GET" }).handler(
-  async ({ data }: { data: { id: string } }) => {
+export const obterCatalogoPublicoPorId = createServerFn({ method: "GET" })
+  .validator((data: { id: string }) => data)
+  .handler(async ({ data }) => {
     const dependencies = createCloudflareDependencies(getCloudflareBindings());
     return obterVeiculoPublicoPorId(dependencies, data.id);
-  },
-);
+  });
