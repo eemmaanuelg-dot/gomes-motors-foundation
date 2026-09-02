@@ -6,5 +6,24 @@
   "compatibility_flags": ["nodejs_compat"],
   "observability": {
     "enabled": true
-  }
+  },
+  "migrations_dir": "migrations"
+
+  // D1 e R2 entram aqui depois que os recursos forem criados no Cloudflare.
+  // Não usamos IDs fictícios: isso manteria o build verde, mas quebraria o deploy.
+  //
+  // "d1_databases": [
+  //   {
+  //     "binding": "DB",
+  //     "database_name": "gomes-motors-db",
+  //     "database_id": "COLOCAR_DATABASE_ID_REAL",
+  //     "migrations_dir": "migrations"
+  //   }
+  // ],
+  // "r2_buckets": [
+  //   {
+  //     "binding": "VEHICLE_IMAGES",
+  //     "bucket_name": "gomes-motors-vehicle-images"
+  //   }
+  // ]
 }
