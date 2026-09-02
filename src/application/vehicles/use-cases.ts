@@ -175,9 +175,6 @@ export async function venderVeiculo(
   deps: VehicleUseCaseDependencies,
   id: string,
 ): Promise<Result<Vehicle>> {
-  const resultado = await alterarStatus(deps, id, "vendido");
-  if (!resultado.ok) return resultado;
-
   const estoque = await deps.inventoryRepository.obterPorVeiculoId(id);
   if (!estoque) {
     return erro(
@@ -185,6 +182,9 @@ export async function venderVeiculo(
       `Entrada de estoque do veículo "${id}" não encontrada.`,
     );
   }
+
+  const resultado = await alterarStatus(deps, id, "vendido");
+  if (!resultado.ok) return resultado;
 
   await deps.inventoryRepository.atualizar(id, {
     publicado: false,
