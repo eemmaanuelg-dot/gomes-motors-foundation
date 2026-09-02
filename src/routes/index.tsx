@@ -9,6 +9,7 @@ import {
   Repeat,
 } from "lucide-react";
 import heroImage from "../assets/hero-showroom.jpg";
+import heroKeyHandover from "../assets/hero-key-handover.svg";
 import { VEICULOS, obterTituloVeiculo } from "@/data/vehicles";
 import { formatarKm, formatarPreco } from "@/lib/vehicle-utils";
 
@@ -50,7 +51,7 @@ function HomePage() {
   return (
     <main>
       {/* Hero */}
-      <section className="relative flex min-h-[85vh] items-center">
+      <section className="relative flex min-h-[85vh] items-center overflow-hidden">
         <img
           src={heroImage}
           alt="Veículo premium em showroom da Gomes Motors"
@@ -59,7 +60,13 @@ function HomePage() {
           className="absolute inset-0 h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-background/70" />
-        <div className="relative mx-auto w-full max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
+        <img
+          src={heroKeyHandover}
+          alt=""
+          aria-hidden="true"
+          className="pointer-events-none absolute bottom-0 right-[-5%] w-[52%] max-w-[720px] opacity-80 sm:right-[-2%] sm:w-[48%] lg:right-[2%] lg:w-[44%]"
+        />
+        <div className="relative z-10 mx-auto w-full max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
           <p className="mb-4 text-sm font-semibold uppercase tracking-[0.3em] text-gold">
             Gomes Motors
           </p>
