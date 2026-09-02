@@ -2,6 +2,7 @@ import "./lib/error-capture";
 
 import { consumeLastCapturedError } from "./lib/error-capture";
 import { renderErrorPage } from "./lib/error-page";
+import type { AppBindings } from "@/infrastructure/cloudflare/bindings";
 import { serveVehicleMedia } from "./server/media";
 
 type ServerEntry = {
@@ -46,7 +47,8 @@ function isH3SwallowedErrorBody(body: string): boolean {
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
-      const mediaResponse = await serveVehicleMedia(request);
+      const bindings = env as Partial<AppBindings>;
+      const mediaResponse = await serveVehicleMedia(request, bindings);
       if (mediaResponse) return mediaResponse;
 
       const handler = await getServerEntry();
