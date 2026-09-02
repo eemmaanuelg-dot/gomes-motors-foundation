@@ -14,7 +14,8 @@ import {
   X,
 } from "lucide-react";
 
-import { VEICULOS, type Veiculo } from "@/data/vehicles";
+import { publicVehicleCatalog } from "@/application/vehicles/public-catalog";
+import type { Vehicle as Veiculo } from "@/domain/vehicles/types";
 import { useFavoritos } from "@/lib/favorites";
 import {
   criarWhatsAppUrl,
@@ -27,6 +28,7 @@ export const Route = createFileRoute("/estoque")({
   validateSearch: (search): { favoritos?: boolean } => ({
     favoritos: search["favoritos"] === true || search["favoritos"] === "true",
   }),
+  loader: () => publicVehicleCatalog.listar(),
   head: () => ({
     meta: [
       { title: "Estoque — Gomes Motors" },
@@ -87,8 +89,8 @@ function unicos(valores: (string | undefined)[]) {
   return [...new Set(valores.filter((valor): valor is string => Boolean(valor)))].sort((a, b) => a.localeCompare(b, "pt-BR"));
 }
 
-function obterFiltros(categoria: Categoria, filtros: Filtros): FiltroGrupo[] {
-  const base = VEICULOS.filter((veiculo) => categoria === "todos" || veiculo.categoria === categoria);
+function obterFiltros(veiculos: Veiculo[], categoria: Categoria, filtros: Filtros): FiltroGrupo[] {
+  const base = veiculos.filter((veiculo) => categoria === "todos" || veiculo.categoria === categoria);
   const porMarca = filtros.marca ? base.filter((veiculo) => veiculo.marca === filtros.marca) : base;
   const porModelo = filtros.modelo ? porMarca.filter((veiculo) => veiculo.modelo === filtros.modelo) : porMarca;
   const grupos: FiltroGrupo[] = [
@@ -163,9 +165,9 @@ function FiltroSelect({ grupo, opcoes, valor, onChange }: { grupo: string; opcoe
   );
 }
 
-function FiltrosLaterais({ categoria, filtros, onChange }: { categoria: Categoria; filtros: Filtros; onChange: (chave: keyof Filtros, valor: string) => void }) {
+function FiltrosLaterais({ veiculos, categoria, filtros, onChange }: { veiculos: Veiculo[]; categoria: Categoria; filtros: Filtros; onChange: (chave: keyof Filtros, valor: string) => void }) {
   const [expandido, setExpandido] = useState(false);
-  const filtrosDisponiveis = useMemo(() => obterFiltros(categoria, filtros), [categoria, filtros]);
+  const filtrosDisponiveis = useMemo(() => obterFiltros(veiculos, categoria, filtros), [veiculos, categoria, filtros]);
   const visiveis = expandido ? filtrosDisponiveis : filtrosDisponiveis.slice(0, VISIVEIS_INICIAL);
   return (
     <div className="space-y-4">
@@ -236,6 +238,7 @@ function CardVeiculo({ veiculo, favorito, onAlternarFavorito }: { veiculo: Veicu
 }
 
 function EstoquePage() {
+  const veiculosDisponiveis = Route.useLoaderData();
   const { favoritos, alternarFavorito } = useFavoritos();
   const { favoritos: favoritosNaUrl } = Route.useSearch();
   const [categoria, setCategoria] = useState<Categoria>("todos");
@@ -259,7 +262,7 @@ function EstoquePage() {
 
   const veiculos = useMemo(() => {
     const termoBusca = busca.trim().toLocaleLowerCase("pt-BR");
-    const filtrados = VEICULOS.filter((veiculo) => {
+    const filtrados = veiculosDisponiveis.filter((veiculo) => {
       if (categoria !== "todos" && veiculo.categoria !== categoria) return false;
       if (favoritosNaUrl && !favoritos.has(veiculo.id)) return false;
       if (termoBusca) {
@@ -287,7 +290,7 @@ function EstoquePage() {
       case "mais-antigo": return [...filtrados].sort((a, b) => a.ano - b.ano);
       default: return filtrados;
     }
-  }, [busca, categoria, favoritos, favoritosNaUrl, filtros, ordenacao]);
+  }, [veiculosDisponiveis, busca, categoria, favoritos, favoritosNaUrl, filtros, ordenacao]);
 
   const possuiFiltrosAtivos = Object.values(filtros).some(Boolean) || busca.trim().length > 0 || ordenacao !== "relevantes";
   const limparFiltros = () => { setFiltros(FILTROS_VAZIOS); setBusca(""); setOrdenacao("relevantes"); };
@@ -315,7 +318,7 @@ function EstoquePage() {
 
       <div className="mt-10 grid gap-10 lg:grid-cols-[240px_minmax(0,1fr)]">
         <aside className="hidden lg:block" aria-label="Filtros de estoque">
-          {!favoritosNaUrl && <FiltrosLaterais categoria={categoria} filtros={filtros} onChange={alterarFiltro} />}
+          {!favoritosNaUrl && <FiltrosLaterais veiculos={veiculosDisponiveis} categoria={categoria} filtros={filtros} onChange={alterarFiltro} />}
           {possuiFiltrosAtivos && !favoritosNaUrl && <button type="button" onClick={limparFiltros} className="mt-5 text-sm font-medium text-brand-red hover:underline">Limpar filtros</button>}
         </aside>
 
@@ -323,7 +326,7 @@ function EstoquePage() {
           <div className="absolute inset-0 bg-background/80" onClick={() => setFiltrosAbertos(false)} />
           <div className="absolute bottom-0 left-0 right-0 max-h-[80vh] overflow-y-auto rounded-t-lg border-t border-border bg-card p-6">
             <div className="mb-6 flex items-center justify-between"><h2 className="text-lg font-semibold text-foreground">Filtros</h2><button type="button" aria-label="Fechar filtros" onClick={() => setFiltrosAbertos(false)} className="flex h-9 w-9 items-center justify-center rounded-sm text-muted-foreground hover:bg-accent"><X className="h-5 w-5" /></button></div>
-            <FiltrosLaterais categoria={categoria} filtros={filtros} onChange={alterarFiltro} />
+            <FiltrosLaterais veiculos={veiculosDisponiveis} categoria={categoria} filtros={filtros} onChange={alterarFiltro} />
             {possuiFiltrosAtivos && <button type="button" onClick={limparFiltros} className="mt-5 text-sm font-medium text-brand-red hover:underline">Limpar filtros</button>}
             <button type="button" onClick={() => setFiltrosAbertos(false)} className="mt-8 w-full rounded-sm bg-brand-red px-4 py-3 text-sm font-semibold text-brand-red-foreground transition-opacity hover:opacity-90">Ver resultados</button>
           </div>
