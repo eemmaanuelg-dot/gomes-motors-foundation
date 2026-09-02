@@ -33,18 +33,18 @@ function getPublicCatalogDependencies(context: PublicCatalogContext) {
 }
 
 const listarCatalogoPublico = createServerFn({ method: "GET" }).handler(
-  async ({ context }) => {
+  async ({ requestContext }) => {
     return listarVeiculosPublicos(
-      getPublicCatalogDependencies(context as PublicCatalogContext),
+      getPublicCatalogDependencies(requestContext as PublicCatalogContext),
     );
   },
 );
 
 const obterCatalogoPublicoPorId = createServerFn({ method: "GET" })
   .validator((data: { id: string }) => data)
-  .handler(async ({ data, context }) => {
+  .handler(async ({ data, requestContext }) => {
     return obterVeiculoPublicoPorId(
-      getPublicCatalogDependencies(context as PublicCatalogContext),
+      getPublicCatalogDependencies(requestContext as PublicCatalogContext),
       data.id,
     );
   });
