@@ -20,10 +20,6 @@ export function criarWhatsAppUrl(mensagem: string) {
   return `https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(mensagem)}`;
 }
 
-export function mensagemInteresse(veiculo: Veiculo) {
-  return `Olá, Gomes Motors! Tenho interesse no ${veiculo.marca} ${veiculo.modelo}${veiculo.versao ? ` ${veiculo.versao}` : ""} ${veiculo.ano}, anunciado por ${formatarPreco(veiculo.preco)}. Gostaria de mais informações.`;
-}
-
 export function mensagemInteressePorTipo(veiculo: Veiculo, tipo: TipoInteresse) {
   const titulo = obterTituloVeiculo(veiculo);
   const valor = formatarPreco(veiculo.preco);
