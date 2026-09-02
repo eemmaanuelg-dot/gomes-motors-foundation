@@ -1,11 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, BadgeDollarSign, Car, CreditCard, KeyRound, MapPin, Repeat } from "lucide-react";
 import { HomeHeroSlider } from "@/components/site/HomeHeroSlider";
-import { VEICULOS, obterTituloVeiculo } from "@/data/vehicles";
+import { publicVehicleCatalog } from "@/application/vehicles/public-catalog";
 import { WHATSAPP_DISPLAY } from "@/lib/contact";
 import { formatarKm, formatarPreco } from "@/lib/vehicle-utils";
 
 export const Route = createFileRoute("/")({
+  loader: () => publicVehicleCatalog.listar(),
   head: () => ({
     meta: [
       { title: "Gomes Motors — A escolha certa começa aqui" },
@@ -27,9 +28,10 @@ const SERVICES = [
   { icon: CreditCard, title: "Financiar", id: "financiar", description: "Condições flexíveis com os principais bancos do mercado." },
 ];
 
-const VEICULOS_DESTAQUE = VEICULOS.filter((veiculo) => veiculo.destaque && veiculo.status !== "vendido").slice(0, 3);
-
 function HomePage() {
+  const veiculos = Route.useLoaderData();
+  const veiculosDestaque = veiculos.filter((veiculo) => veiculo.destaque).slice(0, 3);
+
   return (
     <main>
       <HomeHeroSlider />
@@ -61,17 +63,17 @@ function HomePage() {
           </div>
 
           <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {VEICULOS_DESTAQUE.map((veiculo) => (
+            {veiculosDestaque.map((veiculo) => (
               <article key={veiculo.id} className="overflow-hidden rounded-sm border border-border bg-card">
-                <a href={`/estoque/${veiculo.id}`} className="block" aria-label={`Ver detalhes de ${obterTituloVeiculo(veiculo)} ${veiculo.ano}`}>
-                  <img src={veiculo.imagem} alt={obterTituloVeiculo(veiculo)} width={800} height={600} loading="lazy" decoding="async" className="aspect-[4/3] w-full object-cover transition-transform duration-300 hover:scale-[1.02]" />
+                <a href={`/estoque/${veiculo.id}`} className="block" aria-label={`Ver detalhes de ${veiculo.marca} ${veiculo.modelo} ${veiculo.ano}`}>
+                  <img src={veiculo.imagem} alt={`${veiculo.marca} ${veiculo.modelo}`} width={800} height={600} loading="lazy" decoding="async" className="aspect-[4/3] w-full object-cover transition-transform duration-300 hover:scale-[1.02]" />
                 </a>
                 <div className="p-5">
                   <p className="text-xs font-semibold uppercase tracking-[0.15em] text-gold">{veiculo.categoria === "carros" ? "Carro" : "Moto"}</p>
-                  <h3 className="mt-2 text-lg font-semibold text-foreground">{obterTituloVeiculo(veiculo)}</h3>
+                  <h3 className="mt-2 text-lg font-semibold text-foreground">{veiculo.marca} {veiculo.modelo}{veiculo.versao ? ` ${veiculo.versao}` : ""}</h3>
                   <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground"><span>{veiculo.ano}</span><span>{formatarKm(veiculo.km)}</span>{veiculo.cambio && <span>{veiculo.cambio}</span>}</div>
                   <p className="mt-4 text-xl font-bold text-foreground">{formatarPreco(veiculo.preco)}</p>
-                  <a href={`/estoque/${veiculo.id}`} aria-label={`Ver detalhes de ${obterTituloVeiculo(veiculo)} ${veiculo.ano}`} className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-gold hover:text-foreground">Ver detalhes<ArrowRight className="h-4 w-4" /></a>
+                  <a href={`/estoque/${veiculo.id}`} aria-label={`Ver detalhes de ${veiculo.marca} ${veiculo.modelo} ${veiculo.ano}`} className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-gold hover:text-foreground">Ver detalhes<ArrowRight className="h-4 w-4" /></a>
                 </div>
               </article>
             ))}
