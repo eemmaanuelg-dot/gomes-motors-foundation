@@ -28,7 +28,7 @@ export const Route = createFileRoute("/estoque")({
   validateSearch: (search): { favoritos?: boolean } => ({
     favoritos: search["favoritos"] === true || search["favoritos"] === "true",
   }),
-  loader: () => publicVehicleCatalog.listar(),
+  loader: (): Promise<Veiculo[]> => publicVehicleCatalog.listar(),
   head: () => ({
     meta: [
       { title: "Estoque — Gomes Motors" },
