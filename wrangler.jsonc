@@ -6,18 +6,23 @@
   "compatibility_flags": ["nodejs_compat"],
   "observability": {
     "enabled": true
-  },
-  "d1_databases": [
-    {
-      "binding": "DB",
-      "database_name": "gomes-motors-db",
-      "migrations_dir": "migrations"
-    }
-  ],
-  "r2_buckets": [
-    {
-      "binding": "VEHICLE_IMAGES",
-      "bucket_name": "gomes-motors-vehicle-images"
-    }
-  ]
+  }
+
+  // D1 e R2 serão vinculados aqui somente com recursos reais do projeto.
+  // Não usamos IDs fictícios e não habilitamos bindings incompletas.
+  //
+  // "d1_databases": [
+  //   {
+  //     "binding": "DB",
+  //     "database_name": "gomes-motors-db",
+  //     "database_id": "DATABASE_ID_REAL",
+  //     "migrations_dir": "migrations"
+  //   }
+  // ],
+  // "r2_buckets": [
+  //   {
+  //     "binding": "VEHICLE_IMAGES",
+  //     "bucket_name": "gomes-motors-vehicle-images"
+  //   }
+  // ]
 }
