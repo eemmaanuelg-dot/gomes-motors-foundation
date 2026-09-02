@@ -1,10 +1,7 @@
 import type { InventoryRepository } from "@/domain/inventory/repository";
 import type { InventoryEntry } from "@/domain/inventory/types";
 import { fail, ok, type Result } from "@/domain/shared/types";
-import {
-  validarTransicaoStatus,
-  podeSerDestacado,
-} from "@/domain/vehicles/rules";
+import { podeSerDestacado, validarTransicaoStatus } from "@/domain/vehicles/rules";
 import type { VehicleRepository } from "@/domain/vehicles/repository";
 import type { Vehicle, VehicleStatus, VehicleUpdate } from "@/domain/vehicles/types";
 
@@ -13,7 +10,10 @@ export type VehicleUseCaseDependencies = {
   inventoryRepository: InventoryRepository;
 };
 
-function erro<T>(code: "NOT_FOUND" | "CONFLICT" | "INVALID_TRANSITION", message: string): Result<T> {
+function erro<T>(
+  code: "NOT_FOUND" | "CONFLICT" | "INVALID_TRANSITION",
+  message: string,
+): Result<T> {
   return fail(code, message);
 }
 
@@ -87,7 +87,9 @@ async function alterarStatus(
   if (!atual) return erro("NOT_FOUND", `Veículo "${id}" não encontrado.`);
 
   const validacao = validarTransicaoStatus(atual.status, status);
-  if (!validacao.ok) return validacao;
+  if (!validacao.ok) {
+    return erro(validacao.error.code, validacao.error.message);
+  }
 
   try {
     return ok(await deps.vehicleRepository.atualizar(id, { status }));
@@ -130,7 +132,12 @@ export async function despublicarVeiculo(
   id: string,
 ): Promise<Result<InventoryEntry>> {
   const atual = await deps.inventoryRepository.obterPorVeiculoId(id);
-  if (!atual) return erro("NOT_FOUND", `Entrada de estoque do veículo "${id}" não encontrada.`);
+  if (!atual) {
+    return erro(
+      "NOT_FOUND",
+      `Entrada de estoque do veículo "${id}" não encontrada.`,
+    );
+  }
   if (!atual.publicado) return erro("CONFLICT", "O veículo já está despublicado.");
 
   return ok(await deps.inventoryRepository.atualizar(id, { publicado: false }));
@@ -170,6 +177,14 @@ export async function venderVeiculo(
 ): Promise<Result<Vehicle>> {
   const resultado = await alterarStatus(deps, id, "vendido");
   if (!resultado.ok) return resultado;
+
+  const estoque = await deps.inventoryRepository.obterPorVeiculoId(id);
+  if (!estoque) {
+    return erro(
+      "NOT_FOUND",
+      `Entrada de estoque do veículo "${id}" não encontrada.`,
+    );
+  }
 
   await deps.inventoryRepository.atualizar(id, {
     publicado: false,
