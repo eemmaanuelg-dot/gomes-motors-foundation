@@ -75,20 +75,9 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/'
-    | '/contato'
-    | '/estoque'
-    | '/servicos'
-    | '/sobre'
-    | '/estoque/$id'
+    '/' | '/contato' | '/estoque' | '/servicos' | '/sobre' | '/estoque/$id'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/contato'
-    | '/estoque'
-    | '/servicos'
-    | '/sobre'
-    | '/estoque/$id'
+  to: '/' | '/contato' | '/estoque' | '/servicos' | '/sobre' | '/estoque/$id'
   id:
     | '__root__'
     | '/'
@@ -100,13 +89,60 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 
-interface RootRouteChildren {
+export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ContatoRoute: typeof ContatoRoute
   EstoqueRoute: typeof EstoqueRoute
   ServicosRoute: typeof ServicosRoute
   SobreRoute: typeof SobreRoute
   EstoqueIdRoute: typeof EstoqueIdRoute
+}
+
+declare module '@tanstack/react-router' {
+  interface FileRoutesByPath {
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contato': {
+      id: '/contato'
+      path: '/contato'
+      fullPath: '/contato'
+      preLoaderRoute: typeof ContatoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/estoque': {
+      id: '/estoque'
+      path: '/estoque'
+      fullPath: '/estoque'
+      preLoaderRoute: typeof EstoqueRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/servicos': {
+      id: '/servicos'
+      path: '/servicos'
+      fullPath: '/servicos'
+      preLoaderRoute: typeof ServicosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sobre': {
+      id: '/sobre'
+      path: '/sobre'
+      fullPath: '/sobre'
+      preLoaderRoute: typeof SobreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/estoque/$id': {
+      id: '/estoque/$id'
+      path: '/estoque/$id'
+      fullPath: '/estoque/$id'
+      preLoaderRoute: typeof EstoqueIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+  }
 }
 
 const rootRouteChildren: RootRouteChildren = {
