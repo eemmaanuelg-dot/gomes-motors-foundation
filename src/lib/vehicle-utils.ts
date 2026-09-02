@@ -1,6 +1,7 @@
 import type { Veiculo } from "@/data/vehicles";
+import { WHATSAPP_NUMERO } from "./contact";
 
-export const WHATSAPP_NUMERO = "55229999908461";
+export { WHATSAPP_NUMERO } from "./contact";
 
 export type TipoInteresse = "comprar" | "trocar" | "financiar";
 
