@@ -20,7 +20,7 @@ export function Footer() {
         <nav aria-label="Links do site">
           <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-gold">Navegação</h3>
           <ul className="space-y-2.5 text-sm text-muted-foreground">
-            <li><Link to="/estoque" className="transition-colors hover:text-foreground">Estoque</Link></li>
+            <li><a href="/estoque" className="transition-colors hover:text-foreground">Estoque</a></li>
             <li><Link to="/servicos" className="transition-colors hover:text-foreground">Serviços</Link></li>
             <li><Link to="/sobre" className="transition-colors hover:text-foreground">Sobre nós</Link></li>
             <li><Link to="/contato" className="transition-colors hover:text-foreground">Contato</Link></li>
