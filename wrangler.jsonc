@@ -6,8 +6,7 @@
   "compatibility_flags": ["nodejs_compat"],
   "observability": {
     "enabled": true
-  },
-  "migrations_dir": "migrations"
+  }
 
   // D1 e R2 entram aqui depois que os recursos forem criados no Cloudflare.
   // Não usamos IDs fictícios: isso manteria o build verde, mas quebraria o deploy.
