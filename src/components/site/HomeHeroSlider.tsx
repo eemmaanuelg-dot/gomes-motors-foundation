@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -37,6 +37,7 @@ const AUTO_ADVANCE_MS = 6500;
 export function HomeHeroSlider() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [paused, setPaused] = useState(false);
+  const touchStartX = useRef<number | null>(null);
 
   useEffect(() => {
     if (paused) return;
@@ -56,6 +57,22 @@ export function HomeHeroSlider() {
     setActiveIndex((current) => (current + 1) % SLIDES.length);
   };
 
+  const handleTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
+    touchStartX.current = event.touches[0]?.clientX ?? null;
+  };
+
+  const handleTouchEnd = (event: React.TouchEvent<HTMLDivElement>) => {
+    if (touchStartX.current === null) return;
+
+    const endX = event.changedTouches[0]?.clientX ?? touchStartX.current;
+    const distance = endX - touchStartX.current;
+    touchStartX.current = null;
+
+    if (Math.abs(distance) < 50) return;
+    if (distance < 0) next();
+    else previous();
+  };
+
   return (
     <section
       aria-label="Destaques Gomes Motors"
@@ -70,7 +87,11 @@ export function HomeHeroSlider() {
         }
       }}
     >
-      <div className="relative min-h-[620px] sm:min-h-[680px] lg:min-h-[720px]">
+      <div
+        className="relative min-h-[520px] touch-pan-y sm:min-h-[570px] lg:min-h-[610px]"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
         {SLIDES.map((slide, index) => (
           <article
             key={slide.title}
@@ -94,18 +115,18 @@ export function HomeHeroSlider() {
             <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-black/20" />
             <div className="absolute inset-0 bg-black/10" />
 
-            <div className="relative z-10 mx-auto flex min-h-[620px] max-w-7xl items-end px-4 pb-24 pt-28 sm:min-h-[680px] sm:px-6 sm:pb-28 lg:min-h-[720px] lg:px-8 lg:pb-32">
+            <div className="relative z-10 mx-auto flex min-h-[520px] max-w-7xl items-end px-4 pb-20 pt-28 sm:min-h-[570px] sm:px-6 sm:pb-24 lg:min-h-[610px] lg:px-8 lg:pb-28">
               <div className="max-w-3xl">
-                <p className="mb-5 text-xs font-semibold uppercase tracking-[0.3em] text-gold sm:text-sm">
+                <p className="mb-4 text-xs font-semibold uppercase tracking-[0.3em] text-gold sm:text-sm">
                   Gomes Motors
                 </p>
-                <h1 className="max-w-3xl text-4xl font-bold uppercase leading-[1.02] tracking-tight text-white sm:text-5xl lg:text-7xl">
+                <h1 className="max-w-3xl text-4xl font-bold uppercase leading-[1.04] tracking-tight text-white sm:text-5xl lg:text-6xl">
                   {slide.title}
                 </h1>
                 <Link
                   to={slide.to}
                   tabIndex={index === activeIndex ? 0 : -1}
-                  className="mt-8 inline-flex items-center gap-2 rounded-sm border border-gold bg-gold px-6 py-3.5 text-sm font-bold text-black transition-opacity hover:opacity-90"
+                  className="mt-7 inline-flex items-center gap-2 rounded-sm border border-gold bg-gold px-6 py-3.5 text-sm font-bold text-black transition-opacity hover:opacity-90"
                 >
                   {slide.cta}
                   <ArrowRight className="h-4 w-4" />
@@ -115,7 +136,7 @@ export function HomeHeroSlider() {
           </article>
         ))}
 
-        <div className="absolute bottom-7 left-0 right-0 z-20 mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        <div className="absolute bottom-6 left-0 right-0 z-20 mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-2" aria-label="Selecionar destaque">
             {SLIDES.map((slide, index) => (
               <button
