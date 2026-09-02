@@ -73,7 +73,7 @@ function HomePage() {
         <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Seleção Gomes Motors</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.25em]"><span className="text-gold">Seleção Gomes</span> <span className="text-foreground">Motors</span></p>
               <h2 className="mt-2 text-2xl font-bold text-foreground sm:text-3xl">Veículos em destaque</h2>
               <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">Confira alguns dos veículos disponíveis em nosso estoque e encontre a opção que mais combina com você.</p>
             </div>
@@ -113,7 +113,7 @@ function HomePage() {
         <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
           <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
             <div className="max-w-2xl">
-              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Sobre a Gomes Motors</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.25em]"><span className="text-gold">Sobre a Gomes</span> <span className="text-foreground">Motors</span></p>
               <h2 className="mt-2 text-2xl font-bold text-foreground sm:text-3xl">Confiança que se constrói em cada negociação</h2>
               <p className="mt-5 leading-relaxed text-muted-foreground">A Gomes Motors nasceu com uma proposta simples: aproximar pessoas de boas oportunidades no mercado automotivo, com informação clara, atendimento próximo e uma negociação transparente.</p>
               <Link to="/sobre" className="mt-7 inline-flex items-center gap-2 text-sm font-semibold text-gold transition-colors hover:text-foreground">
