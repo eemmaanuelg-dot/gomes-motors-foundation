@@ -6,13 +6,14 @@ Projeto de treinamento profissional para uma revendedora fictícia de veículos 
 
 ## Estado atual
 
-O projeto já possui uma camada pública funcional composta por:
+O projeto possui uma camada pública funcional composta por:
 
 - Home institucional e comercial;
 - Estoque de carros e motos;
 - filtros, busca, ordenação e favoritos persistentes no navegador;
 - página de detalhes de veículo com galeria, ficha técnica e simulador demonstrativo de financiamento;
-- fluxos de Comprar, Vender, Trocar, Consignar e Financiar;
+- seleção rápida de interesse em Comprar, Trocar ou Financiar a partir do veículo;
+- fluxos estruturados de Comprar, Vender, Trocar, Consignar e Financiar;
 - integração comercial por WhatsApp;
 - páginas Sobre nós e Contato;
 - tratamento de erros de navegação e SSR;
@@ -95,6 +96,11 @@ As mudanças são desenvolvidas e revisadas no GitHub/Lovable. O Cloudflare Work
 
 Não reescrever histórico publicado, não fazer force push e não remover código funcional sem justificativa.
 
+## Documentação
+
+- [`docs/PROJECT-AUDIT-AND-ROADMAP.md`](docs/PROJECT-AUDIT-AND-ROADMAP.md) — auditoria técnica e critérios de manutenção da base.
+- [`docs/FUTURE-ROADMAP.md`](docs/FUTURE-ROADMAP.md) — evolução de produto, do domínio de dados ao Painel Comercial Gomes Motors.
+
 ## Próxima evolução
 
 A visão de longo prazo é transformar a vitrine em uma pequena plataforma comercial:
@@ -103,6 +109,4 @@ A visão de longo prazo é transformar a vitrine em uma pequena plataforma comer
 cliente → estoque → veículo → interesse → atendimento → negociação → venda
 ```
 
-A primeira grande evolução será a preparação do domínio de dados e, depois, um **Painel Comercial Gomes Motors** com estoque administrativo, leads, avaliações, financiamento, mídia e conteúdo.
-
-O plano detalhado está em [`docs/PROJECT-AUDIT-AND-ROADMAP.md`](docs/PROJECT-AUDIT-AND-ROADMAP.md).
+A próxima etapa não é reconstruir o site. É preparar o domínio de dados e, depois, evoluir para persistência, autenticação e o **Painel Comercial Gomes Motors** com estoque administrativo, leads, avaliações, financiamento, mídia e conteúdo.
