@@ -1,22 +1,15 @@
-import { inventoryRepository } from "@/infrastructure/repositories/static/inventory-repository";
-import { vehicleRepository } from "@/infrastructure/repositories/static/vehicle-repository";
 import {
-  listarVeiculosPublicos,
-  obterVeiculoPublicoPorId,
-  type VehicleUseCaseDependencies,
-} from "./use-cases";
-
-const dependencies: VehicleUseCaseDependencies = {
-  vehicleRepository,
-  inventoryRepository,
-};
+  listarVeiculosPublicosServer,
+  obterVeiculoPublicoPorIdServer,
+} from "./server-functions";
 
 /**
  * Ponto de entrada da aplicação para o catálogo público.
- * Rotas e componentes não precisam conhecer a fonte estática nem os
- * repositórios concretos.
+ *
+ * As rotas e componentes continuam consumindo este contrato, enquanto a
+ * execução concreta atravessa a fronteira server-side de TanStack Start.
  */
 export const publicVehicleCatalog = {
-  listar: () => listarVeiculosPublicos(dependencies),
-  obterPorId: (id: string) => obterVeiculoPublicoPorId(dependencies, id),
+  listar: () => listarVeiculosPublicosServer(),
+  obterPorId: (id: string) => obterVeiculoPublicoPorIdServer({ data: { id } }),
 };
