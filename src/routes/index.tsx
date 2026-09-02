@@ -8,7 +8,7 @@ import {
   MapPin,
   Repeat,
 } from "lucide-react";
-import heroImage from "../assets/hero-showroom.jpg";
+import { HomeHeroSlider } from "@/components/site/HomeHeroSlider";
 import { VEICULOS, obterTituloVeiculo } from "@/data/vehicles";
 import { formatarKm, formatarPreco } from "@/lib/vehicle-utils";
 
@@ -49,38 +49,7 @@ const VEICULOS_DESTAQUE = VEICULOS.filter(
 function HomePage() {
   return (
     <main>
-      <section className="relative flex min-h-[85vh] items-center overflow-hidden">
-        <img
-          src={heroImage}
-          alt="Veículo premium em showroom da Gomes Motors"
-          width={1920}
-          height={1080}
-          fetchPriority="high"
-          decoding="async"
-          className="absolute inset-0 h-full w-full object-cover"
-        />
-        <div className="absolute inset-0 bg-background/70" />
-        <div className="relative z-10 mx-auto w-full max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
-          <p className="mb-4 text-sm font-semibold uppercase tracking-[0.3em] text-gold">Gomes Motors</p>
-          <h1 className="max-w-2xl text-4xl font-bold leading-tight text-foreground sm:text-5xl lg:text-6xl">
-            A escolha certa <span className="text-gold">começa aqui.</span>
-          </h1>
-          <p className="mt-6 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-            Veículos selecionados com rigor, transparência em cada negociação e
-            atendimento próximo em Campos dos Goytacazes. Comprar, vender ou
-            trocar de veículo nunca foi tão simples.
-          </p>
-          <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-            <Link to="/estoque" className="inline-flex items-center justify-center gap-2 rounded-sm bg-brand-red px-7 py-3.5 text-sm font-semibold text-brand-red-foreground transition-opacity hover:opacity-90">
-              Ver estoque
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-            <Link to="/servicos" className="inline-flex items-center justify-center gap-2 rounded-sm border border-gold/60 px-7 py-3.5 text-sm font-semibold text-gold transition-colors hover:bg-gold/10">
-              Vender meu veículo
-            </Link>
-          </div>
-        </div>
-      </section>
+      <HomeHeroSlider />
 
       <section className="border-t border-border bg-secondary">
         <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
