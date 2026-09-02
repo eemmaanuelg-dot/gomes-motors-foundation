@@ -1,44 +1,51 @@
 import { createServerFn } from "@tanstack/react-start";
-import {
-  listarVeiculosPublicos,
-  obterVeiculoPublicoPorId,
-} from "@/application/vehicles/use-cases";
-import {
-  createCloudflareDependencies,
-  createStaticDependencies,
-} from "@/infrastructure/composition";
-import { getCloudflareBindings } from "@/server/cloudflare-bindings";
-
-function getPublicCatalogDependencies() {
-  const bindings = getCloudflareBindings();
-
-  if (bindings.DB && bindings.VEHICLE_IMAGES) {
-    return createCloudflareDependencies({
-      DB: bindings.DB,
-      VEHICLE_IMAGES: bindings.VEHICLE_IMAGES,
-    });
-  }
-
-  return createStaticDependencies();
-}
 
 /**
  * Fronteira pública do catálogo.
  *
- * Estas funções são Server Functions e podem ser importadas pelas rotas
- * públicas com segurança: o TanStack Start substitui a implementação por
- * RPC no bundle do cliente e mantém o acesso a D1/R2 no Worker.
+ * O módulo pode ser importado pelas rotas públicas sem carregar módulos
+ * server-only no bundle do cliente. A implementação da aplicação e a
+ * composição das dependências são carregadas somente dentro do handler
+ * da Server Function, no Worker.
  */
 export const publicVehicleCatalog = {
   listar: createServerFn({ method: "GET" }).handler(async () => {
-    return listarVeiculosPublicos(getPublicCatalogDependencies());
+    const [{ listarVeiculosPublicos }, { createCloudflareDependencies, createStaticDependencies }, { getCloudflareBindings }] = await Promise.all([
+      import("@/application/vehicles/use-cases"),
+      import("@/infrastructure/composition"),
+      import("@/server/cloudflare-bindings"),
+    ]);
+
+    const bindings = getCloudflareBindings();
+    const deps =
+      bindings.DB && bindings.VEHICLE_IMAGES
+        ? createCloudflareDependencies({
+            DB: bindings.DB,
+            VEHICLE_IMAGES: bindings.VEHICLE_IMAGES,
+          })
+        : createStaticDependencies();
+
+    return listarVeiculosPublicos(deps);
   }),
+
   obterPorId: createServerFn({ method: "GET" })
     .validator((data: { id: string }) => data)
     .handler(async ({ data }) => {
-      return obterVeiculoPublicoPorId(
-        getPublicCatalogDependencies(),
-        data.id,
-      );
+      const [{ obterVeiculoPublicoPorId }, { createCloudflareDependencies, createStaticDependencies }, { getCloudflareBindings }] = await Promise.all([
+        import("@/application/vehicles/use-cases"),
+        import("@/infrastructure/composition"),
+        import("@/server/cloudflare-bindings"),
+      ]);
+
+      const bindings = getCloudflareBindings();
+      const deps =
+        bindings.DB && bindings.VEHICLE_IMAGES
+          ? createCloudflareDependencies({
+              DB: bindings.DB,
+              VEHICLE_IMAGES: bindings.VEHICLE_IMAGES,
+            })
+          : createStaticDependencies();
+
+      return obterVeiculoPublicoPorId(deps, data.id);
     }),
 };
