@@ -16,6 +16,8 @@ import {
   ShoppingCart,
 } from "lucide-react";
 
+import { publicVehicleCatalog } from "@/application/vehicles/public-catalog";
+import type { Vehicle } from "@/domain/vehicles/types";
 import { VEICULOS, obterTituloVeiculo } from "@/data/vehicles";
 import { useFavoritos } from "@/lib/favorites";
 import {
@@ -28,6 +30,17 @@ import {
 } from "@/lib/vehicle-utils";
 
 export const Route = createFileRoute("/estoque/$id")({
+  loader: async ({ params }) => {
+    const [veiculo, veiculos] = await Promise.all([
+      publicVehicleCatalog.obterPorId(params.id),
+      publicVehicleCatalog.listar(),
+    ]);
+
+    return {
+      veiculo,
+      relacionados: veiculo ? obterVeiculosRelacionados(veiculos, veiculo) : [],
+    };
+  },
   head: ({ params }) => {
     const veiculo = VEICULOS.find((item) => item.id === params.id);
     if (!veiculo) {
@@ -58,7 +71,7 @@ export const Route = createFileRoute("/estoque/$id")({
   component: DetalhesVeiculoPage,
 });
 
-function StatusBadge({ status }: { status: "disponivel" | "reservado" | "vendido" }) {
+function StatusBadge({ status }: { status: Vehicle["status"] }) {
   const labels = { disponivel: "Disponível", reservado: "Reservado", vendido: "Vendido" };
   return (
     <span className="inline-flex rounded-sm border border-border bg-secondary px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-foreground">
@@ -75,7 +88,7 @@ function calcularParcela(valor: number, entrada: number, parcelas: number, taxaM
   return (financiado * (taxa * (1 + taxa) ** parcelas)) / ((1 + taxa) ** parcelas - 1);
 }
 
-function SimulacaoFinanciamento({ veiculo }: { veiculo: (typeof VEICULOS)[number] }) {
+function SimulacaoFinanciamento({ veiculo }: { veiculo: Vehicle }) {
   const [entrada, setEntrada] = useState(veiculo.financiamento.entradaMinima);
   const [parcelas, setParcelas] = useState(veiculo.financiamento.parcelas[0] ?? 36);
   const entradaSegura = Math.min(
@@ -128,8 +141,7 @@ function SimulacaoFinanciamento({ veiculo }: { veiculo: (typeof VEICULOS)[number
 }
 
 function DetalhesVeiculoPage() {
-  const { id } = Route.useParams();
-  const veiculo = VEICULOS.find((item) => item.id === id);
+  const { veiculo, relacionados } = Route.useLoaderData();
   const { favoritos, alternarFavorito } = useFavoritos();
   const [imagemAtual, setImagemAtual] = useState(0);
   const [compartilhado, setCompartilhado] = useState(false);
@@ -144,10 +156,9 @@ function DetalhesVeiculoPage() {
     );
   }
 
-  const titulo = obterTituloVeiculo(veiculo);
+  const titulo = `${veiculo.marca} ${veiculo.modelo}${veiculo.versao ? ` ${veiculo.versao}` : ""}`;
   const imagens = veiculo.imagens.length > 0 ? veiculo.imagens : [veiculo.imagem];
   const imagemSelecionada = imagens[Math.min(imagemAtual, imagens.length - 1)] ?? veiculo.imagem;
-  const relacionados = obterVeiculosRelacionados(VEICULOS, veiculo);
   const favorito = favoritos.has(veiculo.id);
 
   const compartilhar = async () => {
@@ -215,7 +226,7 @@ function DetalhesVeiculoPage() {
         <aside><SimulacaoFinanciamento veiculo={veiculo} /></aside>
       </div>
 
-      {relacionados.length > 0 && <section className="mt-12" aria-labelledby="relacionados"><div className="flex items-end justify-between gap-4"><div><p className="text-sm font-semibold uppercase tracking-[0.2em] text-gold">Você também pode gostar</p><h2 id="relacionados" className="mt-2 text-2xl font-bold text-foreground">Veículos relacionados</h2></div><Link to="/estoque" className="hidden text-sm font-semibold text-gold hover:text-foreground sm:inline-flex">Ver todo o estoque</Link></div><div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{relacionados.map((relacionado) => <Link key={relacionado.id} to="/estoque/$id" params={{ id: relacionado.id }} className="group overflow-hidden rounded-sm border border-border bg-card"><div className="aspect-[4/3] overflow-hidden"><img src={relacionado.imagem} alt={`${obterTituloVeiculo(relacionado)} ${relacionado.ano}`} width={640} height={480} loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]" /></div><div className="p-5"><h3 className="font-bold text-foreground">{obterTituloVeiculo(relacionado)}</h3><p className="mt-1 text-sm text-muted-foreground">{relacionado.ano} · {formatarKm(relacionado.km)}</p><p className="mt-3 font-bold text-gold">{formatarPreco(relacionado.preco)}</p></div></Link>)}</div></section>}
+      {relacionados.length > 0 && <section className="mt-12" aria-labelledby="relacionados"><div className="flex items-end justify-between gap-4"><div><p className="text-sm font-semibold uppercase tracking-[0.2em] text-gold">Você também pode gostar</p><h2 id="relacionados" className="mt-2 text-2xl font-bold text-foreground">Veículos relacionados</h2></div><Link to="/estoque" className="hidden text-sm font-semibold text-gold hover:text-foreground sm:inline-flex">Ver todo o estoque</Link></div><div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{relacionados.map((relacionado) => <Link key={relacionado.id} to="/estoque/$id" params={{ id: relacionado.id }} className="group overflow-hidden rounded-sm border border-border bg-card"><div className="aspect-[4/3] overflow-hidden"><img src={relacionado.imagem} alt={`${relacionado.marca} ${relacionado.modelo} ${relacionado.ano}`} width={640} height={480} loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]" /></div><div className="p-5"><h3 className="font-bold text-foreground">{relacionado.marca} {relacionado.modelo}{relacionado.versao ? ` ${relacionado.versao}` : ""}</h3><p className="mt-1 text-sm text-muted-foreground">{relacionado.ano} · {formatarKm(relacionado.km)}</p><p className="mt-3 font-bold text-gold">{formatarPreco(relacionado.preco)}</p></div></Link>)}</div></section>}
 
       <div className="mt-10 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-6"><Link to="/estoque" className="inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-foreground"><ArrowLeft className="h-4 w-4" />Voltar ao estoque</Link><button type="button" onClick={compartilhar} className="inline-flex items-center gap-2 text-sm font-semibold text-gold hover:text-foreground">{compartilhado ? <Copy className="h-4 w-4" /> : <Share2 className="h-4 w-4" />}{compartilhado ? "Link copiado" : "Compartilhar veículo"}</button></div>
     </main>
