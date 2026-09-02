@@ -1,6 +1,9 @@
 import { Link } from "@tanstack/react-router";
 import { Clock, MapPin, Phone } from "lucide-react";
+import { criarWhatsAppUrl } from "@/lib/vehicle-utils";
 import { Logo } from "./Logo";
+
+const whatsappUrl = criarWhatsAppUrl("Olá, Gomes Motors! Gostaria de falar com a equipe comercial.");
 
 export function Footer() {
   return (
@@ -15,9 +18,7 @@ export function Footer() {
         </div>
 
         <nav aria-label="Links do site">
-          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-gold">
-            Navegação
-          </h3>
+          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-gold">Navegação</h3>
           <ul className="space-y-2.5 text-sm text-muted-foreground">
             <li><Link to="/estoque" className="transition-colors hover:text-foreground">Estoque</Link></li>
             <li><Link to="/servicos" className="transition-colors hover:text-foreground">Serviços</Link></li>
@@ -27,25 +28,23 @@ export function Footer() {
         </nav>
 
         <div>
-          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-gold">
-            Contato
-          </h3>
+          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-gold">Contato</h3>
           <ul className="space-y-3 text-sm text-muted-foreground">
             <li className="flex items-start gap-2.5">
               <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-gold" />
               Campos dos Goytacazes, RJ
             </li>
-            <li className="flex items-center gap-2.5">
-              <Phone className="h-4 w-4 shrink-0 text-gold" />
-              WhatsApp comercial
+            <li>
+              <a href={whatsappUrl} target="_blank" rel="noreferrer" className="flex items-center gap-2.5 transition-colors hover:text-foreground">
+                <Phone className="h-4 w-4 shrink-0 text-gold" />
+                WhatsApp comercial
+              </a>
             </li>
           </ul>
         </div>
 
         <div>
-          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-gold">
-            Horários
-          </h3>
+          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-gold">Horários</h3>
           <ul className="space-y-3 text-sm text-muted-foreground">
             <li className="flex items-start gap-2.5">
               <Clock className="mt-0.5 h-4 w-4 shrink-0 text-gold" />
