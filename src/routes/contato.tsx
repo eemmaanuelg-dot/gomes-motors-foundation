@@ -35,7 +35,7 @@ function ContatoPage() {
     <main>
       <section className="border-b border-border bg-card/50">
         <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
-          <p className="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Gomes Motors</p>
+          <p className="text-sm font-semibold uppercase tracking-[0.25em]"><span className="text-gold">Gomes</span> <span className="text-foreground">Motors</span></p>
           <h1 className="mt-3 text-4xl font-bold tracking-tight text-foreground sm:text-5xl">Fale conosco.</h1>
           <p className="mt-5 max-w-2xl text-lg leading-8 text-muted-foreground">Quer saber mais sobre um veículo, negociar o seu, avaliar uma troca ou conversar sobre financiamento? Nossa equipe está pronta para atender você.</p>
         </div>
@@ -77,7 +77,7 @@ function ContatoPage() {
           </section>
 
           <section className="rounded-sm border border-border bg-card p-7 sm:p-9">
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gold">Canais</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Canais</p>
             <div className="mt-6 space-y-5">
               <div className="flex gap-4"><Phone className="mt-0.5 h-5 w-5 shrink-0 text-gold" /><div><h3 className="font-semibold text-foreground">WhatsApp / telefone</h3><p className="mt-1 text-sm text-muted-foreground">{contato.whatsapp}</p></div></div>
               <div className="flex gap-4"><Mail className="mt-0.5 h-5 w-5 shrink-0 text-gold" /><div><h3 className="font-semibold text-foreground">Atendimento online</h3><p className="mt-1 text-sm text-muted-foreground">{contato.email}</p></div></div>
@@ -97,7 +97,7 @@ function ContatoPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 py-6" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setContatoAberto(false); }}>
           <section role="dialog" aria-modal="true" aria-labelledby="contato-dialog-title" className="relative w-full max-w-md rounded-sm border border-border bg-card p-7 shadow-2xl sm:p-8">
             <button type="button" onClick={() => setContatoAberto(false)} aria-label="Fechar contato" className="absolute right-4 top-4 rounded-sm p-2 text-muted-foreground hover:bg-accent hover:text-foreground"><X className="h-5 w-5" /></button>
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gold">Gomes Motors</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.2em]"><span className="text-gold">Gomes</span> <span className="text-foreground">Motors</span></p>
             <h2 id="contato-dialog-title" className="mt-2 pr-8 text-2xl font-bold text-foreground">Nossos contatos</h2>
             <p className="mt-2 text-sm leading-6 text-muted-foreground">Escolha a melhor forma de falar com a nossa equipe.</p>
             <div className="mt-6 space-y-4">
