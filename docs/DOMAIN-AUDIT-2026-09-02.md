@@ -42,8 +42,8 @@ Implementados para veículos:
 
 Revisão aplicada:
 
-- a venda agora verifica a existência da entrada de estoque antes de alterar o status do veículo, evitando deixar o veículo como vendido quando a estrutura de estoque necessária não existe;
-- transições de status continuam passando pelas regras centrais do domínio;
+- a venda verifica a existência da entrada de estoque antes de alterar o status do veículo;
+- transições de status passam pelas regras centrais do domínio;
 - veículo vendido não pode ser publicado nem destacado;
 - catálogo público considera simultaneamente status comercial e publicação do estoque;
 - os casos de uso aceitam o `DomainErrorCode` completo definido no domínio.
@@ -92,8 +92,6 @@ REPOSITÓRIOS ESTÁTICOS
 DADOS DE TRANSIÇÃO
 ```
 
-A adoção dos loaders segue o mecanismo oficial do TanStack Router para carregar dados antes da renderização e consumi-los por `Route.useLoaderData()`. citeturn1search0turn1search3
-
 Nenhuma alteração de UX, identidade visual ou funcionalidade comercial foi planejada como parte dessa migração.
 
 ## 4. Validação arquitetural 5.5
@@ -101,16 +99,41 @@ Nenhuma alteração de UX, identidade visual ou funcionalidade comercial foi pla
 A revisão estrutural confirma:
 
 - separação entre domínio, aplicação, infraestrutura e apresentação;
-- rotas públicas sem dependência dos repositórios concretos;
+- rotas públicas sem dependência dos repositórios concretos na camada de apresentação;
 - publicação tratada como estado de estoque;
 - regras de status concentradas no domínio;
 - catálogo público como fronteira única da leitura pública de veículos;
 - preparação compatível com futura substituição dos repositórios estáticos por D1;
 - ausência de necessidade de alterar o contrato do domínio quando a persistência for introduzida.
 
-O build anterior do projeto foi executado após a correção de tipagem dos casos de uso e aprovado pelo ambiente de deploy. As novas alterações de integração desta rodada ainda precisam passar pelo mesmo build final do ambiente do projeto.
+## 5. Validação técnica dos cinco blocos
 
-### Checklist final de aceitação
+### Bloco 1 — Auditoria de código e arquitetura
+**Concluído.**
+
+Os contratos, regras, repositórios, casos de uso, catálogo público, fonte estática de transição e centralização do WhatsApp foram conferidos diretamente na base atual.
+
+### Bloco 2 — Build oficial
+**Concluído com sucesso.**
+
+No commit `e12c5fd358a0c98dbd3404464f8db24dbb85f962`, o check `build` do GitHub Actions terminou com `status: completed` e `conclusion: success`. O pipeline executa `npm ci` e `npm run build`; o script de build executa `vite build` e `tsc --noEmit`.
+
+### Bloco 3 — Deploy / publicação
+**Concluído tecnicamente.**
+
+Os checks do Cloudflare Workers associados ao mesmo commit terminaram com `success`, registrando builds dos serviços `gomes-motors-foundation` e `gomes-motors-foundation1`. Isso confirma a integração de publicação automática do ambiente Cloudflare.
+
+### Bloco 4 — Regressão funcional
+**Revisão técnica concluída; validação manual pendente.**
+
+Os fluxos públicos foram conferidos estruturalmente após a integração. A validação de interação no ambiente publicado — navegação, busca, filtros, favoritos, detalhes, ações comerciais e WhatsApp — depende do teste manual no navegador.
+
+### Bloco 5 — Responsividade
+**Revisão estrutural concluída; validação visual manual pendente.**
+
+A implementação mantém as classes e estruturas responsivas da base pública. A confirmação visual final em desktop, tablet e mobile depende de observação no ambiente publicado.
+
+## Checklist de aceitação
 
 - [x] contratos fundamentais;
 - [x] repositórios estáticos;
@@ -120,26 +143,26 @@ O build anterior do projeto foi executado após a correção de tipagem dos caso
 - [x] integração do Estoque;
 - [x] integração do detalhe de veículo;
 - [x] correção centralizada do WhatsApp;
-- [ ] `npm run build` após a integração 5.4;
-- [ ] teste funcional final após o novo deploy;
-- [ ] confirmação final de desktop/mobile após o novo deploy.
+- [x] auditoria estrutural;
+- [x] build oficial pós-integração;
+- [x] publicação automatizada validada;
+- [ ] teste funcional manual final;
+- [ ] confirmação visual final de desktop/mobile.
 
-O build oficial continua sendo:
+## Estado de aceite
+
+A parte técnica do desenvolvimento está fechada para a rodada atual. A Fase 5 somente deve ser marcada como **aprovada** após o teste manual do usuário.
 
 ```text
-npm run build
+feito tecnicamente ≠ validado manualmente ≠ aprovado
 ```
 
-que executa `vite build` e `tsc --noEmit`.
+## 6. Próximo marco
 
-## 5. Próximo marco
-
-Depois que o build final e a conferência funcional desta integração forem aprovados:
+Depois do teste manual e do aceite desta fase:
 
 ```text
-5.5 Validação arquitetural
-        ↓
-Fase 5 concluída
+Fase 5 aprovada
         ↓
 D1 + R2 + server-side
         ↓
