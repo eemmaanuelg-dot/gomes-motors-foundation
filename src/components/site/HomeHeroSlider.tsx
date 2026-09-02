@@ -136,6 +136,23 @@ export function HomeHeroSlider() {
           </article>
         ))}
 
+        <button
+          type="button"
+          aria-label="Destaque anterior"
+          onClick={previous}
+          className="absolute left-3 top-1/2 z-30 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/30 bg-black/20 text-white backdrop-blur-sm transition-all hover:border-gold hover:bg-black/40 hover:text-gold sm:left-5 lg:left-7"
+        >
+          <ChevronLeft className="h-6 w-6" />
+        </button>
+        <button
+          type="button"
+          aria-label="Próximo destaque"
+          onClick={next}
+          className="absolute right-3 top-1/2 z-30 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/30 bg-black/20 text-white backdrop-blur-sm transition-all hover:border-gold hover:bg-black/40 hover:text-gold sm:right-5 lg:right-7"
+        >
+          <ChevronRight className="h-6 w-6" />
+        </button>
+
         <div className="absolute bottom-6 left-0 right-0 z-20 mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-2" aria-label="Selecionar destaque">
             {SLIDES.map((slide, index) => (
@@ -152,27 +169,9 @@ export function HomeHeroSlider() {
             ))}
           </div>
 
-          <div className="flex items-center gap-2 text-white">
-            <span className="mr-2 hidden text-xs font-medium tracking-[0.18em] sm:inline">
-              {String(activeIndex + 1).padStart(2, "0")} / {String(SLIDES.length).padStart(2, "0")}
-            </span>
-            <button
-              type="button"
-              aria-label="Destaque anterior"
-              onClick={previous}
-              className="flex h-10 w-10 items-center justify-center rounded-sm border border-white/30 bg-black/20 transition-colors hover:border-gold hover:text-gold"
-            >
-              <ChevronLeft className="h-5 w-5" />
-            </button>
-            <button
-              type="button"
-              aria-label="Próximo destaque"
-              onClick={next}
-              className="flex h-10 w-10 items-center justify-center rounded-sm border border-white/30 bg-black/20 transition-colors hover:border-gold hover:text-gold"
-            >
-              <ChevronRight className="h-5 w-5" />
-            </button>
-          </div>
+          <span className="text-xs font-medium tracking-[0.18em] text-white sm:mr-2">
+            {String(activeIndex + 1).padStart(2, "0")} / {String(SLIDES.length).padStart(2, "0")}
+          </span>
         </div>
       </div>
     </section>
