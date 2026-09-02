@@ -8,7 +8,7 @@ export const Route = createFileRoute("/sobre")({
       {
         name: "description",
         content:
-          "Conheça a Gomes Motors: uma revenda de veículos com foco em confiança, transparência, atendimento próximo e escolhas seguras.",
+          "Conheça a Gomes Motors: uma revendedora de veículos com foco em confiança, transparência, atendimento próximo e escolhas seguras.",
       },
       { property: "og:title", content: "Sobre nós — Gomes Motors" },
       {
@@ -51,7 +51,7 @@ function SobrePage() {
               A escolha certa começa aqui.
             </h1>
             <p className="mt-5 max-w-2xl text-lg leading-8 text-muted-foreground">
-              Somos uma revenda de veículos com uma proposta simples: aproximar pessoas de boas oportunidades, com informação clara, atendimento próximo e uma negociação feita de forma transparente.
+              Somos uma revendedora de veículos com uma proposta simples: aproximar pessoas de boas oportunidades, com informação clara, atendimento próximo e uma negociação feita de forma transparente.
             </p>
           </div>
         </div>
