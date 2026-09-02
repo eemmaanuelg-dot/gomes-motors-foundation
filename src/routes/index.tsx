@@ -2,11 +2,12 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, BadgeDollarSign, Car, CreditCard, KeyRound, MapPin, Repeat } from "lucide-react";
 import { HomeHeroSlider } from "@/components/site/HomeHeroSlider";
 import { publicVehicleCatalog } from "@/application/vehicles/public-catalog";
+import type { Vehicle } from "@/domain/vehicles/types";
 import { WHATSAPP_DISPLAY } from "@/lib/contact";
 import { formatarKm, formatarPreco } from "@/lib/vehicle-utils";
 
 export const Route = createFileRoute("/")({
-  loader: () => publicVehicleCatalog.listar(),
+  loader: (): Promise<Vehicle[]> => publicVehicleCatalog.listar(),
   head: () => ({
     meta: [
       { title: "Gomes Motors — A escolha certa começa aqui" },
