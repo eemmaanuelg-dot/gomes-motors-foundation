@@ -32,7 +32,7 @@ import {
 export const Route = createFileRoute("/estoque/$id")({
   loader: async ({ params }) => {
     const [veiculo, veiculos] = await Promise.all([
-      publicVehicleCatalog.obterPorId(params.id),
+      publicVehicleCatalog.obterPorId({ data: { id: params.id } }),
       publicVehicleCatalog.listar(),
     ]);
 
