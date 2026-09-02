@@ -6,7 +6,7 @@ import {
   createCloudflareDependencies,
   createStaticDependencies,
 } from "@/infrastructure/composition";
-import { getCloudflareBindings } from "@/server/cloudflare-bindings";
+import { getCloudflareBindings } from "@/infrastructure/cloudflare/runtime-bindings";
 
 function getPublicCatalogDependencies() {
   const bindings = getCloudflareBindings();
