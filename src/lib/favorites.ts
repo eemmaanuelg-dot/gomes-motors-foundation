@@ -34,7 +34,6 @@ export function useFavoritos() {
   useEffect(() => {
     if (!hidratado) return;
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify([...favoritos]));
-    notificarFavoritos();
   }, [favoritos, hidratado]);
 
   useEffect(() => {
@@ -54,6 +53,7 @@ export function useFavoritos() {
       else novo.add(id);
       return novo;
     });
+    window.setTimeout(notificarFavoritos, 0);
   };
 
   return { favoritos, alternarFavorito };
