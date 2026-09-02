@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 180" role="img" aria-labelledby="title desc">
   <title id="title">Gomes Motors</title>
-  <desc id="desc">Marca Gomes Motors com símbolo GM dourado e nome em branco.</desc>
+  <desc id="desc">Marca Gomes Motors com símbolo G dourado e M branco, e nome GOMES dourado e MOTORS branco.</desc>
   <defs>
     <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#E4C985"/>
@@ -13,8 +13,8 @@
     <path d="M108 103V39h13l22 35 22-35h13v64h-15V65l-20 31h-1l-20-31v38h-14Z" fill="#F5F5F5"/>
   </g>
   <g transform="translate(185 45)">
-    <text x="0" y="48" fill="#F5F5F5" font-family="Sora,Manrope,Arial,sans-serif" font-size="43" font-weight="800" letter-spacing="4">GOMES</text>
-    <text x="2" y="91" fill="#C9A45C" font-family="Sora,Manrope,Arial,sans-serif" font-size="35" font-weight="700" letter-spacing="8">MOTORS</text>
+    <text x="0" y="48" fill="#C9A45C" font-family="Sora,Manrope,Arial,sans-serif" font-size="43" font-weight="800" letter-spacing="4">GOMES</text>
+    <text x="2" y="91" fill="#F5F5F5" font-family="Sora,Manrope,Arial,sans-serif" font-size="35" font-weight="700" letter-spacing="8">MOTORS</text>
     <rect x="2" y="106" width="245" height="2" fill="#C9A45C" opacity=".65"/>
   </g>
 </svg>
