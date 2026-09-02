@@ -134,17 +134,20 @@ A implementação existente mantém os comportamentos responsivos definidos na b
 - D1 provisionado no ambiente Cloudflare conforme validação realizada.
 
 ### 6.2 — R2 / mídia e arquivos
-**Em execução.**
+**Tecnicamente concluída. Validação manual pendente.**
 
 Base criada sem alterar a UI pública:
 
 - binding `MEDIA` configurado para o bucket `gomes-motors-media`;
 - contrato de domínio `src/domain/media/types.ts` criado;
 - contrato `src/domain/media/repository.ts` criado;
-- armazenamento permanece abstraído para permitir que o domínio não conheça diretamente a API do R2;
-- tabela `vehicle_media` da fundação D1 já representa os metadados dos objetos.
+- repositório de transição `src/infrastructure/repositories/static/vehicle-media-repository.ts` criado para os metadados das mídias atuais;
+- abstração `src/infrastructure/storage/object-storage.ts` criada para desacoplar a aplicação do fornecedor de armazenamento;
+- adapter `src/infrastructure/storage/r2-object-storage.ts` criado para o binding R2;
+- tabela `vehicle_media` da fundação D1 já representa os metadados dos objetos;
+- build oficial do GitHub Actions validado com sucesso após a implementação da infraestrutura R2.
 
-Ainda não foi feita migração das imagens estáticas atuais para R2. Isso permanece deliberadamente separado para evitar misturar infraestrutura com a futura migração controlada do catálogo.
+A migração física das imagens estáticas atuais para o bucket R2 ainda não foi executada. Isso permanece deliberadamente separado para a migração controlada, evitando alterar a fonte visual do catálogo público antes da etapa apropriada.
 
 ## Observação comercial — simulador de financiamento
 
@@ -165,7 +168,7 @@ Essa melhoria foi registrada como requisito funcional/comercial e não será mis
 
 ## Estado de aceite
 
-**A Fase 6 está em implementação.**
+**A Fase 6 está em implementação. A subetapa 6.2 está tecnicamente concluída e aguarda validação manual.**
 
 Não confundir:
 
@@ -177,7 +180,7 @@ Cada subetapa da Fase 6 deverá passar por implementação, validação técnica
 
 ## Próximo marco
 
-Após concluir e validar manualmente a 6.2:
+Após validar manualmente a 6.2:
 
 ```text
 6.2 R2 / mídia
