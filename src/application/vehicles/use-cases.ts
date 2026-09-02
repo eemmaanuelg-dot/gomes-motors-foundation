@@ -1,6 +1,6 @@
 import type { InventoryRepository } from "@/domain/inventory/repository";
 import type { InventoryEntry } from "@/domain/inventory/types";
-import { fail, ok, type Result } from "@/domain/shared/types";
+import { fail, ok, type DomainErrorCode, type Result } from "@/domain/shared/types";
 import { podeSerDestacado, validarTransicaoStatus } from "@/domain/vehicles/rules";
 import type { VehicleRepository } from "@/domain/vehicles/repository";
 import type { Vehicle, VehicleStatus, VehicleUpdate } from "@/domain/vehicles/types";
@@ -10,10 +10,7 @@ export type VehicleUseCaseDependencies = {
   inventoryRepository: InventoryRepository;
 };
 
-function erro<T>(
-  code: "NOT_FOUND" | "CONFLICT" | "INVALID_TRANSITION",
-  message: string,
-): Result<T> {
+function erro<T>(code: DomainErrorCode, message: string): Result<T> {
   return fail(code, message);
 }
 
