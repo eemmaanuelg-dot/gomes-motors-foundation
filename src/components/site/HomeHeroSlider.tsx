@@ -17,8 +17,8 @@ const SLIDES = [
     cta: "AVALIAR VEÍCULO",
     to: "/servicos",
     image:
-      "https://images.pexels.com/photos/7144207/pexels-photo-7144207.jpeg?auto=compress&cs=tinysrgb&w=1920",
-    alt: "Negociação entre profissionais em concessionária com troca de chave",
+      "https://images.pexels.com/photos/36729882/pexels-photo-36729882.jpeg?auto=compress&cs=tinysrgb&w=1920",
+    alt: "Negociação entre consultor e cliente em concessionária com veículo ao fundo",
     position: "center",
   },
   {
