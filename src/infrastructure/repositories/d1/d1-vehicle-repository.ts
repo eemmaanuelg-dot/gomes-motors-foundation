@@ -37,19 +37,14 @@ function parseJson<T>(value: string, fallback: T): T {
 }
 
 function rowToVehicle(row: VehicleRow): Vehicle {
-  return {
+  const vehicle: Vehicle = {
     id: row.id,
     categoria: row.category,
     marca: row.brand,
     modelo: row.model,
-    versao: row.version ?? undefined,
     ano: row.year,
     km: row.mileage,
     preco: row.price_cents / 100,
-    cambio: row.transmission ?? undefined,
-    combustivel: row.fuel ?? undefined,
-    cilindrada: row.cylinder_capacity ?? undefined,
-    tipo: row.vehicle_type ?? undefined,
     imagem: row.image_url ?? "",
     imagens: parseJson<string[]>(row.images_json, []),
     descricao: row.description ?? "",
@@ -66,6 +61,14 @@ function rowToVehicle(row: VehicleRow): Vehicle {
     }),
     seoDescription: row.seo_description,
   };
+
+  if (row.version !== null) vehicle.versao = row.version;
+  if (row.transmission !== null) vehicle.cambio = row.transmission;
+  if (row.fuel !== null) vehicle.combustivel = row.fuel;
+  if (row.cylinder_capacity !== null) vehicle.cilindrada = row.cylinder_capacity;
+  if (row.vehicle_type !== null) vehicle.tipo = row.vehicle_type;
+
+  return vehicle;
 }
 
 function vehicleParams(veiculo: Vehicle): unknown[] {
