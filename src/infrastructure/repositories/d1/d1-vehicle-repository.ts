@@ -1,5 +1,6 @@
 import type { VehicleRepository } from "@/domain/vehicles/repository";
 import type { Vehicle, VehicleUpdate } from "@/domain/vehicles/types";
+import { resolveVehicleImage, resolveVehicleImages } from "./media-resolver";
 import type { D1DatabaseLike } from "./d1-types";
 
 type VehicleRow = {
@@ -37,6 +38,10 @@ function parseJson<T>(value: string, fallback: T): T {
 }
 
 function rowToVehicle(row: VehicleRow): Vehicle {
+  const imageReferences = parseJson<string[]>(row.images_json, []);
+  const images = resolveVehicleImages(imageReferences, row.id);
+  const primaryImage = resolveVehicleImage(row.image_url, row.id) || images[0] || "";
+
   const vehicle: Vehicle = {
     id: row.id,
     categoria: row.category,
@@ -45,8 +50,8 @@ function rowToVehicle(row: VehicleRow): Vehicle {
     ano: row.year,
     km: row.mileage,
     preco: row.price_cents / 100,
-    imagem: row.image_url ?? "",
-    imagens: parseJson<string[]>(row.images_json, []),
+    imagem: primaryImage,
+    imagens: images.length > 0 ? images : primaryImage ? [primaryImage] : [],
     descricao: row.description ?? "",
     equipamentos: parseJson<string[]>(row.equipment_json, []),
     fichaTecnica: parseJson<Vehicle["fichaTecnica"]>(row.technical_sheet_json, {
@@ -159,7 +164,7 @@ export class D1VehicleRepository implements VehicleRepository {
   async atualizar(id: string, dados: VehicleUpdate): Promise<Vehicle> {
     const atual = await this.obterPorId(id);
     if (!atual) {
-      throw new Error(`Veículo "${id}" não encontrado.`);
+      throw new Error(`Veículo \"${id}\" não encontrado.`);
     }
 
     const atualizado: Vehicle = { ...atual, ...dados, id: atual.id };
