@@ -91,14 +91,29 @@ function calcularParcela(valor: number, entrada: number, parcelas: number, taxaM
 function SimulacaoFinanciamento({ veiculo }: { veiculo: Vehicle }) {
   const [entrada, setEntrada] = useState(veiculo.financiamento.entradaMinima);
   const [parcelas, setParcelas] = useState(veiculo.financiamento.parcelas[0] ?? 36);
-  const entradaSegura = Math.min(
-    Math.max(entrada || veiculo.financiamento.entradaMinima, veiculo.financiamento.entradaMinima),
-    veiculo.preco,
-  );
+  const entradaSegura = Math.min(Math.max(Number.isFinite(entrada) ? entrada : 0, 0), veiculo.preco);
+  const financiado = Math.max(veiculo.preco - entradaSegura, 0);
   const parcela = useMemo(
     () => calcularParcela(veiculo.preco, entradaSegura, parcelas, veiculo.financiamento.taxaIndicativa),
     [entradaSegura, parcelas, veiculo],
   );
+  const totalParcelas = parcela * parcelas;
+  const totalEstimado = entradaSegura + totalParcelas;
+  const taxaFormatada = veiculo.financiamento.taxaIndicativa.toFixed(2).replace(".", ",");
+  const mensagemFinanciamento = [
+    `Olá, Gomes Motors! Tenho interesse no ${veiculo.marca} ${veiculo.modelo}${veiculo.versao ? ` ${veiculo.versao}` : ""} ${veiculo.ano}.`,
+    "",
+    "*Intenção de financiamento:*",
+    `• Valor do veículo: ${formatarPreco(veiculo.preco)}`,
+    `• Entrada pretendida: ${formatarPreco(entradaSegura)}`,
+    `• Prazo: ${parcelas}x`,
+    `• Parcela estimada: ${formatarPreco(parcela)} / mês`,
+    `• Total estimado das parcelas: ${formatarPreco(totalParcelas)}`,
+    `• Total estimado com entrada: ${formatarPreco(totalEstimado)}`,
+    `• Taxa indicativa utilizada: ${taxaFormatada}% a.m.`,
+    "",
+    "Gostaria de receber uma proposta real de financiamento com as condições disponíveis.",
+  ].join("\n");
 
   return (
     <section className="rounded-sm border border-border bg-card p-6 sm:p-8" aria-labelledby="financiamento">
@@ -115,7 +130,7 @@ function SimulacaoFinanciamento({ veiculo }: { veiculo: Vehicle }) {
       <div className="mt-6 grid gap-5 sm:grid-cols-2">
         <label className="block">
           <span className="mb-1.5 block text-sm font-semibold text-foreground">Entrada</span>
-          <input type="number" min={veiculo.financiamento.entradaMinima} max={veiculo.preco} step={500} value={entradaSegura} onChange={(event) => setEntrada(Number(event.target.value))} className="w-full rounded-sm border border-border bg-secondary px-3 py-2.5 text-sm text-foreground outline-none focus:border-gold" />
+          <input type="number" min={0} max={veiculo.preco} step={500} value={entrada} onChange={(event) => setEntrada(Number(event.target.value))} className="w-full rounded-sm border border-border bg-secondary px-3 py-2.5 text-sm text-foreground outline-none focus:border-gold" />
           <span className="mt-1 block text-xs text-muted-foreground">Mínimo sugerido: {formatarPreco(veiculo.financiamento.entradaMinima)}</span>
         </label>
         <label className="block">
@@ -126,13 +141,27 @@ function SimulacaoFinanciamento({ veiculo }: { veiculo: Vehicle }) {
         </label>
       </div>
 
-      <div className="mt-6 rounded-sm border border-border bg-secondary p-5">
-        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Parcela estimada</p>
-        <p className="mt-1 text-3xl font-bold text-gold">{formatarPreco(parcela)} <span className="text-sm font-medium text-muted-foreground">/ mês</span></p>
-        <p className="mt-2 text-xs leading-relaxed text-muted-foreground">Taxa indicativa de {veiculo.financiamento.taxaIndicativa.toFixed(2).replace(".", ",")} % a.m. Esta é uma estimativa educativa; condições reais dependem da análise de crédito e da instituição financeira.</p>
+      <div className="mt-6 grid gap-3 sm:grid-cols-2">
+        <div className="rounded-sm border border-border bg-secondary p-5">
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Parcela estimada</p>
+          <p className="mt-1 text-3xl font-bold text-gold">{formatarPreco(parcela)} <span className="text-sm font-medium text-muted-foreground">/ mês</span></p>
+        </div>
+        <div className="rounded-sm border border-border bg-secondary p-5">
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Total estimado</p>
+          <p className="mt-1 text-2xl font-bold text-foreground">{formatarPreco(totalEstimado)}</p>
+          <p className="mt-1 text-xs text-muted-foreground">Entrada + {parcelas} parcelas</p>
+        </div>
       </div>
 
-      <a href={criarWhatsAppUrl(mensagemComercial(veiculo, "uma proposta de financiamento"))} target="_blank" rel="noreferrer" className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-sm bg-brand-red px-5 py-3 text-sm font-semibold text-brand-red-foreground transition-opacity hover:opacity-90">
+      <div className="mt-3 rounded-sm border border-border bg-secondary/60 p-4">
+        <div className="flex items-baseline justify-between gap-3">
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Valor estimado financiado</p>
+          <p className="text-sm font-bold text-foreground">{formatarPreco(financiado)}</p>
+        </div>
+        <p className="mt-2 text-xs leading-relaxed text-muted-foreground">Taxa indicativa de {taxaFormatada} % a.m. Esta é uma estimativa educativa; condições reais dependem da análise de crédito e da instituição financeira. O valor apresentado não representa uma proposta ou aprovação de crédito.</p>
+      </div>
+
+      <a href={criarWhatsAppUrl(mensagemFinanciamento)} target="_blank" rel="noreferrer" className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-sm bg-brand-red px-5 py-3 text-sm font-semibold text-brand-red-foreground transition-opacity hover:opacity-90">
         <MessageCircle className="h-4 w-4" />
         Quero uma proposta real
       </a>
