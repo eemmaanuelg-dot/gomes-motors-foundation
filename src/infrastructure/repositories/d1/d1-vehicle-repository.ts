@@ -98,10 +98,10 @@ function vehicleParams(veiculo: Vehicle): unknown[] {
 }
 
 const SELECT_COLUMNS = `
-  id, category, brand, model, version, year, mileage, price_cents,
-  transmission, fuel, cylinder_capacity, vehicle_type, image_url,
-  images_json, description, equipment_json, technical_sheet_json,
-  status, featured, financing_json, seo_description, created_at, updated_at
+  v.id, v.category, v.brand, v.model, v.version, v.year, v.mileage, v.price_cents,
+  v.transmission, v.fuel, v.cylinder_capacity, v.vehicle_type, v.image_url,
+  v.images_json, v.description, v.equipment_json, v.technical_sheet_json,
+  v.status, v.featured, v.financing_json, v.seo_description, v.created_at, v.updated_at
 `;
 
 export class D1VehicleRepository implements VehicleRepository {
@@ -111,9 +111,10 @@ export class D1VehicleRepository implements VehicleRepository {
     const result = await this.db
       .prepare(
         `SELECT ${SELECT_COLUMNS}
-         FROM vehicles
-         WHERE status != 'vendido'
-         ORDER BY created_at ASC`,
+         FROM vehicles v
+         INNER JOIN inventory_entries i ON i.vehicle_id = v.id
+         WHERE v.status != 'vendido' AND i.published = 1
+         ORDER BY i.display_order ASC, v.created_at ASC`,
       )
       .all<VehicleRow>();
 
@@ -122,7 +123,7 @@ export class D1VehicleRepository implements VehicleRepository {
 
   async listarTodos(): Promise<Vehicle[]> {
     const result = await this.db
-      .prepare(`SELECT ${SELECT_COLUMNS} FROM vehicles ORDER BY created_at ASC`)
+      .prepare(`SELECT ${SELECT_COLUMNS} FROM vehicles v ORDER BY v.created_at ASC`)
       .all<VehicleRow>();
 
     return result.results.map(rowToVehicle);
@@ -130,7 +131,7 @@ export class D1VehicleRepository implements VehicleRepository {
 
   async obterPorId(id: string): Promise<Vehicle | null> {
     const result = await this.db
-      .prepare(`SELECT ${SELECT_COLUMNS} FROM vehicles WHERE id = ? LIMIT 1`)
+      .prepare(`SELECT ${SELECT_COLUMNS} FROM vehicles v WHERE v.id = ? LIMIT 1`)
       .bind(id)
       .first<VehicleRow>();
 
