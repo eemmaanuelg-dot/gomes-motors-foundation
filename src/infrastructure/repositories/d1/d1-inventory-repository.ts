@@ -12,13 +12,16 @@ type InventoryRow = {
 };
 
 function rowToEntry(row: InventoryRow): InventoryEntry {
-  return {
+  const entry: InventoryEntry = {
     vehicleId: row.vehicle_id,
     publicado: row.published === 1,
     ordem: row.display_order,
-    entradaEm: row.entry_at ?? undefined,
-    saidaEm: row.exit_at ?? undefined,
   };
+
+  if (row.entry_at !== null) entry.entradaEm = row.entry_at;
+  if (row.exit_at !== null) entry.saidaEm = row.exit_at;
+
+  return entry;
 }
 
 export class D1InventoryRepository implements InventoryRepository {
