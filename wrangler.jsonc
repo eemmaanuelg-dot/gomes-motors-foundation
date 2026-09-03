@@ -8,7 +8,7 @@
     "enabled": true
   },
   "vars": {
-    "VEHICLE_DATA_SOURCE": "static"
+    "VEHICLE_DATA_SOURCE": "d1"
   },
   "d1_databases": [
     {
