@@ -1,10 +1,18 @@
 import { env } from "cloudflare:workers";
 
 import type { VehicleUseCaseDependencies } from "@/application/vehicles/use-cases";
+import { D1InventoryRepository } from "./d1/d1-inventory-repository";
+import { D1VehicleRepository } from "./d1/d1-vehicle-repository";
+import type { D1DatabaseLike } from "./d1/d1-types";
 import { inventoryRepository as staticInventoryRepository } from "./static/inventory-repository";
 import { vehicleRepository as staticVehicleRepository } from "./static/vehicle-repository";
-import { createD1VehicleDependencies } from "./d1/create-d1-vehicle-dependencies";
-import type { D1DatabaseLike } from "./d1/d1-types";
+
+declare module "cloudflare:workers" {
+  export const env: {
+    DB: D1DatabaseLike;
+    VEHICLE_DATA_SOURCE?: string;
+  };
+}
 
 type RuntimeEnv = {
   DB: D1DatabaseLike;
@@ -27,7 +35,10 @@ export function createVehicleDependencies(): VehicleUseCaseDependencies {
   const runtimeEnv = env as unknown as RuntimeEnv;
 
   if (runtimeEnv.VEHICLE_DATA_SOURCE === "d1") {
-    return createD1VehicleDependencies(runtimeEnv.DB);
+    return {
+      vehicleRepository: new D1VehicleRepository(runtimeEnv.DB),
+      inventoryRepository: new D1InventoryRepository(runtimeEnv.DB),
+    };
   }
 
   return staticDependencies;
