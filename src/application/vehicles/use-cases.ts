@@ -17,19 +17,10 @@ function erro<T>(code: DomainErrorCode, message: string): Result<T> {
 export async function listarVeiculosPublicos(
   deps: VehicleUseCaseDependencies,
 ): Promise<Vehicle[]> {
-  const veiculos = await deps.vehicleRepository.listarTodos();
-  const publicados: Array<{ veiculo: Vehicle; estoque: InventoryEntry }> = [];
-
-  for (const veiculo of veiculos) {
-    const estoque = await deps.inventoryRepository.obterPorVeiculoId(veiculo.id);
-    if (estoque?.publicado && veiculo.status !== "vendido") {
-      publicados.push({ veiculo, estoque });
-    }
-  }
-
-  return publicados
-    .sort((a, b) => a.estoque.ordem - b.estoque.ordem)
-    .map(({ veiculo }) => veiculo);
+  // O repositório é responsável por entregar apenas o catálogo publicável.
+  // No D1 isso é resolvido em uma única consulta com JOIN no estoque, evitando
+  // o padrão N+1 que existia na transição e que não escala com um estoque real.
+  return deps.vehicleRepository.listarPublicados();
 }
 
 export async function obterVeiculoPublicoPorId(
