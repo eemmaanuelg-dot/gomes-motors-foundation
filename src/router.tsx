@@ -9,6 +9,10 @@ export const getRouter = () => {
     routeTree,
     context: { queryClient },
     scrollRestoration: true,
+    // Catalog and vehicle detail loaders are backed by live D1 data. Never
+    // consider route data fresh just because the same route was visited before.
+    defaultStaleTime: 0,
+    defaultStaleReloadMode: "blocking",
     defaultPreloadStaleTime: 0,
   });
 
