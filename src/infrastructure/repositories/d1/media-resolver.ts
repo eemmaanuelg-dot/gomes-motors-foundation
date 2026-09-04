@@ -1,6 +1,6 @@
 import { mediaPublicUrl } from "@/infrastructure/storage/r2-storage";
 
-const IMAGE_VERSION = "20260904-6";
+const IMAGE_VERSION = "20260904-7";
 
 function withCacheVersion(url: string): string {
   return `${url}${url.includes("?") ? "&" : "?"}gm=${IMAGE_VERSION}`;
@@ -13,9 +13,9 @@ const LEGACY_IMAGES: Record<string, string[]> = {
     "https://www.autocerto.com/fotos/1761/3248676/13_033817.jpg",
   ],
   "corolla-gli": [
-    "https://diascarmultimarcas.com.br/wp-content/uploads/2025/02/WhatsApp-Image-2025-02-14-at-16.02.07-4.jpeg",
-    "https://diascarmultimarcas.com.br/wp-content/uploads/2025/02/WhatsApp-Image-2025-02-14-at-16.02.07-2.jpeg",
-    "https://diascarmultimarcas.com.br/wp-content/uploads/2025/02/WhatsApp-Image-2025-02-14-at-16.02.07-3.jpeg",
+    "https://upload.wikimedia.org/wikipedia/commons/b/b4/Toyota_Corolla_1.6_XLi_2021_%2850638290137%29.jpg",
+    "https://www.dubicars.com/images/e999b1/w_1300x760/true-value-automobile/f971f831-0fcf-428c-9bb0-4836c9b2458b.jpeg",
+    "https://www.dubicars.com/images/0cc623/w_1300x760/perfect-automobiles-trading-llc/fb264773-074b-45de-8c50-b8db8118ef93.jpg",
   ],
   polo: [
     "https://cdn.diariodolitoral.com.br/uploads/dn_arquivo/2023/03/volkswagen-capa-polo-highli.jpg",
@@ -23,9 +23,9 @@ const LEGACY_IMAGES: Record<string, string[]> = {
     "https://cdn.diariodolitoral.com.br/uploads/dn_arquivo/2023/03/volkswagen-lateral-polo-hig.jpg",
   ],
   onix: [
-    "https://randazzoar.vtexassets.com/arquivos/ids/519991-800-auto?aspect=true&height=auto&v=639021212415470000&width=800",
-    "https://randazzoar.vtexassets.com/arquivos/ids/519992-800-auto?aspect=true&height=auto&v=639021212418430000&width=800",
-    "https://randazzoar.vtexassets.com/arquivos/ids/519993-800-auto?aspect=true&height=auto&v=639021212424370000&width=800",
+    "https://www.autocerto.com/fotos/1468/2677690/1.jpg",
+    "https://www.autocerto.com/fotos/1468/2677690/2.jpg",
+    "https://www.autocerto.com/fotos/1468/2677690/3.jpg",
   ],
   cb500f: [
     "https://www.honda.com.br/motos/sites/hda/files/2022-07/5F8A1615c.webp",
@@ -42,9 +42,8 @@ const LEGACY_IMAGES: Record<string, string[]> = {
 export function resolveVehicleImage(reference: string | null, vehicleId: string): string {
   if (!reference) return "";
 
-  // The six migrated demo vehicles are intentionally pinned to their
-  // verified galleries. This prevents stale D1 image references from
-  // reintroducing the old demo photos after a deployment.
+  // The six migrated demo vehicles are intentionally pinned to verified
+  // galleries so stale D1 image references cannot restore the old demo media.
   const mappedImage = LEGACY_IMAGES[vehicleId]?.[0];
   if (mappedImage) return withCacheVersion(mappedImage);
 
