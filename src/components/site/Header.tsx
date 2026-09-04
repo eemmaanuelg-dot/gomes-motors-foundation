@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { Heart, Menu, Phone, X } from "lucide-react";
 import { useState } from "react";
 
+import { dealershipConfig } from "@/config/dealership";
 import { useFavoritos } from "@/lib/favorites";
 import { criarWhatsAppUrl } from "@/lib/vehicle-utils";
 import { Logo } from "./Logo";
@@ -13,7 +14,7 @@ const NAV_ITEMS = [
   { to: "/contato", label: "Contato" },
 ] as const;
 
-const whatsappUrl = criarWhatsAppUrl("Olá, Gomes Motors! Gostaria de falar com a equipe comercial.");
+const whatsappUrl = criarWhatsAppUrl(`Olá, ${dealershipConfig.company.name}! Gostaria de falar com a equipe comercial.`);
 
 export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
