@@ -9,6 +9,8 @@
 - [x] Servidor entrega imagens por rota controlada.
 - [x] Referências `legacy://` permanecem compatíveis durante transição.
 - [x] Referências `r2://` são resolvidas pelo mesmo catálogo.
+- [x] Migração demo associa cada objeto à tabela `vehicle_media`.
+- [x] Script de migração usa chaves determinísticas e pode ser repetido sem duplicar associações.
 
 ## Instalação
 
@@ -27,4 +29,10 @@
 
 O bucket, objetos, banco, Worker, domínio e credenciais são recursos da instalação do cliente. O repositório representa o produto e não deve conter credenciais ou dados privados do cliente.
 
-Para a instalação de referência Gomes Motors, o bucket planejado é `gomes-motors-media`. A migração das seis imagens demo é executada com `bun run media:migrate:legacy` depois que o bucket estiver criado e o Wrangler estiver autenticado.
+Para a instalação de referência Gomes Motors, o bucket é `gomes-motors-media-2026`. A migração das seis imagens demo é executada com:
+
+```bash
+node scripts/migrate-legacy-media.mjs
+```
+
+A migração deve ocorrer somente depois de confirmar que o build gerado contém o binding `MEDIA_BUCKET` e que o Worker foi implantado com esse binding funcional.
