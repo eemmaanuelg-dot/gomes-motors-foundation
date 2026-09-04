@@ -1,4 +1,5 @@
 import type { Veiculo } from "@/data/vehicles";
+import { dealershipConfig } from "@/config/dealership";
 import { WHATSAPP_NUMERO } from "./contact";
 
 export { WHATSAPP_NUMERO } from "./contact";
@@ -33,7 +34,7 @@ export function mensagemInteressePorTipo(veiculo: Veiculo, tipo: TipoInteresse) 
       `Valor anunciado: ${valor}`,
       `Quilometragem: ${km}`,
       "",
-      "Olá! Tenho interesse neste veículo e gostaria de conversar sobre a compra.",
+      `Olá! Tenho interesse neste veículo e gostaria de conversar sobre a compra com a equipe da ${dealershipConfig.company.name}.`,
     ].join("\n");
   }
 
@@ -44,7 +45,7 @@ export function mensagemInteressePorTipo(veiculo: Veiculo, tipo: TipoInteresse) 
       `Valor anunciado: ${valor}`,
       `Quilometragem: ${km}`,
       "",
-      "Olá! Tenho interesse neste veículo e gostaria de saber se posso utilizá-lo em uma negociação de troca. Tenho um veículo para oferecer.",
+      `Olá! Tenho interesse neste veículo e gostaria de saber se posso utilizá-lo em uma negociação de troca com a ${dealershipConfig.company.name}. Tenho um veículo para oferecer.`,
     ].join("\n");
   }
 
@@ -54,12 +55,12 @@ export function mensagemInteressePorTipo(veiculo: Veiculo, tipo: TipoInteresse) 
     `Valor anunciado: ${valor}`,
     `Quilometragem: ${km}`,
     "",
-    "Olá! Tenho interesse em financiar este veículo e gostaria de saber quais condições estão disponíveis.",
+    `Olá! Tenho interesse em financiar este veículo e gostaria de saber quais condições estão disponíveis na ${dealershipConfig.company.name}.`,
   ].join("\n");
 }
 
 export function mensagemComercial(veiculo: Veiculo, assunto: string) {
-  return `Olá, Gomes Motors! Quero falar sobre o ${veiculo.marca} ${veiculo.modelo}${veiculo.versao ? ` ${veiculo.versao}` : ""} ${veiculo.ano}. Tenho interesse em ${assunto}.`;
+  return `Olá, ${dealershipConfig.company.name}! Quero falar sobre o ${veiculo.marca} ${veiculo.modelo}${veiculo.versao ? ` ${veiculo.versao}` : ""} ${veiculo.ano}. Tenho interesse em ${assunto}.`;
 }
 
 export function obterVeiculosRelacionados(veiculos: Veiculo[], atual: Veiculo, limite = 3) {
