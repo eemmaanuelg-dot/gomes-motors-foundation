@@ -1,6 +1,6 @@
 import { mediaPublicUrl } from "@/infrastructure/storage/r2-storage";
 
-const IMAGE_VERSION = "20260904-8";
+const IMAGE_VERSION = "20260904-9";
 
 function withCacheVersion(url: string): string {
   return `${url}${url.includes("?") ? "&" : "?"}gm=${IMAGE_VERSION}`;
@@ -18,9 +18,9 @@ const LEGACY_IMAGES: Record<string, string[]> = {
     "https://www.dubicars.com/images/0cc623/w_1300x760/perfect-automobiles-trading-llc/fb264773-074b-45de-8c50-b8db8118ef93.jpg",
   ],
   polo: [
-    "https://garagem360.com.br/wp-content/uploads/2024/04/polo-highline.jpg",
-    "https://img1.icarros.com/dbimg/imgadicionalnoticia/4/117726_1.jpg",
-    "https://portaln10.com.br/fipecarros/wp-content/uploads/2024/09/volkswagen-polo-1.0-170-tsi-highline-automatico-wmimagem10003259618-1280x960.jpg",
+    "https://cdn.diariodolitoral.com.br/uploads/dn_arquivo/2023/03/volkswagen-capa-polo-highli.jpg",
+    "https://cdn.diariodolitoral.com.br/uploads/dn_arquivo/2023/03/volkswagen-farol-polo-highl.jpg",
+    "https://cdn.diariodolitoral.com.br/uploads/dn_arquivo/2023/03/volkswagen-lateral-polo-hig.jpg",
   ],
   onix: [
     "https://www.autocerto.com/fotos/1468/2677690/1.jpg",
@@ -34,16 +34,14 @@ const LEGACY_IMAGES: Record<string, string[]> = {
   ],
   mt03: [
     "https://img.olx.com.br/images/97/976542404655508.webp",
-    "https://img.olx.com.br/images/83/839429148259404.jpg",
-    "https://img.olx.com.br/images/62/623668632277020.webp",
+    "https://img.olx.com.br/images/51/519614376156591.jpg",
+    "https://img.olx.com.br/images/93/933652877180796.webp",
   ],
 };
 
 export function resolveVehicleImage(reference: string | null, vehicleId: string): string {
   if (!reference) return "";
 
-  // The six migrated demo vehicles are intentionally pinned to verified
-  // galleries so stale D1 image references cannot restore the old demo media.
   const mappedImage = LEGACY_IMAGES[vehicleId]?.[0];
   if (mappedImage) return withCacheVersion(mappedImage);
 
