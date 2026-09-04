@@ -53,7 +53,7 @@ async function getDashboard(database: D1DatabaseLike) {
 
 async function executeAction(database: D1DatabaseLike, request: Request, input: AdminAction) {
   const now = new Date().toISOString();
-  if (!input.id && input.action !== "removeMedia") throw new Error("Veículo é obrigatório.");
+  if (input.action !== "removeMedia" && !input.id) throw new Error("Veículo é obrigatório.");
 
   switch (input.action) {
     case "updateVehicle": {
