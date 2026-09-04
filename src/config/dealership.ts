@@ -1,10 +1,12 @@
 /**
  * Configuração comercial da instalação.
  *
- * Este arquivo representa a identidade da empresa que está usando o produto.
- * A aplicação e suas regras de negócio não devem depender diretamente desses
- * valores. Em uma futura instalação, esta configuração poderá ser substituída
- * sem reescrever a aplicação.
+ * Este arquivo representa a identidade e os dados operacionais da empresa
+ * que está usando o produto. A aplicação e suas regras de negócio não devem
+ * depender diretamente desses valores. Em uma futura instalação, esta
+ * configuração poderá ser substituída sem reescrever a aplicação.
+ *
+ * Dados de estoque, preços, mídia, histórico e auditoria permanecem no D1.
  */
 export const dealershipConfig = {
   company: {
@@ -31,6 +33,12 @@ export const dealershipConfig = {
   },
   web: {
     domain: "",
+  },
+  operations: {
+    businessHours: [
+      "Segunda a sexta — 9h às 18h",
+      "Sábado — 9h às 13h",
+    ],
   },
   branding: {
     logoAsset: "@/assets/gomes-motors-logo.svg",
