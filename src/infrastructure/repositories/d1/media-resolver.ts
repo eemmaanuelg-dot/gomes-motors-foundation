@@ -1,5 +1,11 @@
 import { mediaPublicUrl } from "@/infrastructure/storage/r2-storage";
 
+const IMAGE_VERSION = "20260904-2";
+
+function withCacheVersion(url: string): string {
+  return `${url}${url.includes("?") ? "&" : "?"}gm=${IMAGE_VERSION}`;
+}
+
 const LEGACY_IMAGES: Record<string, string[]> = {
   "civic-exl": [
     "https://carango.nyc3.digitaloceanspaces.com/images/veiculos/2022/06/honda-civic-2020-2-0-16v-flexone-exl-4p-cvt-flex-104437-r7uc5o.jpg",
@@ -37,12 +43,13 @@ export function resolveVehicleImage(reference: string | null, vehicleId: string)
   if (!reference) return "";
   if (reference.startsWith("r2://")) return mediaPublicUrl(reference.slice(5));
   if (!reference.startsWith("legacy://")) return reference;
-  return LEGACY_IMAGES[vehicleId]?.[0] ?? "";
+  const image = LEGACY_IMAGES[vehicleId]?.[0] ?? "";
+  return image ? withCacheVersion(image) : "";
 }
 
 export function resolveVehicleImages(references: string[], vehicleId: string): string[] {
   if (references.some((reference) => reference.startsWith("legacy://"))) {
-    return LEGACY_IMAGES[vehicleId] ?? [];
+    return (LEGACY_IMAGES[vehicleId] ?? []).map(withCacheVersion);
   }
 
   return references
