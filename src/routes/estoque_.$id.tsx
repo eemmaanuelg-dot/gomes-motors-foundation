@@ -88,24 +88,102 @@ function calcularParcela(valor: number, entrada: number, parcelas: number, taxaM
   return (financiado * (taxa * (1 + taxa) ** parcelas)) / ((1 + taxa) ** parcelas - 1);
 }
 
+function formatarEntrada(valor: number) {
+  return formatarPreco(valor);
+}
+
+function interpretarEntrada(valor: string) {
+  const texto = valor.trim();
+  if (!texto) return null;
+
+  const normalizado = texto.replace(/\s/g, "").replace(/R\$/gi, "");
+  const temVirgula = normalizado.includes(",");
+  const temPonto = normalizado.includes(".");
+
+  if (temVirgula || (temPonto && /\.\d{1,2}$/.test(normalizado))) {
+    const semMilhar = normalizado.replace(/\./g, "").replace(",", ".");
+    const numero = Number(semMilhar.replace(/[^\d.-]/g, ""));
+    return Number.isFinite(numero) ? numero : null;
+  }
+
+  const numero = Number(normalizado.replace(/\D/g, ""));
+  return Number.isFinite(numero) ? numero : null;
+}
+
 function SimulacaoFinanciamento({ veiculo }: { veiculo: Vehicle }) {
-  const [entrada, setEntrada] = useState(veiculo.financiamento.entradaMinima);
+  const entradaMinima = Math.max(1000, veiculo.financiamento.entradaMinima);
+  const valorMaximoEntrada = Math.max(entradaMinima, veiculo.preco - 0.01);
+  const [entrada, setEntrada] = useState(formatarEntrada(entradaMinima));
+  const [entradaNumerica, setEntradaNumerica] = useState(entradaMinima);
+  const [entradaValida, setEntradaValida] = useState(true);
   const [parcelas, setParcelas] = useState(veiculo.financiamento.parcelas[0] ?? 36);
-  const entradaSegura = Math.min(Math.max(entrada || veiculo.financiamento.entradaMinima, veiculo.financiamento.entradaMinima), veiculo.preco);
-  const financiado = Math.max(veiculo.preco - entradaSegura, 0);
+
+  const atualizarEntrada = (valorDigitado: string) => {
+    if (!valorDigitado.trim()) {
+      setEntrada("");
+      setEntradaNumerica(entradaMinima);
+      setEntradaValida(false);
+      return;
+    }
+
+    const valor = interpretarEntrada(valorDigitado);
+    if (valor === null) {
+      setEntrada(valorDigitado);
+      setEntradaValida(false);
+      return;
+    }
+
+    const valorLimitado = Math.min(Math.max(valor, entradaMinima), valorMaximoEntrada);
+    setEntrada(formatarEntrada(valorLimitado));
+    setEntradaNumerica(valorLimitado);
+    setEntradaValida(valor >= entradaMinima && valor < veiculo.preco);
+  };
+
+  const confirmarEntrada = () => {
+    if (!entrada.trim()) {
+      setEntrada("");
+      setEntradaNumerica(entradaMinima);
+      setEntradaValida(false);
+      return;
+    }
+
+    const valor = interpretarEntrada(entrada);
+    if (valor === null || valor < entradaMinima) {
+      setEntrada(formatarEntrada(entradaMinima));
+      setEntradaNumerica(entradaMinima);
+      setEntradaValida(false);
+      return;
+    }
+
+    if (valor >= veiculo.preco) {
+      setEntrada(formatarEntrada(valorMaximoEntrada));
+      setEntradaNumerica(valorMaximoEntrada);
+      setEntradaValida(true);
+      return;
+    }
+
+    setEntrada(formatarEntrada(valor));
+    setEntradaNumerica(valor);
+    setEntradaValida(true);
+  };
+
+  const entradaEfetiva = Math.min(Math.max(entradaNumerica, entradaMinima), valorMaximoEntrada);
+  const financiado = Math.max(veiculo.preco - entradaEfetiva, 0);
+  const percentualEntrada = veiculo.preco > 0 ? (entradaEfetiva / veiculo.preco) * 100 : 0;
   const parcela = useMemo(
-    () => calcularParcela(veiculo.preco, entradaSegura, parcelas, veiculo.financiamento.taxaIndicativa),
-    [entradaSegura, parcelas, veiculo],
+    () => calcularParcela(veiculo.preco, entradaEfetiva, parcelas, veiculo.financiamento.taxaIndicativa),
+    [entradaEfetiva, parcelas, veiculo],
   );
   const totalParcelas = parcela * parcelas;
-  const totalEstimado = entradaSegura + totalParcelas;
+  const totalEstimado = entradaEfetiva + totalParcelas;
   const taxaFormatada = veiculo.financiamento.taxaIndicativa.toFixed(2).replace(".", ",");
+  const percentualFormatado = percentualEntrada.toFixed(2).replace(".", ",");
   const mensagemFinanciamento = [
     `Olá, Gomes Motors! Tenho interesse no ${veiculo.marca} ${veiculo.modelo}${veiculo.versao ? ` ${veiculo.versao}` : ""} ${veiculo.ano}.`,
     "",
     "*Intenção de financiamento:*",
     `• Valor do veículo: ${formatarPreco(veiculo.preco)}`,
-    `• Entrada pretendida: ${formatarPreco(entradaSegura)}`,
+    `• Entrada pretendida: ${formatarPreco(entradaEfetiva)} (${percentualFormatado}% do valor)`,
     `• Prazo: ${parcelas}x`,
     `• Parcela estimada: ${formatarPreco(parcela)} / mês`,
     `• Total estimado das parcelas: ${formatarPreco(totalParcelas)}`,
@@ -130,8 +208,19 @@ function SimulacaoFinanciamento({ veiculo }: { veiculo: Vehicle }) {
       <div className="mt-6 grid gap-5 sm:grid-cols-2">
         <label className="block">
           <span className="mb-1.5 block text-sm font-semibold text-foreground">Entrada</span>
-          <input type="number" min={veiculo.financiamento.entradaMinima} max={veiculo.preco} step={500} value={entradaSegura} onChange={(event) => setEntrada(Number(event.target.value))} className="w-full rounded-sm border border-border bg-secondary px-3 py-2.5 text-sm text-foreground outline-none focus:border-gold" />
-          <span className="mt-1 block text-xs text-muted-foreground">Mínimo sugerido: {formatarPreco(veiculo.financiamento.entradaMinima)}</span>
+          <input
+            type="text"
+            inputMode="decimal"
+            autoComplete="off"
+            value={entrada}
+            onChange={(event) => atualizarEntrada(event.target.value)}
+            onBlur={confirmarEntrada}
+            aria-invalid={!entradaValida && Boolean(entrada)}
+            placeholder="R$ 1.000,00"
+            className="w-full rounded-sm border border-border bg-secondary px-3 py-2.5 text-sm text-foreground outline-none focus:border-gold"
+          />
+          <span className="mt-1 block text-xs text-muted-foreground">Entrada livre, mínimo de {formatarPreco(entradaMinima)}. Não é exigido percentual mínimo.</span>
+          <span className="mt-1 block text-xs font-medium text-foreground">{percentualFormatado}% do valor do veículo</span>
         </label>
         <label className="block">
           <span className="mb-1.5 block text-sm font-semibold text-foreground">Prazo</span>
@@ -140,6 +229,8 @@ function SimulacaoFinanciamento({ veiculo }: { veiculo: Vehicle }) {
           </select>
         </label>
       </div>
+
+      {!entradaValida && <p className="mt-2 text-xs font-medium text-brand-red">Informe uma entrada de pelo menos {formatarPreco(entradaMinima)} e inferior ao valor do veículo.</p>}
 
       <div className="mt-6 grid gap-3 sm:grid-cols-2">
         <div className="rounded-sm border border-border bg-secondary p-5">
