@@ -1,6 +1,6 @@
 import { mediaPublicUrl } from "@/infrastructure/storage/r2-storage";
 
-const IMAGE_VERSION = "20260904-4";
+const IMAGE_VERSION = "20260904-5";
 
 function withCacheVersion(url: string): string {
   return `${url}${url.includes("?") ? "&" : "?"}gm=${IMAGE_VERSION}`;
@@ -8,9 +8,9 @@ function withCacheVersion(url: string): string {
 
 const LEGACY_IMAGES: Record<string, string[]> = {
   "civic-exl": [
-    "https://newr7-r7-prod.web.arc-cdn.net/resizer/v2/YSB2MRCY2JL35HMNAYFIZSFVRM.jpg?auth=c735eec92ef201fb99cd0e3d6acdaf91aa9d13835b41b16506de1b3b83717e14&height=1125&width=1500",
-    "https://newr7-r7-prod.web.arc-cdn.net/resizer/v2/DNRPNCO6SJJKHHQ4C2PHEIGBII.jpg?auth=538fe76a6dc29a4d5c2b1170340820bfc5c14a9e22cd0fcbf86390ea461c339c&height=1125&width=1500",
-    "https://newr7-r7-prod.web.arc-cdn.net/resizer/v2/4QPYXJKFZJJQXO6MWNKEFK6W6E.jpg?auth=a5780d02cb59bf59d5a36e383ead4e1bbfb790617f2bedcd413225a80d41c946&height=1125&width=1500",
+    "https://www.autocerto.com/fotos/1761/3248676/11_033817.jpg",
+    "https://www.autocerto.com/fotos/1761/3248676/12_033817.jpg",
+    "https://www.autocerto.com/fotos/1761/3248676/13_033817.jpg",
   ],
   "corolla-gli": [
     "https://www.usadofacil.com.br/fotoscarrosano/2026/09/1382042.jpg",
