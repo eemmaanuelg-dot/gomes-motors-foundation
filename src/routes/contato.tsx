@@ -56,7 +56,7 @@ function ContatoPage() {
           <article className="rounded-sm border border-border bg-card p-7">
             <MapPin className="h-7 w-7 text-gold" />
             <h2 className="mt-5 text-lg font-semibold text-foreground">Onde estamos</h2>
-            <p className="mt-2 text-sm leading-6 text-muted-foreground">{location.city}, {location.country === "Brasil" ? "Rio de Janeiro" : location.country}.</p>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">{locationLabel}.</p>
             <p className="mt-3 text-xs leading-5 text-muted-foreground">{location.address ? addressLabel : `Atendimento na região de ${location.city}.`}</p>
           </article>
 
