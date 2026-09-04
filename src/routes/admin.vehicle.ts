@@ -31,12 +31,14 @@ export const Route = createFileRoute("/admin/vehicle")({ server: { handlers: { P
     const parcelas = Array.isArray(financing["parcelas"]) ? financing["parcelas"].map(Number).filter((value) => Number.isInteger(value) && value > 0) : [24, 36, 48];
     if (!ALLOWED_CATEGORY.has(category)) throw new Error("Categoria inválida. Use carros ou motos."); if (!ALLOWED_STATUS.has(status)) throw new Error("Status inválido.");
     if (!Number.isFinite(taxaIndicativa) || taxaIndicativa < 0) throw new Error("Taxa indicativa inválida."); if (!parcelas.length) throw new Error("Informe pelo menos um prazo de financiamento.");
-    vehicleId = requiredText(body["id"] || `${brand}-${model}-${year}-${crypto.randomUUID().slice(0, 8)}`.toLowerCase().replace(/[^a-z0-9]+/g, "-"), "ID");
+    if (entradaMinima > priceCents) throw new Error("A entrada mínima não pode ser maior que o preço do veículo.");
+    const generatedId = `${brand}-${model}-${year}-${crypto.randomUUID().slice(0, 8)}`.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+    vehicleId = requiredText(body["id"] || generatedId, "ID");
     const now = new Date().toISOString(); const existing = await db.prepare(`SELECT id FROM vehicles WHERE id = ? LIMIT 1`).bind(vehicleId).first<{ id: string }>(); if (existing) throw new Error("Já existe um veículo com este ID.");
     await db.batch([
       db.prepare(`INSERT INTO vehicles (id, category, brand, model, version, year, model_year, mileage, transmission, fuel, color, price_cents, status, condition, description, featured, created_at, updated_at, image_url, images_json, equipment_json, technical_sheet_json, financing_json, seo_description, cylinder_capacity, vehicle_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, '[]', '[]', '{}', ?, '', ?, ?)`).bind(vehicleId, category, brand, model, version, year, modelYearValue, mileage, transmission, fuel, color, priceCents, status, "seminovo", description, featured, now, now, JSON.stringify({ entradaMinima, parcelas, taxaIndicativa }), cylinderCapacity, vehicleType),
       db.prepare(`INSERT INTO vehicle_prices (id, vehicle_id, price_cents, effective_at, created_at) VALUES (?, ?, ?, ?, ?)`).bind(crypto.randomUUID(), vehicleId, priceCents, now, now),
-      db.prepare(`INSERT INTO inventory_entries (id, vehicle_id, published, display_order, created_at, updated_at, entry_at, exit_at) VALUES (?, ?, ?, ?, ?, ?, ?, NULL)`).bind(crypto.randomUUID(), vehicleId, published, displayOrder, now, now, now, now),
+      db.prepare(`INSERT INTO inventory_entries (id, vehicle_id, published, display_order, created_at, updated_at, entry_at, exit_at) VALUES (?, ?, ?, ?, ?, ?, ?, NULL)`).bind(crypto.randomUUID(), vehicleId, published, displayOrder, now, now, now),
       db.prepare(`INSERT INTO vehicle_status_history (id, vehicle_id, from_status, to_status, changed_at, reason) VALUES (?, ?, NULL, ?, ?, ?)`).bind(crypto.randomUUID(), vehicleId, status, now, "Cadastro inicial pelo painel administrativo"),
     ]);
     await audit(db, request, "vehicle.create", vehicleId, "success", { category, brand, model, year, priceCents, status, published: Boolean(published) }); return json({ ok: true, id: vehicleId });
