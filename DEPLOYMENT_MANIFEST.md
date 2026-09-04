@@ -1,10 +1,12 @@
 # Gomes Motors — Deployment Manifest
 
-Documento mestre para instalação e transferência comercial.
+Documento mestre para instalação, migração e transferência comercial.
 
 ## 1. Produto
 
 O repositório contém a aplicação e sua infraestrutura declarativa. A instalação de produção deve ser criada na conta Cloudflare do cliente.
+
+A Gomes Motors atual é a instalação de referência/homologação. O produto deve permanecer portátil para outra concessionária.
 
 ## 2. Pré-requisitos
 
@@ -60,7 +62,10 @@ Deve ser configurada para cada cliente:
 - cidade, estado e endereço;
 - redes sociais;
 - domínio;
+- horário de atendimento;
 - referências de marca.
+
+Não é necessário reescrever as funcionalidades para trocar a identidade comercial.
 
 ## 5. Deploy
 
@@ -122,11 +127,21 @@ domínio
 validação final
 ```
 
-## 9. Handoff comercial
+## 9. Documentação operacional
+
+- `docs/INSTALACAO.md` — nova instalação;
+- `docs/MIGRACAO.md` — migração entre ambientes;
+- `docs/BACKUP.md` — backup;
+- `docs/RESTAURACAO.md` — restauração;
+- `docs/COMMERCIAL-TRANSFER.md` — auditoria 7.7 e transferência comercial.
+
+## 10. Handoff comercial
 
 Na venda, a conta Cloudflare, domínio e recursos de produção pertencem ao cliente. O desenvolvedor pode receber acesso como membro autorizado para manutenção, sem compartilhamento de credenciais pessoais.
 
-## 10. Critério de aceite
+O cliente deve ser capaz de administrar sua infraestrutura e seus dados independentemente da conta pessoal usada no desenvolvimento.
+
+## 11. Critério de aceite
 
 Uma instalação é considerada transferível quando:
 
