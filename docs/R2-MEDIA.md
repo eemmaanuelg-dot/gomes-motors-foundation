@@ -13,8 +13,6 @@ O catálogo usa D1 para dados e Cloudflare R2 para arquivos de mídia. O Worker 
 - Leitura pública das imagens: feita pela rota `/media?key=...` do Worker.
 - Escrita/exclusão: somente pelas rotas administrativas protegidas pelo Cloudflare Access.
 
-O binding segue o modelo oficial do Cloudflare para Workers + R2. citeturn0search0turn0search3
-
 ## Upload pelo Admin
 
 `POST /admin/media` recebe `multipart/form-data` com:
@@ -44,7 +42,7 @@ O comando abaixo envia as seis imagens atuais e troca as referências D1 de `leg
 bun run media:migrate:legacy
 ```
 
-O script usa Wrangler e o bucket remoto. Wrangler suporta upload de objetos R2 individualmente; para grandes migrações futuras, rclone é uma alternativa adequada. citeturn2search0turn2search2
+O script usa Wrangler e o bucket remoto. Wrangler suporta upload de objetos R2 individualmente; para grandes migrações futuras, rclone é uma alternativa adequada.
 
 ### Pré-requisitos
 
@@ -58,4 +56,4 @@ O script usa Wrangler e o bucket remoto. Wrangler suporta upload de objetos R2 i
 
 Na instalação de um cliente, o bucket deve ser criado na conta Cloudflare do cliente e o `bucket_name` do ambiente deve ser ajustado para o bucket dessa instalação. O código do produto continua o mesmo.
 
-Não criar API tokens S3 apenas para o Worker: bindings são o caminho recomendado e incorporam a permissão diretamente no runtime. citeturn0search3turn0search7
+Não criar API tokens S3 apenas para o Worker: bindings são o caminho recomendado e incorporam a permissão diretamente no runtime.
