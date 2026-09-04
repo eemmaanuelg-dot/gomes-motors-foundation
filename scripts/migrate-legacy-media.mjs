@@ -2,7 +2,7 @@ import { existsSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { resolve } from "node:path";
 
-const bucket = "gomes-motors-media";
+const bucket = "gomes-motors-media-2026";
 const root = process.cwd();
 
 const assets = [
