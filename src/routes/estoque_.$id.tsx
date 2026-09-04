@@ -140,9 +140,9 @@ function SimulacaoFinanciamento({ veiculo }: { veiculo: Vehicle }) {
 
   const confirmarEntrada = () => {
     if (!entrada.trim()) {
-      setEntrada("");
+      setEntrada(formatarEntrada(entradaMinima));
       setEntradaNumerica(entradaMinima);
-      setEntradaValida(false);
+      setEntradaValida(true);
       return;
     }
 
@@ -219,7 +219,7 @@ function SimulacaoFinanciamento({ veiculo }: { veiculo: Vehicle }) {
             placeholder="R$ 1.000,00"
             className="w-full rounded-sm border border-border bg-secondary px-3 py-2.5 text-sm text-foreground outline-none focus:border-gold"
           />
-          <span className="mt-1 block text-xs text-muted-foreground">Entrada livre, mínimo de {formatarPreco(entradaMinima)}. Não é exigido percentual mínimo.</span>
+          <span className="mt-1 block text-xs text-muted-foreground">Entrada a partir de {formatarPreco(entradaMinima)}.</span>
           <span className="mt-1 block text-xs font-medium text-foreground">{percentualFormatado}% do valor do veículo</span>
         </label>
         <label className="block">
@@ -230,7 +230,7 @@ function SimulacaoFinanciamento({ veiculo }: { veiculo: Vehicle }) {
         </label>
       </div>
 
-      {!entradaValida && <p className="mt-2 text-xs font-medium text-brand-red">Informe uma entrada de pelo menos {formatarPreco(entradaMinima)} e inferior ao valor do veículo.</p>}
+      {!entradaValida && <p className="mt-2 text-xs font-medium text-brand-red">Informe uma entrada a partir de {formatarPreco(entradaMinima)} e inferior ao valor do veículo.</p>}
 
       <div className="mt-6 grid gap-3 sm:grid-cols-2">
         <div className="rounded-sm border border-border bg-secondary p-5">
