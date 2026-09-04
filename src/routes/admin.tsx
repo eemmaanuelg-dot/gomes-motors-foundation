@@ -19,6 +19,7 @@ import {
   Tag,
   Trash2,
   Truck,
+  Upload,
 } from "lucide-react";
 
 type AdminVehicle = {
@@ -175,8 +176,38 @@ function PricingTab({ vehicles, run, saving }: { vehicles: AdminVehicle[]; run: 
 }
 
 function MediaTab({ vehicles, media, run, saving }: { vehicles: AdminVehicle[]; media: Media[]; run: (payload: Record<string, unknown>) => Promise<void>; saving: boolean }) {
-  const [id, setId] = useState(vehicles[0]?.id ?? ""); const [key, setKey] = useState(""); const [alt, setAlt] = useState(""); const [order, setOrder] = useState("0"); const current = media.filter((m) => m.vehicle_id === id);
-  return <div className="space-y-6"><Header title="Mídia e fotos" description="Gerencie referências de objetos de mídia sem acoplar o catálogo ao provedor de armazenamento." /><Panel><div className="grid gap-4 sm:grid-cols-2"><label className="block"><span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-muted-foreground">Veículo</span><select value={id} onChange={(e) => setId(e.target.value)} className="w-full rounded-sm border border-border bg-secondary px-3 py-2.5 text-sm">{vehicles.map((v) => <option key={v.id} value={v.id}>{v.brand} {v.model}</option>)}</select></label><Field label="Ordem" value={order} setValue={setOrder} type="number" /><Field label="Object key / referência" value={key} setValue={setKey} /><Field label="Texto alternativo" value={alt} setValue={setAlt} /></div><button disabled={saving || !key.trim()} onClick={() => void run({ action: "addMedia", id, objectKey: key, altText: alt || undefined, order: Number(order) || 0 })} className="mt-4 inline-flex items-center gap-2 rounded-sm bg-foreground px-4 py-2.5 text-sm font-semibold text-background"><ImagePlus className="h-4 w-4" />Adicionar referência</button></Panel><Panel><h2 className="font-bold">Mídias cadastradas</h2><div className="mt-4 space-y-2">{current.length ? current.map((item) => <div key={item.id} className="flex items-center justify-between gap-4 rounded-sm border border-border p-3"><div className="min-w-0"><p className="truncate text-sm font-semibold">{item.object_key}</p><p className="text-xs text-muted-foreground">ordem {item.display_order} · {item.mime_type}</p></div><button disabled={saving} onClick={() => void run({ action: "removeMedia", mediaId: item.id })} className="shrink-0 text-muted-foreground hover:text-brand-red" aria-label="Remover mídia"><Trash2 className="h-4 w-4" /></button></div>) : <p className="text-sm text-muted-foreground">Nenhuma mídia R2 cadastrada. As referências legacy continuam sendo resolvidas pelo catálogo.</p>}</div></Panel></div>;
+  const [id, setId] = useState(vehicles[0]?.id ?? "");
+  const [key, setKey] = useState("");
+  const [alt, setAlt] = useState("");
+  const [order, setOrder] = useState("0");
+  const [file, setFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadMessage, setUploadMessage] = useState("");
+  const current = media.filter((m) => m.vehicle_id === id);
+  const imageUrl = (objectKey: string) => `/media?key=${encodeURIComponent(objectKey)}`;
+
+  const upload = async () => {
+    if (!file || !id) return;
+    setUploading(true); setUploadMessage("");
+    try {
+      const form = new FormData();
+      form.set("vehicleId", id);
+      form.set("file", file);
+      form.set("altText", alt);
+      form.set("order", order);
+      const response = await fetch("/admin/media", { method: "POST", body: form });
+      const result = await response.json() as { ok?: boolean; error?: string };
+      if (!response.ok || !result.ok) throw new Error(result.error ?? "Não foi possível enviar a imagem.");
+      setFile(null); setAlt(""); setOrder("0"); setUploadMessage("Imagem enviada para o R2 com sucesso.");
+      const input = document.getElementById("admin-media-file") as HTMLInputElement | null;
+      if (input) input.value = "";
+      window.location.reload();
+    } catch (error) {
+      setUploadMessage(error instanceof Error ? error.message : "Não foi possível enviar a imagem.");
+    } finally { setUploading(false); }
+  };
+
+  return <div className="space-y-6"><Header title="Mídia e fotos" description="Envie, visualize e remova imagens armazenadas no Cloudflare R2." /><Panel><div className="grid gap-4 sm:grid-cols-2"><label className="block sm:col-span-2"><span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-muted-foreground">Veículo</span><select value={id} onChange={(e) => setId(e.target.value)} className="w-full rounded-sm border border-border bg-secondary px-3 py-2.5 text-sm">{vehicles.map((v) => <option key={v.id} value={v.id}>{v.brand} {v.model} — {v.year}</option>)}</select></label><label className="block sm:col-span-2"><span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-muted-foreground">Imagem</span><input id="admin-media-file" type="file" accept="image/jpeg,image/png,image/webp,image/avif" onChange={(e) => setFile(e.target.files?.[0] ?? null)} className="block w-full rounded-sm border border-border bg-secondary px-3 py-2 text-sm file:mr-3 file:rounded-sm file:border-0 file:bg-foreground file:px-3 file:py-2 file:text-xs file:font-semibold file:text-background" /></label><Field label="Ordem" value={order} setValue={setOrder} type="number" /><Field label="Texto alternativo" value={alt} setValue={setAlt} /><label className="block sm:col-span-2"><span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-muted-foreground">Object key / referência legada</span><input value={key} onChange={(e) => setKey(e.target.value)} placeholder="Opcional — usado apenas para referência manual" className="w-full rounded-sm border border-border bg-secondary px-3 py-2.5 text-sm outline-none focus:border-gold" /></label></div><div className="mt-4 flex flex-wrap gap-2"><button disabled={saving || uploading || !key.trim()} onClick={() => void run({ action: "addMedia", id, objectKey: key, altText: alt || undefined, order: Number(order) || 0 })} className="inline-flex items-center gap-2 rounded-sm border border-border px-4 py-2.5 text-sm font-semibold"><ImagePlus className="h-4 w-4" />Adicionar referência</button><button disabled={saving || uploading || !file} onClick={() => void upload()} className="inline-flex items-center gap-2 rounded-sm bg-foreground px-4 py-2.5 text-sm font-semibold text-background disabled:opacity-50"><Upload className="h-4 w-4" />{uploading ? "Enviando…" : "Enviar imagem para R2"}</button></div>{uploadMessage && <p className="mt-3 text-sm text-muted-foreground">{uploadMessage}</p>}</Panel><Panel><h2 className="font-bold">Mídias cadastradas</h2><div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{current.length ? current.map((item) => <div key={item.id} className="overflow-hidden rounded-sm border border-border"><div className="aspect-video bg-secondary"><img src={imageUrl(item.object_key)} alt={item.alt_text ?? "Imagem do veículo"} className="h-full w-full object-cover" loading="lazy" /></div><div className="flex items-center justify-between gap-3 p-3"><div className="min-w-0"><p className="truncate text-sm font-semibold">{item.object_key}</p><p className="text-xs text-muted-foreground">ordem {item.display_order} · {item.mime_type}</p></div><button disabled={saving} onClick={() => void fetch("/admin/media", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ mediaId: item.id }) }).then(async (response) => { const result = await response.json() as { ok?: boolean; error?: string }; if (!response.ok || !result.ok) throw new Error(result.error ?? "Não foi possível remover a mídia."); window.location.reload(); }).catch((error) => setUploadMessage(error instanceof Error ? error.message : "Não foi possível remover a mídia."))} className="shrink-0 text-muted-foreground hover:text-brand-red" aria-label="Remover mídia"><Trash2 className="h-4 w-4" /></button></div></div>) : <p className="text-sm text-muted-foreground sm:col-span-2 lg:col-span-3">Nenhuma mídia R2 cadastrada. As referências legacy continuam sendo resolvidas pelo catálogo.</p>}</div></Panel></div>;
 }
 
 function AuditTab({ audits }: { audits: Audit[] }) { return <div className="space-y-6"><Header title="Auditoria" description="Histórico das operações administrativas gravadas no D1." /><Panel><div className="overflow-x-auto"><table className="w-full min-w-[780px] text-left text-sm"><thead className="border-b border-border text-xs uppercase tracking-wider text-muted-foreground"><tr><th className="pb-3">Data</th><th className="pb-3">Ator</th><th className="pb-3">Ação</th><th className="pb-3">Entidade</th><th className="pb-3">Resultado</th><th className="pb-3">Detalhes</th></tr></thead><tbody>{audits.map((a) => <tr key={a.id} className="border-b border-border/70"><td className="py-3 text-xs">{new Date(a.occurred_at).toLocaleString("pt-BR")}</td><td className="py-3 text-xs">{a.actor_id ?? "—"}</td><td className="py-3 font-semibold">{a.action}</td><td className="py-3 text-xs">{a.entity_type}{a.entity_id ? ` · ${a.entity_id}` : ""}</td><td className="py-3"><span className={`rounded-sm px-2 py-1 text-xs font-bold ${a.result === "success" ? "bg-secondary text-foreground" : "bg-brand-red/10 text-brand-red"}`}>{a.result === "success" ? "Sucesso" : "Falha"}</span></td><td className="max-w-xs truncate py-3 text-xs text-muted-foreground">{a.metadata_json ?? "—"}</td></tr>)}</tbody></table>{audits.length === 0 && <p className="py-8 text-center text-sm text-muted-foreground">Nenhum evento administrativo registrado ainda.</p>}</div></Panel></div>; }
