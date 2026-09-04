@@ -20,7 +20,7 @@
   "r2_buckets": [
     {
       "binding": "MEDIA_BUCKET",
-      "bucket_name": "gomes-motors-media"
+      "bucket_name": "gomes-motors-media-2026"
     }
   ]
 }
