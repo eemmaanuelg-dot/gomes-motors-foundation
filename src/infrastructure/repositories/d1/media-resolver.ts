@@ -1,6 +1,6 @@
 import { mediaPublicUrl } from "@/infrastructure/storage/r2-storage";
 
-const IMAGE_VERSION = "20260904-2";
+const IMAGE_VERSION = "20260904-3";
 
 function withCacheVersion(url: string): string {
   return `${url}${url.includes("?") ? "&" : "?"}gm=${IMAGE_VERSION}`;
@@ -41,16 +41,21 @@ const LEGACY_IMAGES: Record<string, string[]> = {
 
 export function resolveVehicleImage(reference: string | null, vehicleId: string): string {
   if (!reference) return "";
+
+  // The six migrated demo vehicles are intentionally pinned to their
+  // verified external galleries. This makes the resolver independent of
+  // whether D1 still contains the original legacy reference or a previously
+  // persisted direct URL.
+  const mappedImage = LEGACY_IMAGES[vehicleId]?.[0];
+  if (mappedImage) return withCacheVersion(mappedImage);
+
   if (reference.startsWith("r2://")) return mediaPublicUrl(reference.slice(5));
-  if (!reference.startsWith("legacy://")) return reference;
-  const image = LEGACY_IMAGES[vehicleId]?.[0] ?? "";
-  return image ? withCacheVersion(image) : "";
+  return reference;
 }
 
 export function resolveVehicleImages(references: string[], vehicleId: string): string[] {
-  if (references.some((reference) => reference.startsWith("legacy://"))) {
-    return (LEGACY_IMAGES[vehicleId] ?? []).map(withCacheVersion);
-  }
+  const mappedImages = LEGACY_IMAGES[vehicleId];
+  if (mappedImages) return mappedImages.map(withCacheVersion);
 
   return references
     .map((reference) => resolveVehicleImage(reference, vehicleId))
