@@ -133,9 +133,8 @@ function SimulacaoFinanciamento({ veiculo }: { veiculo: Vehicle }) {
       return;
     }
 
-    const valorLimitado = Math.min(Math.max(valor, entradaMinima), valorMaximoEntrada);
-    setEntrada(formatarEntrada(valorLimitado));
-    setEntradaNumerica(valorLimitado);
+    setEntrada(valorDigitado);
+    setEntradaNumerica(valor);
     setEntradaValida(valor >= entradaMinima && valor < veiculo.preco);
   };
 
@@ -215,6 +214,7 @@ function SimulacaoFinanciamento({ veiculo }: { veiculo: Vehicle }) {
             value={entrada}
             onChange={(event) => atualizarEntrada(event.target.value)}
             onBlur={confirmarEntrada}
+            onFocus={(event) => event.currentTarget.select()}
             aria-invalid={!entradaValida && Boolean(entrada)}
             placeholder="R$ 1.000,00"
             className="w-full rounded-sm border border-border bg-secondary px-3 py-2.5 text-sm text-foreground outline-none focus:border-gold"
