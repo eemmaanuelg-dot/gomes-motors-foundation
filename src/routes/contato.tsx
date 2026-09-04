@@ -10,7 +10,7 @@ import {
 } from "@/lib/contact";
 import { criarWhatsAppUrl } from "@/lib/vehicle-utils";
 
-const { company, contact, location } = dealershipConfig;
+const { company, contact, location, operations } = dealershipConfig;
 const locationLabel = [location.city, location.state].filter(Boolean).join(", ");
 const addressLabel = location.address || locationLabel;
 
@@ -70,7 +70,7 @@ function ContatoPage() {
           <article className="rounded-sm border border-border bg-card p-7">
             <Clock className="h-7 w-7 text-gold" />
             <h2 className="mt-5 text-lg font-semibold text-foreground">Horário de atendimento</h2>
-            <p className="mt-2 text-sm leading-6 text-muted-foreground">Segunda a sexta — 9h às 18h<br />Sábado — 9h às 13h</p>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">{operations.businessHours.map((hour, index) => <span key={hour}>{index > 0 && <br />}{hour}</span>)}</p>
             <p className="mt-3 text-xs leading-5 text-muted-foreground">Para outros horários, consulte a disponibilidade da equipe pelo WhatsApp.</p>
           </article>
         </div>
