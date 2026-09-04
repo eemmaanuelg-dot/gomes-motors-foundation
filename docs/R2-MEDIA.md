@@ -6,7 +6,7 @@ O catálogo usa D1 para dados e Cloudflare R2 para arquivos de mídia. O Worker 
 
 ## Bucket de referência
 
-- Nome: `gomes-motors-media`
+- Nome: `gomes-motors-media-2026`
 - Binding: `MEDIA_BUCKET`
 - Prefixo de objetos: `vehicles/<vehicleId>/`
 - Acesso direto público ao bucket: não necessário.
@@ -20,7 +20,7 @@ O catálogo usa D1 para dados e Cloudflare R2 para arquivos de mídia. O Worker 
 - `vehicleId`
 - `file`
 - `altText`
-- `order`
+- `sortOrder`
 
 Formatos aceitos: JPEG, PNG, WebP e AVIF. Limite atual: 10 MB por imagem.
 
@@ -36,21 +36,24 @@ Referências `r2://vehicles/...` são convertidas em URLs internas `/media?key=.
 
 ## Migração da instalação de referência
 
-O comando abaixo envia as seis imagens atuais e troca as referências D1 de `legacy://` para `r2://`:
+O script envia as seis imagens demo atuais para o R2 remoto, atualiza `vehicles.image_url` e `vehicles.images_json` para referências `r2://` e cria/atualiza a associação correspondente em `vehicle_media`.
+
+Execute a partir da raiz do repositório:
 
 ```bash
-bun run media:migrate:legacy
+node scripts/migrate-legacy-media.mjs
 ```
 
-O script usa Wrangler e o bucket remoto. Wrangler suporta upload de objetos R2 individualmente; para grandes migrações futuras, rclone é uma alternativa adequada.
+A migração usa chaves determinísticas (`vehicles/<vehicleId>/primary.<ext>`) e remove eventual associação anterior com a mesma chave antes de inserir a nova. Isso permite repetir a operação sem criar duplicatas em `vehicle_media`.
 
 ### Pré-requisitos
 
 1. R2 ativado na conta Cloudflare.
-2. Bucket `gomes-motors-media` criado.
+2. Bucket `gomes-motors-media-2026` criado.
 3. Usuário autenticado no Wrangler (`npx wrangler login`).
 4. D1 `gomes-motors-db` acessível remotamente.
-5. Executar a migração a partir da raiz do repositório.
+5. Build/deploy do Worker com o binding `MEDIA_BUCKET` validado.
+6. Executar a migração a partir da raiz do repositório.
 
 ## Transferência comercial
 
