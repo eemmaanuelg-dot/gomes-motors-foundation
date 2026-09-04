@@ -1,4 +1,6 @@
-export const WHATSAPP_NUMERO = "5522999908461";
-export const WHATSAPP_DISPLAY = "(22) 99990-8461";
-export const WHATSAPP_TELEFONE = "+55 22 99990-8461";
-export const WHATSAPP_TELEFONE_HREF = "tel:+5522999908461";
+import { dealershipConfig } from "@/config/dealership";
+
+export const WHATSAPP_NUMERO = dealershipConfig.contact.whatsappNumber;
+export const WHATSAPP_DISPLAY = dealershipConfig.contact.whatsappDisplay;
+export const WHATSAPP_TELEFONE = dealershipConfig.contact.phoneDisplay;
+export const WHATSAPP_TELEFONE_HREF = dealershipConfig.contact.phoneHref;
