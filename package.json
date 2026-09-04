@@ -8,7 +8,7 @@
     "build": "vite build && tsc --noEmit",
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
-    "deploy": "npm run build && npm run db:migrate:remote && wrangler deploy",
+    "deploy": "npm run build && wrangler deploy",
     "db:migrate:local": "wrangler d1 migrations apply gomes-motors-db --local",
     "db:migrate:remote": "wrangler d1 migrations apply gomes-motors-db --remote",
     "db:info": "wrangler d1 info gomes-motors-db",
@@ -16,9 +16,7 @@
     "lint": "eslint .",
     "format": "prettier --write ."
   },
-  "overrides": {
-    "rolldown": "1.2.1"
-  },
+  "overrides": { "rolldown": "1.2.1" },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
     "@radix-ui/react-accordion": "^1.2.11",
