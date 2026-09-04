@@ -39,3 +39,5 @@ jobs:
 
       - name: Build application
         run: npm run build
+
+      # Phase 8.0: validate application, D1 migrations, and administrative lifecycle.
