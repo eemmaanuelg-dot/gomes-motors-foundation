@@ -1,6 +1,6 @@
 import { mediaPublicUrl } from "@/infrastructure/storage/r2-storage";
 
-const IMAGE_VERSION = "20260904-5";
+const IMAGE_VERSION = "20260904-6";
 
 function withCacheVersion(url: string): string {
   return `${url}${url.includes("?") ? "&" : "?"}gm=${IMAGE_VERSION}`;
@@ -13,29 +13,29 @@ const LEGACY_IMAGES: Record<string, string[]> = {
     "https://www.autocerto.com/fotos/1761/3248676/13_033817.jpg",
   ],
   "corolla-gli": [
-    "https://www.usadofacil.com.br/fotoscarrosano/2026/09/1382042.jpg",
-    "https://www.usadofacil.com.br/fotoscarrosano/2026/09/1382042-2.jpg",
-    "https://www.usadofacil.com.br/fotoscarrosano/2026/09/1382042-3.jpg",
+    "https://diascarmultimarcas.com.br/wp-content/uploads/2025/02/WhatsApp-Image-2025-02-14-at-16.02.07-4.jpeg",
+    "https://diascarmultimarcas.com.br/wp-content/uploads/2025/02/WhatsApp-Image-2025-02-14-at-16.02.07-2.jpeg",
+    "https://diascarmultimarcas.com.br/wp-content/uploads/2025/02/WhatsApp-Image-2025-02-14-at-16.02.07-3.jpeg",
   ],
   polo: [
-    "https://imgserver.autocarro.com.br/fotos/grande/volkswagen-polo-1.0-tsi-170-highline-12v-2023-chumbo_31e2613d915.jpg",
-    "https://imgserver.autocarro.com.br/fotos/grande/volkswagen-polo-1.0-tsi-170-highline-12v-2023-chumbo_1e2613d9159.jpg",
-    "https://imgserver.autocarro.com.br/fotos/grande/volkswagen-polo-1.0-tsi-170-highline-12v-2023-chumbo_2613d91599d.jpg",
+    "https://cdn.diariodolitoral.com.br/uploads/dn_arquivo/2023/03/volkswagen-capa-polo-highli.jpg",
+    "https://cdn.diariodolitoral.com.br/uploads/dn_arquivo/2023/03/volkswagen-farol-polo-highl.jpg",
+    "https://cdn.diariodolitoral.com.br/uploads/dn_arquivo/2023/03/volkswagen-lateral-polo-hig.jpg",
   ],
   onix: [
-    "https://carango.com.br/f.php?cc=0&h=520&src=upload%2Fver31%2Fveiculos%2F2024%2F06%2Fchevrolet-onix-2022-1-0-turbo-flex-ltz-automatico-flex-124597-u1ln38.jpg&w=810&zc=1",
-    "https://carango.com.br/f.php?cc=0&h=520&src=upload%2Fver31%2Fveiculos%2F2024%2F06%2Fchevrolet-onix-2022-1-0-turbo-flex-ltz-automatico-flex-124597-zfr60k.jpg&w=810&zc=1",
-    "https://carango.com.br/f.php?cc=0&h=520&src=upload%2Fver31%2Fveiculos%2F2024%2F06%2Fchevrolet-onix-2022-1-0-turbo-flex-ltz-automatico-flex-124597-ab28ou.jpg&w=810&zc=1",
+    "https://randazzoar.vtexassets.com/arquivos/ids/519991-800-auto?aspect=true&height=auto&v=639021212415470000&width=800",
+    "https://randazzoar.vtexassets.com/arquivos/ids/519992-800-auto?aspect=true&height=auto&v=639021212418430000&width=800",
+    "https://randazzoar.vtexassets.com/arquivos/ids/519993-800-auto?aspect=true&height=auto&v=639021212424370000&width=800",
   ],
   cb500f: [
-    "https://carango.com.br/f.php?cc=0&h=520&src=upload%2Fver31%2Fveiculos%2F2022%2F10%2Fhonda-cb-500f-2022-cb-500f-108030-luegwn.jpg&w=810&zc=1",
-    "https://carango.com.br/f.php?cc=0&h=520&src=upload%2Fver31%2Fveiculos%2F2022%2F10%2Fhonda-cb-500f-2022-cb-500f-108030-hjqxuf.jpg&w=810&zc=1",
-    "https://carango.com.br/f.php?cc=0&h=520&src=upload%2Fver31%2Fveiculos%2F2022%2F10%2Fhonda-cb-500f-2022-cb-500f-108030-k00la7.jpg&w=810&zc=1",
+    "https://www.honda.com.br/motos/sites/hda/files/2022-07/5F8A1615c.webp",
+    "https://www.honda.com.br/motos/sites/hda/files/2022-07/5F8A2724c.webp",
+    "https://www.honda.com.br/motos/sites/hda/files/2022-07/5F8A3379c.webp",
   ],
   mt03: [
-    "https://carango.com.br/f.php?cc=0&h=520&src=upload%2Fver31%2Fveiculos%2F2023%2F01%2Fyamaha-mt-03-abs-2023-mt-03-abs-gasolina-111152-4g6qfz.jpg&w=810&zc=1",
-    "https://carango.com.br/f.php?cc=0&h=520&src=upload%2Fver31%2Fveiculos%2F2023%2F01%2Fyamaha-mt-03-abs-2023-mt-03-abs-gasolina-111152-dwxbsq.jpg&w=810&zc=1",
-    "https://carango.com.br/f.php?cc=0&h=520&src=upload%2Fver31%2Fveiculos%2F2023%2F01%2Fyamaha-mt-03-abs-2023-mt-03-abs-gasolina-111152-m9u1na.jpg&w=810&zc=1",
+    "https://img.olx.com.br/images/97/976542404655508.webp",
+    "https://img.olx.com.br/images/83/839429148259404.jpg",
+    "https://motonewsbrasil.com/wp-content/uploads/2022/05/yamaha-mt-03-2023-brasil-cinza-frontal-direita.jpg",
   ],
 };
 
@@ -43,9 +43,8 @@ export function resolveVehicleImage(reference: string | null, vehicleId: string)
   if (!reference) return "";
 
   // The six migrated demo vehicles are intentionally pinned to their
-  // verified external galleries. This makes the resolver independent of
-  // whether D1 still contains the original legacy reference or a previously
-  // persisted direct URL.
+  // verified galleries. This prevents stale D1 image references from
+  // reintroducing the old demo photos after a deployment.
   const mappedImage = LEGACY_IMAGES[vehicleId]?.[0];
   if (mappedImage) return withCacheVersion(mappedImage);
 
