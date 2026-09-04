@@ -14,6 +14,28 @@ export default defineConfig({
       },
     },
   },
+  nitro: {
+    cloudflare: {
+      wrangler: {
+        vars: {
+          VEHICLE_DATA_SOURCE: "d1",
+        },
+        d1_databases: [
+          {
+            binding: "DB",
+            database_name: "gomes-motors-db",
+            migrations_dir: "db/migrations",
+          },
+        ],
+        r2_buckets: [
+          {
+            binding: "MEDIA_BUCKET",
+            bucket_name: "gomes-motors-media-2026",
+          },
+        ],
+      },
+    },
+  },
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this
