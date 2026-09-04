@@ -54,11 +54,11 @@ export const VEICULOS: Veiculo[] = [
     cambio: "Automático CVT",
     combustivel: "Flex",
     tipo: "Sedã",
-    imagem: "https://carango.com.br/f.php?cc=0&h=520&src=https%3A%2F%2Fcarango.nyc3.digitaloceanspaces.com%2Fimages%2Fveiculos%2F2022%2F06%2Fhonda-civic-2020-2-0-16v-flexone-exl-4p-cvt-flex-104437-r7uc5o.jpg&w=810&zc=1",
+    imagem: "https://carango.nyc3.digitaloceanspaces.com/images/veiculos/2022/06/honda-civic-2020-2-0-16v-flexone-exl-4p-cvt-flex-104437-r7uc5o.jpg",
     imagens: [
-      "https://carango.com.br/f.php?cc=0&h=520&src=https%3A%2F%2Fcarango.nyc3.digitaloceanspaces.com%2Fimages%2Fveiculos%2F2022%2F06%2Fhonda-civic-2020-2-0-16v-flexone-exl-4p-cvt-flex-104437-r7uc5o.jpg&w=810&zc=1",
-      "https://carango.com.br/f.php?cc=0&h=520&src=https%3A%2F%2Fcarango.nyc3.digitaloceanspaces.com%2Fimages%2Fveiculos%2F2022%2F06%2Fhonda-civic-2020-2-0-16v-flexone-exl-4p-cvt-flex-104437-kjazo5.jpg&w=810&zc=1",
-      "https://carango.com.br/f.php?cc=0&h=520&src=https%3A%2F%2Fcarango.nyc3.digitaloceanspaces.com%2Fimages%2Fveiculos%2F2022%2F06%2Fhonda-civic-2020-2-0-16v-flexone-exl-4p-cvt-flex-104437-17lmo3.jpg&w=810&zc=1",
+      "https://carango.nyc3.digitaloceanspaces.com/images/veiculos/2022/06/honda-civic-2020-2-0-16v-flexone-exl-4p-cvt-flex-104437-r7uc5o.jpg",
+      "https://carango.nyc3.digitaloceanspaces.com/images/veiculos/2022/06/honda-civic-2020-2-0-16v-flexone-exl-4p-cvt-flex-104437-kjazo5.jpg",
+      "https://carango.nyc3.digitaloceanspaces.com/images/veiculos/2022/06/honda-civic-2020-2-0-16v-flexone-exl-4p-cvt-flex-104437-17lmo3.jpg",
     ],
     descricao:
       "Honda Civic EXL com perfil executivo, ótimo nível de conforto e conjunto mecânico equilibrado. Uma opção para quem procura um sedã confiável, bem equipado e pronto para uso.",
