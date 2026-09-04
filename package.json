@@ -12,7 +12,6 @@
     "db:migrate:local": "wrangler d1 migrations apply gomes-motors-db --local",
     "db:migrate:remote": "wrangler d1 migrations apply gomes-motors-db --remote",
     "db:info": "wrangler d1 info gomes-motors-db",
-    "media:migrate:legacy": "node scripts/migrate-legacy-media.mjs",
     "cf-typegen": "wrangler types",
     "lint": "eslint .",
     "format": "prettier --write ."
@@ -55,7 +54,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
-    "date-fns": "^4.1.0",
+    "date-fns": "^4.1.1",
     "embla-carousel-react": "^8.6.0",
     "input-otp": "^1.4.0",
     "lucide-react": "^0.575.0",
