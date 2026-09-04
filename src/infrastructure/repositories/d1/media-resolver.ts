@@ -4,6 +4,7 @@ import imgPolo from "@/assets/veiculos/vw-polo.jpg";
 import imgOnix from "@/assets/veiculos/chevrolet-onix.jpg";
 import imgCb500 from "@/assets/veiculos/honda-cb500f.jpg";
 import imgMt03 from "@/assets/veiculos/yamaha-mt03.jpg";
+import { mediaPublicUrl } from "@/infrastructure/storage/r2-storage";
 
 const LEGACY_IMAGES: Record<string, string> = {
   "civic-exl": imgCivic,
@@ -16,6 +17,7 @@ const LEGACY_IMAGES: Record<string, string> = {
 
 export function resolveVehicleImage(reference: string | null, vehicleId: string): string {
   if (!reference) return "";
+  if (reference.startsWith("r2://")) return mediaPublicUrl(reference.slice(5));
   if (!reference.startsWith("legacy://")) return reference;
   return LEGACY_IMAGES[vehicleId] ?? "";
 }
