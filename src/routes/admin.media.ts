@@ -52,7 +52,8 @@ export const Route = createFileRoute("/admin/media")({
           const vehicle = await runtimeEnv.DB.prepare(`SELECT id FROM vehicles WHERE id = ? LIMIT 1`).bind(vehicleId).first<{ id: string }>();
           if (!vehicle) throw new Error("Veículo não encontrado.");
 
-          const extension = MIME_TO_EXTENSION[file.type];
+          const extension: string = MIME_TO_EXTENSION[file.type] ?? "";
+          if (!extension) throw new Error("Formato de imagem não suportado.");
           objectKey = mediaObjectKey(vehicleId, extension);
           const bucket = requireR2Bucket(runtimeEnv.MEDIA_BUCKET);
 
