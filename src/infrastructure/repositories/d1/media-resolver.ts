@@ -1,6 +1,6 @@
 import { mediaPublicUrl } from "@/infrastructure/storage/r2-storage";
 
-const IMAGE_VERSION = "20260904-9";
+const IMAGE_VERSION = "20260904-10";
 
 function withCacheVersion(url: string): string {
   return `${url}${url.includes("?") ? "&" : "?"}gm=${IMAGE_VERSION}`;
@@ -33,9 +33,9 @@ const LEGACY_IMAGES: Record<string, string[]> = {
     "https://www.honda.com.br/motos/sites/hda/files/2022-07/5F8A3379c.webp",
   ],
   mt03: [
-    "https://img.olx.com.br/images/97/976542404655508.webp",
-    "https://img.olx.com.br/images/51/519614376156591.jpg",
-    "https://img.olx.com.br/images/93/933652877180796.webp",
+    "https://motonewsbrasil.com/wp-content/uploads/2022/05/yamaha-mt-03-2023-brasil-cinza-frontal-direita.jpg",
+    "https://motonewsbrasil.com/wp-content/uploads/2022/05/yamaha-mt-03-2023-brasil-cinza-lateral-direita-1000x667.jpg.webp",
+    "https://motonewsbrasil.com/wp-content/uploads/2022/05/yamaha-mt-03-2023-brasil-cinza-traseira-esquerda-1000x667.jpg.webp",
   ],
 };
 
