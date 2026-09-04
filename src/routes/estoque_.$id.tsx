@@ -91,7 +91,7 @@ function calcularParcela(valor: number, entrada: number, parcelas: number, taxaM
 function SimulacaoFinanciamento({ veiculo }: { veiculo: Vehicle }) {
   const [entrada, setEntrada] = useState(veiculo.financiamento.entradaMinima);
   const [parcelas, setParcelas] = useState(veiculo.financiamento.parcelas[0] ?? 36);
-  const entradaSegura = Math.min(Math.max(Number.isFinite(entrada) ? entrada : 0, 0), veiculo.preco);
+  const entradaSegura = Math.min(Math.max(entrada || veiculo.financiamento.entradaMinima, veiculo.financiamento.entradaMinima), veiculo.preco);
   const financiado = Math.max(veiculo.preco - entradaSegura, 0);
   const parcela = useMemo(
     () => calcularParcela(veiculo.preco, entradaSegura, parcelas, veiculo.financiamento.taxaIndicativa),
@@ -130,7 +130,7 @@ function SimulacaoFinanciamento({ veiculo }: { veiculo: Vehicle }) {
       <div className="mt-6 grid gap-5 sm:grid-cols-2">
         <label className="block">
           <span className="mb-1.5 block text-sm font-semibold text-foreground">Entrada</span>
-          <input type="number" min={0} max={veiculo.preco} step={500} value={entrada} onChange={(event) => setEntrada(Number(event.target.value))} className="w-full rounded-sm border border-border bg-secondary px-3 py-2.5 text-sm text-foreground outline-none focus:border-gold" />
+          <input type="number" min={veiculo.financiamento.entradaMinima} max={veiculo.preco} step={500} value={entradaSegura} onChange={(event) => setEntrada(Number(event.target.value))} className="w-full rounded-sm border border-border bg-secondary px-3 py-2.5 text-sm text-foreground outline-none focus:border-gold" />
           <span className="mt-1 block text-xs text-muted-foreground">Mínimo sugerido: {formatarPreco(veiculo.financiamento.entradaMinima)}</span>
         </label>
         <label className="block">
