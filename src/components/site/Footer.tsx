@@ -1,19 +1,24 @@
 import { Link } from "@tanstack/react-router";
 import { Clock, MapPin, Phone } from "lucide-react";
+
+import { dealershipConfig } from "@/config/dealership";
 import { criarWhatsAppUrl } from "@/lib/vehicle-utils";
 import { Logo } from "./Logo";
 
-const whatsappUrl = criarWhatsAppUrl("Olá, Gomes Motors! Gostaria de falar com a equipe comercial.");
+const whatsappUrl = criarWhatsAppUrl(`Olá, ${dealershipConfig.company.name}! Gostaria de falar com a equipe comercial.`);
 
 export function Footer() {
+  const { company, contact, location } = dealershipConfig;
+  const locationLabel = [location.city, location.state].filter(Boolean).join(", ");
+  const addressLabel = location.address || locationLabel;
+
   return (
     <footer className="border-t border-border bg-secondary">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:grid-cols-2 sm:px-6 lg:grid-cols-4 lg:px-8">
         <div className="space-y-4">
           <Logo className="h-16" />
           <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">
-            A escolha certa começa aqui. Veículos selecionados com transparência
-            e atendimento próximo em Campos dos Goytacazes, RJ.
+            {company.tagline} Veículos selecionados com transparência e atendimento próximo em {locationLabel}.
           </p>
         </div>
 
@@ -32,7 +37,7 @@ export function Footer() {
           <ul className="space-y-3 text-sm text-muted-foreground">
             <li className="flex items-start gap-2.5">
               <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-gold" />
-              Campos dos Goytacazes, RJ
+              {addressLabel}
             </li>
             <li>
               <a href={whatsappUrl} target="_blank" rel="noreferrer" className="flex items-center gap-2.5 transition-colors hover:text-foreground">
@@ -60,8 +65,8 @@ export function Footer() {
 
       <div className="border-t border-border">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 px-4 py-5 text-xs text-muted-foreground sm:flex-row sm:px-6 lg:px-8">
-          <span>© {new Date().getFullYear()} Gomes Motors. Todos os direitos reservados.</span>
-          <span>Campos dos Goytacazes — RJ</span>
+          <span>© {new Date().getFullYear()} {company.name}. Todos os direitos reservados.</span>
+          <span>{locationLabel}</span>
         </div>
       </div>
     </footer>
