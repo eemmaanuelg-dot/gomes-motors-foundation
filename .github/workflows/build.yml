@@ -40,4 +40,4 @@ jobs:
       - name: Build application
         run: npm run build
 
-      # Phase 8.0 final validation rerun.
+      # Phase 8.0 final validation rerun — TypeScript fixes applied.
