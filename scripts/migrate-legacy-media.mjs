@@ -68,16 +68,14 @@ for (const [vehicleId, relativePath] of assets) {
     "--remote",
   ]);
 
-  const sql = [
-    "BEGIN TRANSACTION;",
-    `UPDATE vehicles SET image_url = ${sqlLiteral(r2Reference)}, images_json = ${sqlLiteral(imagesJson)}, updated_at = datetime('now') WHERE id = ${sqlLiteral(vehicleId)};`,
-    `DELETE FROM vehicle_media WHERE object_key = ${sqlLiteral(key)};`,
-    `INSERT INTO vehicle_media (id, vehicle_id, object_key, media_type, mime_type, display_order, alt_text, created_at, updated_at) VALUES (${sqlLiteral(mediaId)}, ${sqlLiteral(vehicleId)}, ${sqlLiteral(key)}, 'image', ${sqlLiteral(mime)}, 0, ${sqlLiteral(altText)}, ${sqlLiteral(now)}, ${sqlLiteral(now)});`,
-    "COMMIT;",
-  ].join(" ");
+  const updateSql = `UPDATE vehicles SET image_url = ${sqlLiteral(r2Reference)}, images_json = ${sqlLiteral(imagesJson)}, updated_at = datetime('now') WHERE id = ${sqlLiteral(vehicleId)};`;
+  const deleteSql = `DELETE FROM vehicle_media WHERE object_key = ${sqlLiteral(key)};`;
+  const insertSql = `INSERT INTO vehicle_media (id, vehicle_id, object_key, media_type, mime_type, display_order, alt_text, created_at, updated_at) VALUES (${sqlLiteral(mediaId)}, ${sqlLiteral(vehicleId)}, ${sqlLiteral(key)}, 'image', ${sqlLiteral(mime)}, 0, ${sqlLiteral(altText)}, ${sqlLiteral(now)}, ${sqlLiteral(now)});`;
 
   console.log(`Atualizando veículo e associação de mídia no D1 para ${vehicleId}`);
-  run(["d1", "execute", database, "--remote", `--command=${sql}`]);
+  run(["d1", "execute", database, "--remote", `--command=${updateSql}`]);
+  run(["d1", "execute", database, "--remote", `--command=${deleteSql}`]);
+  run(["d1", "execute", database, "--remote", `--command=${insertSql}`]);
 }
 
 console.log("\nMigração concluída. Valide os seis veículos no site e no Admin antes de remover qualquer asset legacy.");
