@@ -37,6 +37,9 @@ jobs:
           (SELECT COUNT(*) FROM vehicle_prices) AS vehicle_prices,
           (SELECT COUNT(*) FROM vehicle_status_history) AS status_history;"
 
+      - name: Smoke test public catalog locally
+        run: node scripts/validate-local-catalog.mjs
+
       - name: Build application
         run: npm run build
 
