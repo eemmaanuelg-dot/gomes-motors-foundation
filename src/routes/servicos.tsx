@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 
 import { VEICULOS, obterTituloVeiculo } from "@/data/vehicles";
+import { resolveVehicleImage } from "@/infrastructure/repositories/d1/media-resolver";
 import { criarWhatsAppUrl, formatarPreco } from "@/lib/vehicle-utils";
 
 export const Route = createFileRoute("/servicos")({
@@ -79,7 +80,8 @@ function VeiculoSelector({ value, onChange, label = "Veículo desejado" }: { val
       <div className="grid gap-2 sm:grid-cols-2">
         {filtrados.map((veiculo) => {
           const selecionado = value === veiculo.id;
-          return <button key={veiculo.id} type="button" onClick={() => onChange(veiculo.id)} className={`flex items-center gap-3 rounded-sm border p-3 text-left transition-colors ${selecionado ? "border-gold bg-gold/10" : "border-border bg-secondary hover:border-gold/60"}`}><img src={veiculo.imagem} alt="" className="h-16 w-20 rounded-sm object-cover" /><span className="min-w-0"><span className="block truncate text-sm font-semibold text-foreground">{obterTituloVeiculo(veiculo)}</span><span className="block text-xs text-muted-foreground">{veiculo.ano} · {formatarPreco(veiculo.preco)}</span><span className="block text-xs text-muted-foreground">{veiculo.categoria === "motos" ? "Moto" : "Carro"}</span></span>{selecionado && <CheckCircle2 className="ml-auto h-5 w-5 shrink-0 text-gold" />}</button>;
+          const imagem = resolveVehicleImage(veiculo.imagem, veiculo.id);
+          return <button key={veiculo.id} type="button" onClick={() => onChange(veiculo.id)} className={`flex items-center gap-3 rounded-sm border p-3 text-left transition-colors ${selecionado ? "border-gold bg-gold/10" : "border-border bg-secondary hover:border-gold/60"}`}><img src={imagem} alt="" className="h-16 w-20 rounded-sm object-cover" /><span className="min-w-0"><span className="block truncate text-sm font-semibold text-foreground">{obterTituloVeiculo(veiculo)}</span><span className="block text-xs text-muted-foreground">{veiculo.ano} · {formatarPreco(veiculo.preco)}</span><span className="block text-xs text-muted-foreground">{veiculo.categoria === "motos" ? "Moto" : "Carro"}</span></span>{selecionado && <CheckCircle2 className="ml-auto h-5 w-5 shrink-0 text-gold" />}</button>;
         })}
       </div>
       {filtrados.length === 0 && <p className="text-sm text-muted-foreground">Nenhum veículo encontrado.</p>}
