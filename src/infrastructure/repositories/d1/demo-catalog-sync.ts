@@ -9,7 +9,7 @@ import type { D1DatabaseLike } from "./d1-types";
  * administrative edits remain persistent in D1 until another explicit version
  * is published.
  */
-const DEMO_CATALOG_VERSION = "20260904-4";
+const DEMO_CATALOG_VERSION = "20260905-1";
 
 const DEMO_VEHICLE_IDS = [
   "civic-exl",
