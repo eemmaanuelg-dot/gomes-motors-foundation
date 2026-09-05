@@ -1,6 +1,11 @@
 import { env } from "cloudflare:workers";
 import { createFileRoute } from "@tanstack/react-router";
 import type { D1DatabaseLike } from "@/infrastructure/repositories/d1/d1-types";
+import {
+  exceedsBodyLimit,
+  hasAcceptableJsonContentType,
+  isSameOriginRequest,
+} from "@/lib/server-security";
 
 type AdminAction =
   | { action: "updateVehicle"; id: string; data: Record<string, unknown> }
@@ -27,6 +32,10 @@ function actor(request: Request) {
 }
 function authorized(request: Request) {
   return Boolean(request.headers.get("cf-access-authenticated-user-email"));
+}
+function rejectCrossOrigin(request: Request): Response | null {
+  if (!isSameOriginRequest(request)) return json({ error: "Origem da requisição não permitida." }, 403);
+  return null;
 }
 async function audit(database: D1DatabaseLike, request: Request, action: string, entityType: string, entityId: string | null, result: "success" | "failure", metadata: Record<string, unknown> = {}) {
   await database.prepare(`INSERT INTO audit_logs (id, actor_id, action, entity_type, entity_id, result, occurred_at, metadata_json) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`).bind(crypto.randomUUID(), actor(request), action, entityType, entityId, result, new Date().toISOString(), JSON.stringify(metadata)).run();
@@ -170,6 +179,26 @@ async function executeAction(database: D1DatabaseLike, request: Request, input: 
 }
 
 export const Route = createFileRoute("/admin/api")({ server: { handlers: {
-  GET: async ({ request }) => { if (!authorized(request)) return json({ error: "Acesso administrativo não autenticado." }, 401); return json(await getDashboard(db())); },
-  POST: async ({ request }) => { if (!authorized(request)) return json({ error: "Acesso administrativo não autenticado." }, 401); try { await executeAction(db(), request, await request.json() as AdminAction); return json({ ok: true }); } catch (error) { const message = error instanceof Error ? error.message : "Não foi possível executar a operação."; try { await audit(db(), request, "admin.action", "admin", null, "failure", { message }); } catch { /* preserve original error */ } return json({ error: message }, 400); } },
+  GET: async ({ request }) => {
+    if (!authorized(request)) return json({ error: "Acesso administrativo não autenticado." }, 401);
+    const originError = rejectCrossOrigin(request);
+    if (originError) return originError;
+    return json(await getDashboard(db()));
+  },
+  POST: async ({ request }) => {
+    if (!authorized(request)) return json({ error: "Acesso administrativo não autenticado." }, 401);
+    const originError = rejectCrossOrigin(request);
+    if (originError) return originError;
+    if (!hasAcceptableJsonContentType(request)) return json({ error: "Content-Type inválido." }, 415);
+    if (exceedsBodyLimit(request)) return json({ error: "Payload administrativo excede o limite permitido." }, 413);
+    try {
+      const input = await request.json() as AdminAction;
+      await executeAction(db(), request, input);
+      return json({ ok: true });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Não foi possível executar a operação.";
+      try { await audit(db(), request, "admin.action", "admin", null, "failure", { message }); } catch { /* preserve original error */ }
+      return json({ error: message }, 400);
+    }
+  },
 } } });
