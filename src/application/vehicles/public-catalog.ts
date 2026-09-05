@@ -2,6 +2,7 @@ import {
   listarVeiculosPublicosServer,
   obterVeiculoPublicoPorIdServer,
 } from "./server-functions";
+import type { PublicVehicleCatalog } from "./contracts";
 
 /**
  * Ponto de entrada da aplicação para o catálogo público.
@@ -12,4 +13,4 @@ import {
 export const publicVehicleCatalog = {
   listar: () => listarVeiculosPublicosServer(),
   obterPorId: (id: string) => obterVeiculoPublicoPorIdServer({ data: { id } }),
-};
+} satisfies PublicVehicleCatalog;
