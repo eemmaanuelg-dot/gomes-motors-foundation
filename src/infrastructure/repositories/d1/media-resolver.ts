@@ -1,6 +1,6 @@
 import { mediaPublicUrl } from "@/infrastructure/storage/r2-storage";
 
-const IMAGE_VERSION = "20260904-10";
+const IMAGE_VERSION = "20260905-1";
 
 function withCacheVersion(url: string): string {
   return `${url}${url.includes("?") ? "&" : "?"}gm=${IMAGE_VERSION}`;
@@ -18,7 +18,7 @@ const LEGACY_IMAGES: Record<string, string[]> = {
     "https://www.dubicars.com/images/0cc623/w_1300x760/perfect-automobiles-trading-llc/fb264773-074b-45de-8c50-b8db8118ef93.jpg",
   ],
   polo: [
-    "https://cdn.diariodolitoral.com.br/uploads/dn_arquivo/2023/03/volkswagen-capa-polo-highli.jpg",
+    "https://img1.icarros.com/dbimg/imgadicionalnoticia/4/117726_1.jpg",
     "https://cdn.diariodolitoral.com.br/uploads/dn_arquivo/2023/03/volkswagen-farol-polo-highl.jpg",
     "https://cdn.diariodolitoral.com.br/uploads/dn_arquivo/2023/03/volkswagen-lateral-polo-hig.jpg",
   ],
