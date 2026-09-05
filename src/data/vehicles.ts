@@ -54,11 +54,11 @@ export const VEICULOS: Veiculo[] = [
     cambio: "Automático CVT",
     combustivel: "Flex",
     tipo: "Sedã",
-    imagem: "https://carango.nyc3.digitaloceanspaces.com/images/veiculos/2022/06/honda-civic-2020-2-0-16v-flexone-exl-4p-cvt-flex-104437-r7uc5o.jpg",
+    imagem: "https://www.autocerto.com/fotos/1761/3248676/11_033817.jpg",
     imagens: [
-      "https://carango.nyc3.digitaloceanspaces.com/images/veiculos/2022/06/honda-civic-2020-2-0-16v-flexone-exl-4p-cvt-flex-104437-r7uc5o.jpg",
-      "https://carango.nyc3.digitaloceanspaces.com/images/veiculos/2022/06/honda-civic-2020-2-0-16v-flexone-exl-4p-cvt-flex-104437-kjazo5.jpg",
-      "https://carango.nyc3.digitaloceanspaces.com/images/veiculos/2022/06/honda-civic-2020-2-0-16v-flexone-exl-4p-cvt-flex-104437-17lmo3.jpg",
+      "https://www.autocerto.com/fotos/1761/3248676/11_033817.jpg",
+      "https://www.autocerto.com/fotos/1761/3248676/12_033817.jpg",
+      "https://www.autocerto.com/fotos/1761/3248676/13_033817.jpg",
     ],
     descricao:
       "Honda Civic EXL com perfil executivo, ótimo nível de conforto e conjunto mecânico equilibrado. Uma opção para quem procura um sedã confiável, bem equipado e pronto para uso.",
@@ -83,7 +83,7 @@ export const VEICULOS: Veiculo[] = [
     },
     status: "disponivel",
     destaque: true,
-    financiamento: { entradaMinima: 32970, parcelas: [24, 36, 48, 60], taxaIndicativa: 1.69 },
+    financiamento: { entradaMinima: 1000, parcelas: [24, 36, 48, 60], taxaIndicativa: 1.69 },
     seoDescription:
       "Honda Civic EXL 2020 usado em Campos dos Goytacazes, RJ, com câmbio automático CVT e 65 mil km.",
   },
@@ -99,11 +99,11 @@ export const VEICULOS: Veiculo[] = [
     cambio: "Automático CVT",
     combustivel: "Flex",
     tipo: "Sedã",
-    imagem: "https://www.usadofacil.com.br/fotoscarrosano/2026/09/1382042.jpg",
+    imagem: "https://upload.wikimedia.org/wikipedia/commons/b/b4/Toyota_Corolla_1.6_XLi_2021_%2850638290137%29.jpg",
     imagens: [
-      "https://www.usadofacil.com.br/fotoscarrosano/2026/09/1382042.jpg",
-      "https://www.usadofacil.com.br/fotoscarrosano/2026/09/1382042-2.jpg",
-      "https://www.usadofacil.com.br/fotoscarrosano/2026/09/1382042-3.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/b/b4/Toyota_Corolla_1.6_XLi_2021_%2850638290137%29.jpg",
+      "https://www.dubicars.com/images/e999b1/w_1300x760/true-value-automobile/f971f831-0fcf-428c-9bb0-4836c9b2458b.jpeg",
+      "https://www.dubicars.com/images/0cc623/w_1300x760/perfect-automobiles-trading-llc/fb264773-074b-45de-8c50-b8db8118ef93.jpg",
     ],
     descricao:
       "Toyota Corolla GLi com combinação de conforto, confiabilidade e bom espaço interno. Ideal para uso diário, viagens e para quem valoriza um sedã de manutenção previsível.",
@@ -128,7 +128,7 @@ export const VEICULOS: Veiculo[] = [
     },
     status: "disponivel",
     destaque: true,
-    financiamento: { entradaMinima: 35970, parcelas: [24, 36, 48, 60], taxaIndicativa: 1.69 },
+    financiamento: { entradaMinima: 1000, parcelas: [24, 36, 48, 60], taxaIndicativa: 1.69 },
     seoDescription:
       "Toyota Corolla GLi 2021 usado em Campos dos Goytacazes, RJ, com câmbio automático CVT e 58 mil km.",
   },
@@ -144,11 +144,11 @@ export const VEICULOS: Veiculo[] = [
     cambio: "Automático",
     combustivel: "Flex",
     tipo: "Hatch",
-    imagem: "https://imgserver.autocarro.com.br/fotos/grande/volkswagen-polo-1.0-tsi-170-highline-12v-2023-chumbo_31e2613d915.jpg",
+    imagem: "https://img1.icarros.com/dbimg/imgadicionalnoticia/4/117726_1.jpg",
     imagens: [
-      "https://imgserver.autocarro.com.br/fotos/grande/volkswagen-polo-1.0-tsi-170-highline-12v-2023-chumbo_31e2613d915.jpg",
-      "https://imgserver.autocarro.com.br/fotos/grande/volkswagen-polo-1.0-tsi-170-highline-12v-2023-chumbo_1e2613d9159.jpg",
-      "https://imgserver.autocarro.com.br/fotos/grande/volkswagen-polo-1.0-tsi-170-highline-12v-2023-chumbo_2613d91599d.jpg",
+      "https://img1.icarros.com/dbimg/imgadicionalnoticia/4/117726_1.jpg",
+      "https://cdn.diariodolitoral.com.br/uploads/dn_arquivo/2023/03/volkswagen-farol-polo-highl.jpg",
+      "https://cdn.diariodolitoral.com.br/uploads/dn_arquivo/2023/03/volkswagen-lateral-polo-hig.jpg",
     ],
     descricao:
       "Volkswagen Polo Highline TSI com proposta esportiva, bom desempenho e tecnologia para o uso urbano. Uma alternativa moderna para quem quer um hatch completo e eficiente.",
@@ -173,7 +173,7 @@ export const VEICULOS: Veiculo[] = [
     },
     status: "disponivel",
     destaque: true,
-    financiamento: { entradaMinima: 23970, parcelas: [24, 36, 48, 60], taxaIndicativa: 1.79 },
+    financiamento: { entradaMinima: 1000, parcelas: [24, 36, 48, 60], taxaIndicativa: 1.79 },
     seoDescription:
       "Volkswagen Polo Highline TSI 2023 usado em Campos dos Goytacazes, RJ, com câmbio automático e 42 mil km.",
   },
@@ -186,14 +186,14 @@ export const VEICULOS: Veiculo[] = [
     ano: 2022,
     km: 38000,
     preco: 72900,
-    cambio: "Manual",
+    cambio: "Automático",
     combustivel: "Flex",
     tipo: "Hatch",
-    imagem: "https://carango.com.br/f.php?cc=0&h=520&src=upload%2Fver31%2Fveiculos%2F2024%2F06%2Fchevrolet-onix-2022-1-0-turbo-flex-ltz-automatico-flex-124597-u1ln38.jpg&w=810&zc=1",
+    imagem: "https://www.autocerto.com/fotos/1468/2677690/1.jpg",
     imagens: [
-      "https://carango.com.br/f.php?cc=0&h=520&src=upload%2Fver31%2Fveiculos%2F2024%2F06%2Fchevrolet-onix-2022-1-0-turbo-flex-ltz-automatico-flex-124597-u1ln38.jpg&w=810&zc=1",
-      "https://carango.com.br/f.php?cc=0&h=520&src=upload%2Fver31%2Fveiculos%2F2024%2F06%2Fchevrolet-onix-2022-1-0-turbo-flex-ltz-automatico-flex-124597-zfr60k.jpg&w=810&zc=1",
-      "https://carango.com.br/f.php?cc=0&h=520&src=upload%2Fver31%2Fveiculos%2F2024%2F06%2Fchevrolet-onix-2022-1-0-turbo-flex-ltz-automatico-flex-124597-ab28ou.jpg&w=810&zc=1",
+      "https://www.autocerto.com/fotos/1468/2677690/1.jpg",
+      "https://www.autocerto.com/fotos/1468/2677690/2.jpg",
+      "https://www.autocerto.com/fotos/1468/2677690/3.jpg",
     ],
     descricao:
       "Chevrolet Onix LTZ com baixa quilometragem para o ano, bom pacote de equipamentos e proposta prática para cidade e estrada.",
@@ -218,9 +218,9 @@ export const VEICULOS: Veiculo[] = [
     },
     status: "disponivel",
     destaque: false,
-    financiamento: { entradaMinima: 21870, parcelas: [24, 36, 48, 60], taxaIndicativa: 1.79 },
+    financiamento: { entradaMinima: 1000, parcelas: [24, 36, 48, 60], taxaIndicativa: 1.79 },
     seoDescription:
-      "Chevrolet Onix LTZ 2022 usado em Campos dos Goytacazes, RJ, com câmbio manual e 38 mil km.",
+      "Chevrolet Onix LTZ 2022 usado em Campos dos Goytacazes, RJ, com câmbio automático e 38 mil km.",
   },
   {
     id: "cb500f",
@@ -234,11 +234,11 @@ export const VEICULOS: Veiculo[] = [
     combustivel: "Gasolina",
     cilindrada: "500 cc",
     tipo: "Naked",
-    imagem: "https://carango.com.br/f.php?cc=0&h=520&src=upload%2Fver31%2Fveiculos%2F2022%2F10%2Fhonda-cb-500f-2022-cb-500f-108030-luegwn.jpg&w=810&zc=1",
+    imagem: "https://www.honda.com.br/motos/sites/hda/files/2022-07/5F8A1615c.webp",
     imagens: [
-      "https://carango.com.br/f.php?cc=0&h=520&src=upload%2Fver31%2Fveiculos%2F2022%2F10%2Fhonda-cb-500f-2022-cb-500f-108030-luegwn.jpg&w=810&zc=1",
-      "https://carango.com.br/f.php?cc=0&h=520&src=upload%2Fver31%2Fveiculos%2F2022%2F10%2Fhonda-cb-500f-2022-cb-500f-108030-hjqxuf.jpg&w=810&zc=1",
-      "https://carango.com.br/f.php?cc=0&h=520&src=upload%2Fver31%2Fveiculos%2F2022%2F10%2Fhonda-cb-500f-2022-cb-500f-108030-k00la7.jpg&w=810&zc=1",
+      "https://www.honda.com.br/motos/sites/hda/files/2022-07/5F8A1615c.webp",
+      "https://www.honda.com.br/motos/sites/hda/files/2022-07/5F8A2724c.webp",
+      "https://www.honda.com.br/motos/sites/hda/files/2022-07/5F8A3379c.webp",
     ],
     descricao:
       "Honda CB 500F para quem busca uma naked equilibrada, com desempenho suficiente para estrada e facilidade para o uso urbano.",
@@ -260,7 +260,7 @@ export const VEICULOS: Veiculo[] = [
     },
     status: "disponivel",
     destaque: true,
-    financiamento: { entradaMinima: 10470, parcelas: [24, 36, 48], taxaIndicativa: 1.89 },
+    financiamento: { entradaMinima: 1000, parcelas: [24, 36, 48], taxaIndicativa: 1.89 },
     seoDescription:
       "Honda CB 500F 2022 usada em Campos dos Goytacazes, RJ, com 21 mil km e 500 cc.",
   },
@@ -276,11 +276,11 @@ export const VEICULOS: Veiculo[] = [
     combustivel: "Gasolina",
     cilindrada: "321 cc",
     tipo: "Naked",
-    imagem: "https://carango.com.br/f.php?cc=0&h=520&src=upload%2Fver31%2Fveiculos%2F2023%2F01%2Fyamaha-mt-03-abs-2023-mt-03-abs-gasolina-111152-4g6qfz.jpg&w=810&zc=1",
+    imagem: "https://motonewsbrasil.com/wp-content/uploads/2022/05/yamaha-mt-03-2023-brasil-cinza-frontal-direita.jpg",
     imagens: [
-      "https://carango.com.br/f.php?cc=0&h=520&src=upload%2Fver31%2Fveiculos%2F2023%2F01%2Fyamaha-mt-03-abs-2023-mt-03-abs-gasolina-111152-4g6qfz.jpg&w=810&zc=1",
-      "https://carango.com.br/f.php?cc=0&h=520&src=upload%2Fver31%2Fveiculos%2F2023%2F01%2Fyamaha-mt-03-abs-2023-mt-03-abs-gasolina-111152-dwxbsq.jpg&w=810&zc=1",
-      "https://carango.com.br/f.php?cc=0&h=520&src=upload%2Fver31%2Fveiculos%2F2023%2F01%2Fyamaha-mt-03-abs-2023-mt-03-abs-gasolina-111152-m9u1na.jpg&w=810&zc=1",
+      "https://motonewsbrasil.com/wp-content/uploads/2022/05/yamaha-mt-03-2023-brasil-cinza-frontal-direita.jpg",
+      "https://motonewsbrasil.com/wp-content/uploads/2022/05/yamaha-mt-03-2023-brasil-cinza-lateral-direita-1000x667.jpg.webp",
+      "https://motonewsbrasil.com/wp-content/uploads/2022/05/yamaha-mt-03-2023-brasil-cinza-traseira-esquerda-1000x667.jpg.webp",
     ],
     descricao:
       "Yamaha MT-03 com visual marcante, baixa quilometragem e conjunto ágil. Uma naked versátil para deslocamentos urbanos e passeios de fim de semana.",
@@ -302,7 +302,7 @@ export const VEICULOS: Veiculo[] = [
     },
     status: "disponivel",
     destaque: false,
-    financiamento: { entradaMinima: 9570, parcelas: [24, 36, 48], taxaIndicativa: 1.89 },
+    financiamento: { entradaMinima: 1000, parcelas: [24, 36, 48], taxaIndicativa: 1.89 },
     seoDescription:
       "Yamaha MT-03 2023 usada em Campos dos Goytacazes, RJ, com 17 mil km e 321 cc.",
   },
