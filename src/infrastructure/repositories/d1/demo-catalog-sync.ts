@@ -9,7 +9,7 @@ import type { D1DatabaseLike } from "./d1-types";
  * administrative edits remain persistent in D1 until another explicit version
  * is published.
  */
-const DEMO_CATALOG_VERSION = "20260905-1";
+const DEMO_CATALOG_VERSION = "20260905-2";
 
 const DEMO_VEHICLE_IDS = [
   "civic-exl",
@@ -21,6 +21,14 @@ const DEMO_VEHICLE_IDS = [
 ] as const;
 
 let syncPromise: Promise<void> | undefined;
+
+function legacyGalleryReferences(id: string): string[] {
+  return [
+    `legacy://vehicles/${id}/primary`,
+    `legacy://vehicles/${id}/image-2`,
+    `legacy://vehicles/${id}/image-3`,
+  ];
+}
 
 async function syncDemoCatalog(db: D1DatabaseLike): Promise<void> {
   await db
@@ -40,8 +48,9 @@ async function syncDemoCatalog(db: D1DatabaseLike): Promise<void> {
   if (current?.value === DEMO_CATALOG_VERSION) return;
 
   const now = new Date().toISOString();
-  const statements = DEMO_VEHICLE_IDS.map((id) =>
-    db
+  const statements = DEMO_VEHICLE_IDS.map((id) => {
+    const gallery = legacyGalleryReferences(id);
+    return db
       .prepare(
         `UPDATE vehicles
          SET financing_json = json_set(financing_json, '$.entradaMinima', 1000),
@@ -50,13 +59,8 @@ async function syncDemoCatalog(db: D1DatabaseLike): Promise<void> {
              updated_at = ?
          WHERE id = ?`,
       )
-      .bind(
-        `legacy://vehicles/${id}/primary`,
-        JSON.stringify([`legacy://vehicles/${id}/primary`]),
-        now,
-        id,
-      ),
-  );
+      .bind(gallery[0], JSON.stringify(gallery), now, id);
+  });
 
   // The original Onix seed had a stale transmission value. The verified
   // listing used for the current demo catalog is automatic.
