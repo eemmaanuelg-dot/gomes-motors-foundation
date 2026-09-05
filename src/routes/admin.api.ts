@@ -57,7 +57,33 @@ async function getDashboard(database: D1DatabaseLike) {
     database.prepare(`SELECT m.id, m.vehicle_id, m.object_key, m.media_type, m.mime_type, m.display_order, m.alt_text, m.created_at FROM vehicle_media m ORDER BY m.vehicle_id, m.display_order, m.created_at`).all<D1Row>(),
     database.prepare(`SELECT id, actor_id, action, entity_type, entity_id, result, occurred_at, metadata_json FROM audit_logs ORDER BY occurred_at DESC LIMIT 100`).all<D1Row>(),
   ]);
-  return { vehicles: vehicles.results ?? [], media: media.results ?? [], audits: audits.results ?? [] };
+
+  const vehicleRows = vehicles.results ?? [];
+  const auditRows = audits.results ?? [];
+  const countByEntity = (entityType: string) => auditRows.filter((row) => row["entity_type"] === entityType && row["result"] === "success").length;
+
+  return {
+    vehicles: vehicleRows,
+    media: media.results ?? [],
+    audits: auditRows,
+    dashboard: {
+      estoque: {
+        total: vehicleRows.length,
+        disponiveis: vehicleRows.filter((row) => row["status"] === "disponivel").length,
+        reservados: vehicleRows.filter((row) => row["status"] === "reservado").length,
+        vendidos: vehicleRows.filter((row) => row["status"] === "vendido").length,
+        publicados: vehicleRows.filter((row) => row["published"] === 1 && row["status"] !== "vendido").length,
+      },
+      comercial: {
+        leads: countByEntity("lead"),
+        propostas: countByEntity("proposal"),
+        avaliacoes: countByEntity("evaluation"),
+        negociacoes: countByEntity("negotiation"),
+        vendas: countByEntity("sale"),
+      },
+      atividadesRecentes: auditRows.slice(0, 10),
+    },
+  };
 }
 
 async function executeAction(database: D1DatabaseLike, request: Request, input: AdminAction) {
