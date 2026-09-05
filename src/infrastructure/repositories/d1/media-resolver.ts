@@ -1,6 +1,6 @@
 import { mediaPublicUrl } from "@/infrastructure/storage/r2-storage";
 
-const IMAGE_VERSION = "20260905-2";
+const IMAGE_VERSION = "20260905-3";
 
 function withCacheVersion(url: string): string {
   return `${url}${url.includes("?") ? "&" : "?"}gm=${IMAGE_VERSION}`;
@@ -39,6 +39,12 @@ const LEGACY_IMAGES: Record<string, string[]> = {
   ],
 };
 
+function legacyImageIndex(reference: string): number {
+  const match = reference.match(/\/(?:primary|image)-(\d+)$/i);
+  if (match) return Math.max(0, Number(match[1]) - 1);
+  return 0;
+}
+
 export function resolveVehicleImage(reference: string | null, vehicleId: string): string {
   if (!reference) return "";
 
@@ -47,7 +53,8 @@ export function resolveVehicleImage(reference: string | null, vehicleId: string)
   }
 
   if (reference.startsWith("legacy://")) {
-    const image = LEGACY_IMAGES[vehicleId]?.[0] ?? "";
+    const images = LEGACY_IMAGES[vehicleId] ?? [];
+    const image = images[legacyImageIndex(reference)] ?? images[0] ?? "";
     return image ? withCacheVersion(image) : "";
   }
 
