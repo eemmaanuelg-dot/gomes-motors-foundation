@@ -8,6 +8,8 @@ export type AuditEntityType =
   | "media"
   | "lead"
   | "customer"
+  | "evaluation"
+  | "proposal"
   | "negotiation"
   | "sale"
   | "system";
