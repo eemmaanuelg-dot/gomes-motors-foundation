@@ -5,6 +5,7 @@ PRAGMA foreign_keys = ON;
 
 UPDATE vehicles
 SET transmission = 'Automático',
+    seo_description = 'Chevrolet Onix LTZ 2022 usado em Campos dos Goytacazes, RJ, com câmbio automático e 38 mil km.',
     updated_at = CURRENT_TIMESTAMP
 WHERE id = 'onix';
 
