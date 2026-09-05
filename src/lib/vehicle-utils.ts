@@ -1,8 +1,13 @@
-import type { Veiculo } from "@/data/vehicles";
+import type { Vehicle } from "@/domain/vehicles/types";
+import {
+  obterTituloVeiculo,
+  obterVeiculosRelacionados,
+} from "@/domain/vehicles/services";
 import { dealershipConfig } from "@/config/dealership";
 import { WHATSAPP_NUMERO } from "./contact";
 
 export { WHATSAPP_NUMERO } from "./contact";
+export { obterTituloVeiculo, obterVeiculosRelacionados } from "@/domain/vehicles/services";
 
 export type TipoInteresse = "comprar" | "trocar" | "financiar";
 
@@ -22,7 +27,7 @@ export function criarWhatsAppUrl(mensagem: string) {
   return `https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(mensagem)}`;
 }
 
-export function mensagemInteressePorTipo(veiculo: Veiculo, tipo: TipoInteresse) {
+export function mensagemInteressePorTipo(veiculo: Vehicle, tipo: TipoInteresse) {
   const titulo = obterTituloVeiculo(veiculo);
   const valor = formatarPreco(veiculo.preco);
   const km = formatarKm(veiculo.km);
@@ -59,27 +64,6 @@ export function mensagemInteressePorTipo(veiculo: Veiculo, tipo: TipoInteresse) 
   ].join("\n");
 }
 
-export function mensagemComercial(veiculo: Veiculo, assunto: string) {
+export function mensagemComercial(veiculo: Vehicle, assunto: string) {
   return `Olá, ${dealershipConfig.company.name}! Quero falar sobre o ${veiculo.marca} ${veiculo.modelo}${veiculo.versao ? ` ${veiculo.versao}` : ""} ${veiculo.ano}. Tenho interesse em ${assunto}.`;
-}
-
-export function obterVeiculosRelacionados(veiculos: Veiculo[], atual: Veiculo, limite = 3) {
-  return veiculos
-    .filter((veiculo) => veiculo.id !== atual.id && veiculo.status !== "vendido")
-    .sort((a, b) => {
-      const pontuacaoA =
-        (a.categoria === atual.categoria ? 3 : 0) +
-        (a.marca === atual.marca ? 2 : 0) +
-        (a.tipo === atual.tipo ? 1 : 0);
-      const pontuacaoB =
-        (b.categoria === atual.categoria ? 3 : 0) +
-        (b.marca === atual.marca ? 2 : 0) +
-        (b.tipo === atual.tipo ? 1 : 0);
-      return pontuacaoB - pontuacaoA;
-    })
-    .slice(0, limite);
-}
-
-export function obterTituloVeiculo(veiculo: Veiculo) {
-  return `${veiculo.marca} ${veiculo.modelo}${veiculo.versao ? ` ${veiculo.versao}` : ""}`;
 }
