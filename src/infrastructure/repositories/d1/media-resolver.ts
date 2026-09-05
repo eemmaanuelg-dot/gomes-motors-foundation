@@ -1,6 +1,7 @@
 import { mediaPublicUrl } from "@/infrastructure/storage/r2-storage";
 
-const IMAGE_VERSION = "20260905-3";
+const IMAGE_VERSION = "20260905-4";
+const R2_MEDIA_PREFIX = "vehicles/";
 
 function withCacheVersion(url: string): string {
   return `${url}${url.includes("?") ? "&" : "?"}gm=${IMAGE_VERSION}`;
@@ -45,20 +46,33 @@ function legacyImageIndex(reference: string): number {
   return 0;
 }
 
+function resolveR2Reference(reference: string): string {
+  const objectKey = reference.slice(5).trim();
+  if (!objectKey || !objectKey.startsWith(R2_MEDIA_PREFIX) || objectKey.includes("..")) return "";
+  return mediaPublicUrl(objectKey);
+}
+
 export function resolveVehicleImage(reference: string | null, vehicleId: string): string {
   if (!reference) return "";
 
-  if (reference.startsWith("r2://")) {
-    return mediaPublicUrl(reference.slice(5));
+  const normalized = reference.trim();
+  if (!normalized) return "";
+
+  if (normalized.startsWith("r2://")) {
+    return resolveR2Reference(normalized);
   }
 
-  if (reference.startsWith("legacy://")) {
+  if (normalized.startsWith("legacy://")) {
     const images = LEGACY_IMAGES[vehicleId] ?? [];
-    const image = images[legacyImageIndex(reference)] ?? images[0] ?? "";
+    const image = images[legacyImageIndex(normalized)] ?? images[0] ?? "";
     return image ? withCacheVersion(image) : "";
   }
 
-  return reference;
+  if (/^https?:\/\//i.test(normalized)) {
+    return withCacheVersion(normalized);
+  }
+
+  return "";
 }
 
 export function resolveVehicleImages(references: string[], vehicleId: string): string[] {
