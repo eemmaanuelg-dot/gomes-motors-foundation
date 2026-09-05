@@ -29,6 +29,12 @@ type VehicleRow = {
   updated_at: string;
 };
 
+type VehicleMediaRow = {
+  vehicle_id: string;
+  object_key: string;
+  display_order: number;
+};
+
 function parseJson<T>(value: string, fallback: T): T {
   try {
     return JSON.parse(value) as T;
@@ -37,10 +43,12 @@ function parseJson<T>(value: string, fallback: T): T {
   }
 }
 
-function rowToVehicle(row: VehicleRow): Vehicle {
-  const imageReferences = parseJson<string[]>(row.images_json, []);
+function rowToVehicle(row: VehicleRow, mediaReferences: string[] = []): Vehicle {
+  const legacyReferences = parseJson<string[]>(row.images_json, []);
+  const imageReferences = mediaReferences.length > 0 ? mediaReferences : legacyReferences;
   const images = resolveVehicleImages(imageReferences, row.id);
-  const primaryImage = resolveVehicleImage(row.image_url, row.id) || images[0] || "";
+  const primaryReference = mediaReferences[0] ?? row.image_url;
+  const primaryImage = resolveVehicleImage(primaryReference, row.id) || images[0] || "";
 
   const vehicle: Vehicle = {
     id: row.id,
@@ -109,6 +117,45 @@ const SELECT_COLUMNS = `
   v.status, v.featured, v.financing_json, v.seo_description, v.created_at, v.updated_at
 `;
 
+async function loadMediaReferences(
+  db: D1DatabaseLike,
+  vehicleIds: string[],
+): Promise<Map<string, string[]>> {
+  if (vehicleIds.length === 0) return new Map();
+
+  const placeholders = vehicleIds.map(() => "?").join(", ");
+  const result = await db
+    .prepare(
+      `SELECT vehicle_id, object_key, display_order
+       FROM vehicle_media
+       WHERE vehicle_id IN (${placeholders})
+       ORDER BY vehicle_id ASC, display_order ASC`,
+    )
+    .bind(...vehicleIds)
+    .all<VehicleMediaRow>();
+
+  const mediaByVehicle = new Map<string, string[]>();
+  for (const media of result.results) {
+    const references = mediaByVehicle.get(media.vehicle_id) ?? [];
+    references.push(`r2://${media.object_key}`);
+    mediaByVehicle.set(media.vehicle_id, references);
+  }
+
+  return mediaByVehicle;
+}
+
+async function mapRowsToVehicles(
+  db: D1DatabaseLike,
+  rows: VehicleRow[],
+): Promise<Vehicle[]> {
+  const mediaByVehicle = await loadMediaReferences(
+    db,
+    rows.map((row) => row.id),
+  );
+
+  return rows.map((row) => rowToVehicle(row, mediaByVehicle.get(row.id) ?? []));
+}
+
 export class D1VehicleRepository implements VehicleRepository {
   constructor(private readonly db: D1DatabaseLike) {}
 
@@ -123,7 +170,7 @@ export class D1VehicleRepository implements VehicleRepository {
       )
       .all<VehicleRow>();
 
-    return result.results.map(rowToVehicle);
+    return mapRowsToVehicles(this.db, result.results);
   }
 
   async listarTodos(): Promise<Vehicle[]> {
@@ -131,7 +178,7 @@ export class D1VehicleRepository implements VehicleRepository {
       .prepare(`SELECT ${SELECT_COLUMNS} FROM vehicles v ORDER BY v.created_at ASC`)
       .all<VehicleRow>();
 
-    return result.results.map(rowToVehicle);
+    return mapRowsToVehicles(this.db, result.results);
   }
 
   async obterPorId(id: string): Promise<Vehicle | null> {
@@ -140,7 +187,10 @@ export class D1VehicleRepository implements VehicleRepository {
       .bind(id)
       .first<VehicleRow>();
 
-    return result ? rowToVehicle(result) : null;
+    if (!result) return null;
+
+    const mediaByVehicle = await loadMediaReferences(this.db, [id]);
+    return rowToVehicle(result, mediaByVehicle.get(id) ?? []);
   }
 
   async criar(veiculo: Vehicle): Promise<Vehicle> {
@@ -164,7 +214,7 @@ export class D1VehicleRepository implements VehicleRepository {
   async atualizar(id: string, dados: VehicleUpdate): Promise<Vehicle> {
     const atual = await this.obterPorId(id);
     if (!atual) {
-      throw new Error(`Veículo \"${id}\" não encontrado.`);
+      throw new Error(`Veículo "${id}" não encontrado.`);
     }
 
     const atualizado: Vehicle = { ...atual, ...dados, id: atual.id };
