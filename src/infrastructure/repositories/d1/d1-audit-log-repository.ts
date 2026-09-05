@@ -19,16 +19,32 @@ function parseMetadata(value: string | null): Record<string, unknown> | undefine
 }
 
 function mapRow(row: Record<string, unknown>): AuditLog {
-  return {
-    id: String(row.id),
-    actorId: row.actor_id == null ? undefined : String(row.actor_id),
-    action: String(row.action),
-    entityType: String(row.entity_type) as AuditEntityType,
-    entityId: row.entity_id == null ? undefined : String(row.entity_id),
-    result: String(row.result) as AuditResult,
-    occurredAt: String(row.occurred_at),
-    metadata: parseMetadata(row.metadata_json == null ? null : String(row.metadata_json)),
+  const log: AuditLog = {
+    id: String(row["id"]),
+    action: String(row["action"]),
+    entityType: String(row["entity_type"]) as AuditEntityType,
+    result: String(row["result"]) as AuditResult,
+    occurredAt: String(row["occurred_at"]),
   };
+
+  const actorId = row["actor_id"];
+  if (actorId != null) {
+    log.actorId = String(actorId);
+  }
+
+  const entityId = row["entity_id"];
+  if (entityId != null) {
+    log.entityId = String(entityId);
+  }
+
+  const metadata = parseMetadata(
+    row["metadata_json"] == null ? null : String(row["metadata_json"]),
+  );
+  if (metadata !== undefined) {
+    log.metadata = metadata;
+  }
+
+  return log;
 }
 
 export function createD1AuditLogRepository(db: D1DatabaseLike): AuditLogRepository {
