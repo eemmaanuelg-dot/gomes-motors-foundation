@@ -1,7 +1,9 @@
-import { existsSync, mkdirSync, rmSync } from "node:fs";
+import { existsSync, mkdirSync, rmSync, writeFile } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { resolve, join } from "node:path";
+import { promisify } from "node:util";
 
+const writeFileAsync = promisify(writeFile);
 const bucket = "gomes-motors-media-2026";
 const database = "gomes-motors-db";
 const root = process.cwd();
@@ -55,9 +57,7 @@ function run(args) {
     shell: process.platform === "win32",
   });
 
-  if (result.status !== 0) {
-    process.exit(result.status ?? 1);
-  }
+  if (result.status !== 0) process.exit(result.status ?? 1);
 }
 
 function sqlLiteral(value) {
@@ -84,7 +84,7 @@ async function download(url, filePath) {
     throw new Error(`Arquivo suspeito ou vazio para ${url} (${buffer.length} bytes)`);
   }
 
-  await Bun.write(filePath, buffer);
+  await writeFileAsync(filePath, buffer);
 }
 
 async function main() {
