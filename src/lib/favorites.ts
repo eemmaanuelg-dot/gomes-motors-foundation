@@ -22,6 +22,11 @@ function notificarFavoritos() {
   window.dispatchEvent(new Event(FAVORITOS_EVENT));
 }
 
+function salvarFavoritos(favoritos: Set<string>) {
+  window.localStorage.setItem(STORAGE_KEY, JSON.stringify([...favoritos]));
+  notificarFavoritos();
+}
+
 export function useFavoritos() {
   const [favoritos, setFavoritos] = useState<Set<string>>(new Set());
   const [hidratado, setHidratado] = useState(false);
@@ -56,5 +61,20 @@ export function useFavoritos() {
     window.setTimeout(notificarFavoritos, 0);
   };
 
-  return { favoritos, alternarFavorito };
+  const removerFavoritosInvalidos = (idsValidos: Iterable<string>) => {
+    const validos = new Set(idsValidos);
+    setFavoritos((atual) => {
+      const novos = new Set([...atual].filter((id) => validos.has(id)));
+      if (novos.size !== atual.size) salvarFavoritos(novos);
+      return novos;
+    });
+  };
+
+  const limparFavoritos = () => {
+    const vazios = new Set<string>();
+    setFavoritos(vazios);
+    salvarFavoritos(vazios);
+  };
+
+  return { favoritos, alternarFavorito, removerFavoritosInvalidos, limparFavoritos };
 }
