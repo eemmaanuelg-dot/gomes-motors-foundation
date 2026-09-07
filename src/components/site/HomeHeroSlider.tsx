@@ -120,6 +120,7 @@ export function HomeHeroSlider() {
               width={1920}
               height={1080}
               fetchPriority={index === 0 ? "high" : "auto"}
+              loading={index === 0 ? "eager" : "lazy"}
               decoding="async"
               className="absolute inset-0 h-full w-full object-cover"
               style={{ objectPosition: slide.position }}
