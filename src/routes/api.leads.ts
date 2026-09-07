@@ -85,7 +85,7 @@ export const Route = createFileRoute("/api/leads")({
           const now = new Date().toISOString();
           const leadId = crypto.randomUUID();
           const simulation = safeSimulation(body.simulation);
-          const simulationVehicleId = typeof simulation?.vehicleId === "string" ? simulation.vehicleId.trim() : "";
+          const simulationVehicleId = typeof simulation?.["vehicleId"] === "string" ? simulation["vehicleId"].trim() : "";
 
           if (simulationVehicleId) {
             const vehicle = await db.prepare(`SELECT id FROM vehicles WHERE id = ? LIMIT 1`).bind(simulationVehicleId).first<{ id: string }>();
