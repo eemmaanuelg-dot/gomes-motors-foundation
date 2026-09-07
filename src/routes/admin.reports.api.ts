@@ -12,7 +12,7 @@ export const Route = createFileRoute("/admin/reports/api")({ server: { handlers:
   if (!authorized(request)) return json({ error: "Acesso administrativo não autenticado." }, 401);
   if (!isSameOriginRequest(request)) return json({ error: "Origem da requisição não permitida." }, 403);
   const db = database();
-  const [stock, leads, pipeline, evaluations, negotiations, reservations, sales, financing, analytics] = await Promise.all([
+  const [stock, leads, pipeline, evaluations, negotiations, reservations, sales, financing, analytics, reviews] = await Promise.all([
     db.prepare(`SELECT status, COUNT(*) AS total FROM vehicles GROUP BY status`).all(),
     db.prepare(`SELECT intent, COUNT(*) AS total FROM leads GROUP BY intent ORDER BY total DESC`).all(),
     db.prepare(`SELECT status, COUNT(*) AS total FROM leads GROUP BY status ORDER BY total DESC`).all(),
@@ -22,6 +22,7 @@ export const Route = createFileRoute("/admin/reports/api")({ server: { handlers:
     db.prepare(`SELECT COUNT(*) AS total, COALESCE(SUM(final_price_cents), 0) AS gross_cents FROM sales`).first(),
     db.prepare(`SELECT status, COUNT(*) AS total FROM financing_operations GROUP BY status`).all(),
     db.prepare(`SELECT event_name, COUNT(*) AS total FROM analytics_events WHERE occurred_at >= datetime('now', '-30 days') GROUP BY event_name ORDER BY total DESC`).all(),
+    db.prepare(`SELECT status, COUNT(*) AS total FROM reviews GROUP BY status ORDER BY total DESC`).all(),
   ]);
-  return json({ stock: stock.results ?? [], leadsByIntent: leads.results ?? [], leadsByStatus: pipeline.results ?? [], evaluations: evaluations.results ?? [], negotiations: negotiations.results ?? [], reservations: reservations.results ?? [], sales: sales ?? { total: 0, gross_cents: 0 }, financing: financing.results ?? [], analyticsLast30Days: analytics.results ?? [] });
+  return json({ stock: stock.results ?? [], leadsByIntent: leads.results ?? [], leadsByStatus: pipeline.results ?? [], evaluations: evaluations.results ?? [], negotiations: negotiations.results ?? [], reservations: reservations.results ?? [], sales: sales ?? { total: 0, gross_cents: 0 }, financing: financing.results ?? [], analyticsLast30Days: analytics.results ?? [], reviews: reviews.results ?? [] });
 } } } });
