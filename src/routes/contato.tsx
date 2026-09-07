@@ -43,7 +43,7 @@ function ContatoPage() {
   const [contatoAberto, setContatoAberto] = useState(false);
 
   const registrarWhatsApp = () => {
-    trackAnalytics("whatsapp_click" as never);
+    trackAnalytics({ eventName: "whatsapp_click", metadata: { source: "contato" } });
   };
 
   return (
