@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import {
   ArrowLeft,
@@ -207,18 +207,7 @@ function SimulacaoFinanciamento({ veiculo }: { veiculo: Vehicle }) {
       <div className="mt-6 grid gap-5 sm:grid-cols-2">
         <label className="block">
           <span className="mb-1.5 block text-sm font-semibold text-foreground">Entrada</span>
-          <input
-            type="text"
-            inputMode="decimal"
-            autoComplete="off"
-            value={entrada}
-            onChange={(event) => atualizarEntrada(event.target.value)}
-            onBlur={confirmarEntrada}
-            onFocus={(event) => event.currentTarget.select()}
-            aria-invalid={!entradaValida && Boolean(entrada)}
-            placeholder="R$ 1.000,00"
-            className="w-full rounded-sm border border-border bg-secondary px-3 py-2.5 text-sm text-foreground outline-none focus:border-gold"
-          />
+          <input type="text" inputMode="decimal" autoComplete="off" value={entrada} onChange={(event) => atualizarEntrada(event.target.value)} onBlur={confirmarEntrada} onFocus={(event) => event.currentTarget.select()} aria-invalid={!entradaValida && Boolean(entrada)} placeholder="R$ 1.000,00" className="w-full rounded-sm border border-border bg-secondary px-3 py-2.5 text-sm text-foreground outline-none focus:border-gold" />
           <span className="mt-1 block text-xs text-muted-foreground">Entrada a partir de {formatarPreco(entradaMinima)}.</span>
           <span className="mt-1 block text-xs font-medium text-foreground">{percentualFormatado}% do valor do veículo</span>
         </label>
@@ -266,6 +255,20 @@ function DetalhesVeiculoPage() {
   const [imagemAtual, setImagemAtual] = useState(0);
   const [compartilhado, setCompartilhado] = useState(false);
   const [mostrarOpcoesInteresse, setMostrarOpcoesInteresse] = useState(false);
+
+  useEffect(() => {
+    if (!veiculo) return;
+    void fetch("/api/analytics", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        eventName: "vehicle_view",
+        vehicleId: veiculo.id,
+        metadata: { category: veiculo.categoria, status: veiculo.status },
+      }),
+      keepalive: true,
+    }).catch(() => undefined);
+  }, [veiculo?.id]);
 
   if (!veiculo) {
     return (
