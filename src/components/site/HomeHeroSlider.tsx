@@ -49,17 +49,27 @@ const AUTO_ADVANCE_MS = 6500;
 export function HomeHeroSlider() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(false);
   const touchStartX = useRef<number | null>(null);
 
   useEffect(() => {
-    if (paused) return;
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const updatePreference = () => setReducedMotion(mediaQuery.matches);
+
+    updatePreference();
+    mediaQuery.addEventListener("change", updatePreference);
+    return () => mediaQuery.removeEventListener("change", updatePreference);
+  }, []);
+
+  useEffect(() => {
+    if (paused || reducedMotion) return;
 
     const timer = window.setInterval(() => {
       setActiveIndex((current) => (current + 1) % SLIDES.length);
     }, AUTO_ADVANCE_MS);
 
     return () => window.clearInterval(timer);
-  }, [paused]);
+  }, [paused, reducedMotion]);
 
   const previous = () => {
     setActiveIndex((current) => (current - 1 + SLIDES.length) % SLIDES.length);
