@@ -140,12 +140,14 @@ function RootComponent() {
       if (!button || button.textContent?.trim() !== "Editar") return;
 
       window.setTimeout(() => {
-        const forms = document.querySelectorAll("form");
-        const editor = forms.item(forms.length - 1);
+        const heading = Array.from(document.querySelectorAll("h2")).find(
+          (element) => element.textContent?.trim() === "Editar veículo",
+        );
+        const editor = heading?.closest("section");
         if (editor instanceof HTMLElement) {
           editor.scrollIntoView({ behavior: "smooth", block: "start" });
         }
-      }, 50);
+      }, 100);
     };
 
     document.addEventListener("click", handleEditClick);
