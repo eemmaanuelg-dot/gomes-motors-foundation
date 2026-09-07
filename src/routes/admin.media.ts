@@ -10,6 +10,7 @@ const runtimeEnv = env as unknown as RuntimeEnv;
 
 const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
 const MAX_MULTIPART_BYTES = MAX_IMAGE_BYTES + 64 * 1024;
+const MAX_JSON_BYTES = 16 * 1024;
 const MIME_TO_EXTENSION: Record<string, string> = {
   "image/jpeg": "jpg",
   "image/png": "png",
@@ -35,6 +36,13 @@ async function audit(database: D1DatabaseLike, request: Request, action: string,
     .prepare(`INSERT INTO audit_logs (id, actor_id, action, entity_type, entity_id, result, occurred_at, metadata_json) VALUES (?, ?, ?, 'vehicle_media', ?, ?, ?, ?)`)
     .bind(crypto.randomUUID(), request.headers.get("cf-access-authenticated-user-email") ?? "cloudflare-access", action, entityId, result, new Date().toISOString(), JSON.stringify(metadata))
     .run();
+}
+
+async function getMedia(database: D1DatabaseLike, mediaId: string) {
+  return database
+    .prepare(`SELECT id, vehicle_id, object_key, mime_type, display_order, alt_text FROM vehicle_media WHERE id = ? LIMIT 1`)
+    .bind(mediaId)
+    .first<{ id: string; vehicle_id: string; object_key: string; mime_type: string; display_order: number; alt_text: string | null }>();
 }
 
 export const Route = createFileRoute("/admin/media")({
@@ -94,12 +102,60 @@ export const Route = createFileRoute("/admin/media")({
           return json({ error: message }, 400);
         }
       },
+      PATCH: async ({ request }) => {
+        if (!authorized(request)) return json({ error: "Acesso administrativo não autenticado." }, 401);
+        const crossOriginError = originError(request);
+        if (crossOriginError) return crossOriginError;
+        if (!hasAcceptableJsonContentType(request)) return json({ error: "Content-Type inválido." }, 415);
+        if (exceedsBodyLimit(request, MAX_JSON_BYTES)) return json({ error: "Payload excede o limite permitido." }, 413);
+
+        try {
+          const body = await request.json() as { action?: string; mediaId?: string; order?: number; altText?: string };
+          const action = String(body.action ?? "").trim();
+          const mediaId = String(body.mediaId ?? "").trim().slice(0, 120);
+          if (!mediaId) throw new Error("Mídia é obrigatória.");
+
+          const media = await getMedia(runtimeEnv.DB, mediaId);
+          if (!media) throw new Error("Mídia não encontrada.");
+          const now = new Date().toISOString();
+
+          if (action === "setOrder") {
+            const order = Number(body.order);
+            if (!Number.isInteger(order) || order < 0 || order > 999) throw new Error("Ordem da mídia inválida.");
+            await runtimeEnv.DB.prepare(`UPDATE vehicle_media SET display_order = ?, updated_at = ? WHERE id = ?`).bind(order, now, mediaId).run();
+            await audit(runtimeEnv.DB, request, "vehicle.media.order.update", media.vehicle_id, "success", { mediaId, from: media.display_order, to: order });
+            return json({ ok: true });
+          }
+
+          if (action === "setPrimary") {
+            await runtimeEnv.DB.batch([
+              runtimeEnv.DB.prepare(`UPDATE vehicle_media SET display_order = display_order + 1, updated_at = ? WHERE vehicle_id = ? AND id <> ? AND display_order <= 0`).bind(now, media.vehicle_id, mediaId),
+              runtimeEnv.DB.prepare(`UPDATE vehicle_media SET display_order = 0, updated_at = ? WHERE id = ?`).bind(now, mediaId),
+            ]);
+            await audit(runtimeEnv.DB, request, "vehicle.media.primary.update", media.vehicle_id, "success", { mediaId });
+            return json({ ok: true });
+          }
+
+          if (action === "setAlt") {
+            const altText = String(body.altText ?? "").trim().slice(0, 300);
+            await runtimeEnv.DB.prepare(`UPDATE vehicle_media SET alt_text = ?, updated_at = ? WHERE id = ?`).bind(altText || null, now, mediaId).run();
+            await audit(runtimeEnv.DB, request, "vehicle.media.alt.update", media.vehicle_id, "success", { mediaId });
+            return json({ ok: true });
+          }
+
+          throw new Error("Ação de mídia inválida.");
+        } catch (error) {
+          const message = error instanceof Error ? error.message : "Não foi possível atualizar a mídia.";
+          try { await audit(runtimeEnv.DB, request, "vehicle.media.update", null, "failure", { message }); } catch { /* auditoria não deve mascarar o erro original */ }
+          return json({ error: message }, 400);
+        }
+      },
       DELETE: async ({ request }) => {
         if (!authorized(request)) return json({ error: "Acesso administrativo não autenticado." }, 401);
         const crossOriginError = originError(request);
         if (crossOriginError) return crossOriginError;
         if (!hasAcceptableJsonContentType(request)) return json({ error: "Content-Type inválido." }, 415);
-        if (exceedsBodyLimit(request, 16 * 1024)) return json({ error: "Payload excede o limite permitido." }, 413);
+        if (exceedsBodyLimit(request, MAX_JSON_BYTES)) return json({ error: "Payload excede o limite permitido." }, 413);
 
         try {
           const body = await request.json() as { mediaId?: string };
