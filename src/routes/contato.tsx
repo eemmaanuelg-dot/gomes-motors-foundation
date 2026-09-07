@@ -8,6 +8,7 @@ import {
   WHATSAPP_TELEFONE,
   WHATSAPP_TELEFONE_HREF,
 } from "@/lib/contact";
+import { trackAnalytics } from "@/lib/analytics";
 import { criarWhatsAppUrl } from "@/lib/vehicle-utils";
 
 const { company, contact, location, operations } = dealershipConfig;
@@ -41,6 +42,10 @@ const contato = {
 function ContatoPage() {
   const [contatoAberto, setContatoAberto] = useState(false);
 
+  const registrarWhatsApp = () => {
+    trackAnalytics("whatsapp_click" as never);
+  };
+
   return (
     <main>
       <section className="border-b border-border bg-card/50">
@@ -64,7 +69,7 @@ function ContatoPage() {
             <MessageCircle className="h-7 w-7 text-gold" />
             <h2 className="mt-5 text-lg font-semibold text-foreground">WhatsApp</h2>
             <p className="mt-2 text-sm leading-6 text-muted-foreground">Atendimento comercial direto para dúvidas, propostas e informações sobre o estoque.</p>
-            <a href={whatsappUrl} target="_blank" rel="noreferrer" className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-gold hover:text-foreground">Chamar no WhatsApp <ArrowUpRight className="h-4 w-4" /></a>
+            <a href={whatsappUrl} target="_blank" rel="noreferrer" onClick={registrarWhatsApp} className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-gold hover:text-foreground">Chamar no WhatsApp <ArrowUpRight className="h-4 w-4" /></a>
           </article>
 
           <article className="rounded-sm border border-border bg-card p-7">
@@ -81,7 +86,7 @@ function ContatoPage() {
             <h2 className="mt-3 text-2xl font-bold text-foreground">Conte o que você precisa.</h2>
             <p className="mt-4 text-sm leading-7 text-muted-foreground">Podemos ajudar em diferentes momentos da negociação: encontrar um carro ou uma moto no estoque, vender seu veículo, avaliar uma troca, conversar sobre consignação ou entender possibilidades de financiamento.</p>
             <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-              <a href={whatsappUrl} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 rounded-sm bg-brand-red px-5 py-3 text-sm font-semibold text-brand-red-foreground hover:opacity-90"><MessageCircle className="h-4 w-4" />Falar pelo WhatsApp</a>
+              <a href={whatsappUrl} target="_blank" rel="noreferrer" onClick={registrarWhatsApp} className="inline-flex items-center justify-center gap-2 rounded-sm bg-brand-red px-5 py-3 text-sm font-semibold text-brand-red-foreground hover:opacity-90"><MessageCircle className="h-4 w-4" />Falar pelo WhatsApp</a>
               <button type="button" onClick={() => setContatoAberto(true)} className="inline-flex items-center justify-center gap-2 rounded-sm border border-border px-5 py-3 text-sm font-semibold text-foreground hover:bg-accent"><Phone className="h-4 w-4" />Ver contato</button>
             </div>
           </section>
@@ -113,7 +118,7 @@ function ContatoPage() {
             <div className="mt-6 space-y-4">
               {contato.email && <a href={`mailto:${contato.email}`} className="flex items-start gap-4 rounded-sm border border-border p-4 hover:bg-accent"><Mail className="mt-0.5 h-5 w-5 shrink-0 text-gold" /><span><strong className="block text-sm text-foreground">E-mail</strong><span className="text-sm text-muted-foreground">{contato.email}</span></span></a>}
               <a href={contato.telefoneHref} className="flex items-start gap-4 rounded-sm border border-border p-4 hover:bg-accent"><Phone className="mt-0.5 h-5 w-5 shrink-0 text-gold" /><span><strong className="block text-sm text-foreground">Telefone para ligação</strong><span className="text-sm text-muted-foreground">{contato.telefone}</span></span></a>
-              <a href={whatsappUrl} target="_blank" rel="noreferrer" className="flex items-start gap-4 rounded-sm border border-border p-4 hover:bg-accent"><MessageCircle className="mt-0.5 h-5 w-5 shrink-0 text-gold" /><span><strong className="block text-sm text-foreground">WhatsApp</strong><span className="text-sm text-muted-foreground">{contato.whatsapp}</span></span></a>
+              <a href={whatsappUrl} target="_blank" rel="noreferrer" onClick={registrarWhatsApp} className="flex items-start gap-4 rounded-sm border border-border p-4 hover:bg-accent"><MessageCircle className="mt-0.5 h-5 w-5 shrink-0 text-gold" /><span><strong className="block text-sm text-foreground">WhatsApp</strong><span className="text-sm text-muted-foreground">{contato.whatsapp}</span></span></a>
               <div className="flex items-start gap-4 rounded-sm border border-border p-4"><MapPin className="mt-0.5 h-5 w-5 shrink-0 text-gold" /><span><strong className="block text-sm text-foreground">Endereço da loja</strong><span className="text-sm leading-6 text-muted-foreground">{contato.endereco}</span></span></div>
             </div>
           </section>
