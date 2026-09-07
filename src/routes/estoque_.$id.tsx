@@ -20,8 +20,8 @@ import { publicVehicleCatalog } from "@/application/vehicles/public-catalog";
 import type { Vehicle } from "@/domain/vehicles/types";
 import { VEICULOS, obterTituloVeiculo } from "@/data/vehicles";
 import { useFavoritos } from "@/lib/favorites";
+import { WhatsAppLink } from "@/components/site/WhatsAppLink";
 import {
-  criarWhatsAppUrl,
   formatarKm,
   formatarPreco,
   mensagemComercial,
@@ -241,10 +241,10 @@ function SimulacaoFinanciamento({ veiculo }: { veiculo: Vehicle }) {
         <p className="mt-2 text-xs leading-relaxed text-muted-foreground">Taxa indicativa de {taxaFormatada} % a.m. Esta é uma estimativa educativa; condições reais dependem da análise de crédito e da instituição financeira. O valor apresentado não representa uma proposta ou aprovação de crédito.</p>
       </div>
 
-      <a href={criarWhatsAppUrl(mensagemFinanciamento)} target="_blank" rel="noreferrer" className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-sm bg-brand-red px-5 py-3 text-sm font-semibold text-brand-red-foreground transition-opacity hover:opacity-90">
+      <WhatsAppLink message={mensagemFinanciamento} vehicleId={veiculo.id} intent="financiar" className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-sm bg-brand-red px-5 py-3 text-sm font-semibold text-brand-red-foreground transition-opacity hover:opacity-90">
         <MessageCircle className="h-4 w-4" />
         Quero uma proposta real
-      </a>
+      </WhatsAppLink>
     </section>
   );
 }
@@ -332,9 +332,9 @@ function DetalhesVeiculoPage() {
           <button type="button" onClick={() => setMostrarOpcoesInteresse((aberto) => !aberto)} disabled={veiculo.status === "vendido"} className={`mt-8 inline-flex w-full items-center justify-center gap-2 rounded-sm px-5 py-3 text-sm font-semibold transition-opacity ${veiculo.status === "vendido" ? "cursor-not-allowed bg-secondary text-muted-foreground" : "bg-brand-red text-brand-red-foreground hover:opacity-90"}`}><MessageCircle className="h-5 w-5" />{veiculo.status === "disponivel" ? "Tenho interesse" : veiculo.status === "reservado" ? "Consultar disponibilidade" : "Veículo vendido"}</button>
 
           {mostrarOpcoesInteresse && veiculo.status !== "vendido" && <div className="mt-3 rounded-sm border border-border bg-secondary p-4" aria-label="Opções de interesse"><p className="text-sm font-bold text-foreground">Como podemos ajudar?</p><p className="mt-1 text-xs leading-relaxed text-muted-foreground">O veículo já está identificado. Escolha uma opção e continue o atendimento diretamente pelo WhatsApp.</p><div className="mt-4 grid gap-2 sm:grid-cols-3">
-            <a href={criarWhatsAppUrl(mensagemInteressePorTipo(veiculo, "comprar"))} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 rounded-sm border border-border bg-card px-3 py-3 text-sm font-semibold text-foreground transition-colors hover:border-gold hover:text-gold"><ShoppingCart className="h-4 w-4" />Comprar</a>
-            <a href={criarWhatsAppUrl(mensagemInteressePorTipo(veiculo, "trocar"))} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 rounded-sm border border-border bg-card px-3 py-3 text-sm font-semibold text-foreground transition-colors hover:border-gold hover:text-gold"><ArrowLeftRight className="h-4 w-4" />Trocar</a>
-            <a href={criarWhatsAppUrl(mensagemInteressePorTipo(veiculo, "financiar"))} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 rounded-sm border border-border bg-card px-3 py-3 text-sm font-semibold text-foreground transition-colors hover:border-gold hover:text-gold"><Calculator className="h-4 w-4" />Financiar</a>
+            <WhatsAppLink message={mensagemInteressePorTipo(veiculo, "comprar")} vehicleId={veiculo.id} intent="comprar" className="inline-flex items-center justify-center gap-2 rounded-sm border border-border bg-card px-3 py-3 text-sm font-semibold text-foreground transition-colors hover:border-gold hover:text-gold"><ShoppingCart className="h-4 w-4" />Comprar</WhatsAppLink>
+            <WhatsAppLink message={mensagemInteressePorTipo(veiculo, "trocar")} vehicleId={veiculo.id} intent="trocar" className="inline-flex items-center justify-center gap-2 rounded-sm border border-border bg-card px-3 py-3 text-sm font-semibold text-foreground transition-colors hover:border-gold hover:text-gold"><ArrowLeftRight className="h-4 w-4" />Trocar</WhatsAppLink>
+            <WhatsAppLink message={mensagemInteressePorTipo(veiculo, "financiar")} vehicleId={veiculo.id} intent="financiar" className="inline-flex items-center justify-center gap-2 rounded-sm border border-border bg-card px-3 py-3 text-sm font-semibold text-foreground transition-colors hover:border-gold hover:text-gold"><Calculator className="h-4 w-4" />Financiar</WhatsAppLink>
           </div></div>}
         </section>
       </div>
@@ -344,7 +344,7 @@ function DetalhesVeiculoPage() {
           <section className="rounded-sm border border-border bg-card p-6 sm:p-8"><h2 className="text-xl font-bold text-foreground">Sobre este veículo</h2><p className="mt-4 text-sm leading-7 text-muted-foreground">{veiculo.descricao}</p></section>
           <section className="rounded-sm border border-border bg-card p-6 sm:p-8"><h2 className="text-xl font-bold text-foreground">Equipamentos</h2><div className="mt-5 grid gap-3 sm:grid-cols-2">{veiculo.equipamentos.map((equipamento) => <div key={equipamento} className="flex items-start gap-2 text-sm text-muted-foreground"><Check className="mt-0.5 h-4 w-4 shrink-0 text-gold" />{equipamento}</div>)}</div></section>
           <section className="rounded-sm border border-border bg-card p-6 sm:p-8"><h2 className="text-xl font-bold text-foreground">Ficha técnica</h2><dl className="mt-5 grid gap-px overflow-hidden rounded-sm border border-border bg-border sm:grid-cols-2">{Object.entries(veiculo.fichaTecnica).map(([chave, valor]) => <div key={chave} className="bg-card p-4"><dt className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{chave.replace(/^./, (letra) => letra.toUpperCase())}</dt><dd className="mt-1 text-sm font-semibold text-foreground">{valor}</dd></div>)}</dl></section>
-          <section className="rounded-sm border border-border bg-card p-6 sm:p-8"><h2 className="text-xl font-bold text-foreground">Outras formas de negociar</h2><div className="mt-5 grid gap-3 sm:grid-cols-2">{[["Financiar", "uma proposta de financiamento"], ["Trocar", "uma troca pelo seu veículo"], ["Consignar", "deixar seu veículo em consignação"], ["Vender", "avaliar seu veículo para venda"]].map(([label, assunto]) => <a key={label} href={criarWhatsAppUrl(mensagemComercial(veiculo, assunto ?? ""))} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 rounded-sm border border-border px-4 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-accent"><MessageCircle className="h-4 w-4 text-gold" />{label}</a>)}</div></section>
+          <section className="rounded-sm border border-border bg-card p-6 sm:p-8"><h2 className="text-xl font-bold text-foreground">Outras formas de negociar</h2><div className="mt-5 grid gap-3 sm:grid-cols-2">{[["Financiar", "uma proposta de financiamento", "financiar"], ["Trocar", "uma troca pelo seu veículo", "trocar"], ["Consignar", "deixar seu veículo em consignação", "consignar"], ["Vender", "avaliar seu veículo para venda", "vender"]].map(([label, assunto, intent]) => <WhatsAppLink key={label} message={mensagemComercial(veiculo, assunto)} vehicleId={veiculo.id} intent={intent} className="inline-flex items-center justify-center gap-2 rounded-sm border border-border px-4 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-accent"><MessageCircle className="h-4 w-4 text-gold" />{label}</WhatsAppLink>)}</div></section>
         </div>
         <aside><SimulacaoFinanciamento veiculo={veiculo} /></aside>
       </div>
