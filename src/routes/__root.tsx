@@ -100,7 +100,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "stylesheet", href: appCss },
       { rel: "icon", href: favicon, type: "image/svg+xml" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com" },
       {
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap",
@@ -129,6 +129,28 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+
+  useEffect(() => {
+    if (window.location.pathname !== "/admin") return;
+
+    const handleEditClick = (event: MouseEvent) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+      const button = target.closest("button");
+      if (!button || button.textContent?.trim() !== "Editar") return;
+
+      window.setTimeout(() => {
+        const forms = document.querySelectorAll("form");
+        const editor = forms.item(forms.length - 1);
+        if (editor instanceof HTMLElement) {
+          editor.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }, 50);
+    };
+
+    document.addEventListener("click", handleEditClick);
+    return () => document.removeEventListener("click", handleEditClick);
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
