@@ -1,11 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
-import { ArrowLeft, CheckCircle2, RefreshCw } from "lucide-react";
-import { Link } from "@tanstack/react-router";
-import { createFileRoute } from "@tanstack/react-router";
+import { ArrowLeft, RefreshCw } from "lucide-react";
+import { Link, createFileRoute } from "@tanstack/react-router";
 
 type Row = Record<string, unknown>;
 type Data = { evaluations: Row[]; negotiations: Row[]; reservations: Row[]; sales: Row[]; financing: Row[] };
-const labels: Record<string, string> = { pendente: "Pendente", aprovada: "Aprovada", recusada: "Recusada", convertida: "Convertida", aberta: "Aberta", proposta: "Proposta", contraproposta: "Contraproposta", fechada: "Fechada", perdida: "Perdida", ativa: "Ativa", liberada: "Liberada", convertida_reserva: "Convertida", expirada: "Expirada", cancelada: "Cancelada", simulacao_interna: "Simulação interna", em_analise: "Em análise", aprovado: "Aprovado", recusado: "Recusado", contratado: "Contratado", cancelado: "Cancelado" };
+const labels: Record<string, string> = { pendente: "Pendente", aprovada: "Aprovada", recusada: "Recusada", convertida: "Convertida", aberta: "Aberta", proposta: "Proposta", contraproposta: "Contraproposta", fechada: "Fechada", perdida: "Perdida", ativa: "Ativa", liberada: "Liberada", expirada: "Expirada", cancelada: "Cancelada", simulacao_interna: "Simulação interna", em_analise: "Em análise", aprovado: "Aprovado", recusado: "Recusado", contratado: "Contratado", cancelado: "Cancelado" };
 const money = (value: unknown) => new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(Number(value ?? 0) / 100);
 
 export const Route = createFileRoute("/admin/operacao")({ component: OperationPage });
