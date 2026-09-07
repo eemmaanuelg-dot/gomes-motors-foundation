@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 const STORAGE_KEY = "gomes-motors-favoritos";
 const FAVORITOS_EVENT = "gomes-motors:favoritos";
@@ -51,7 +51,7 @@ export function useFavoritos() {
     };
   }, []);
 
-  const alternarFavorito = (id: string) => {
+  const alternarFavorito = useCallback((id: string) => {
     setFavoritos((atual) => {
       const novo = new Set(atual);
       if (novo.has(id)) novo.delete(id);
@@ -59,22 +59,22 @@ export function useFavoritos() {
       return novo;
     });
     window.setTimeout(notificarFavoritos, 0);
-  };
+  }, []);
 
-  const removerFavoritosInvalidos = (idsValidos: Iterable<string>) => {
+  const removerFavoritosInvalidos = useCallback((idsValidos: Iterable<string>) => {
     const validos = new Set(idsValidos);
     setFavoritos((atual) => {
       const novos = new Set([...atual].filter((id) => validos.has(id)));
       if (novos.size !== atual.size) salvarFavoritos(novos);
-      return novos;
+      return novos.size === atual.size ? atual : novos;
     });
-  };
+  }, []);
 
-  const limparFavoritos = () => {
+  const limparFavoritos = useCallback(() => {
     const vazios = new Set<string>();
     setFavoritos(vazios);
     salvarFavoritos(vazios);
-  };
+  }, []);
 
   return { favoritos, alternarFavorito, removerFavoritosInvalidos, limparFavoritos };
 }
