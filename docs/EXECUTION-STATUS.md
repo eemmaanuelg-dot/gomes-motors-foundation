@@ -47,34 +47,43 @@ Implementado:
 **Pendente operacional:** executar a migração das imagens no R2 remoto e validar os objetos/banco remoto.
 
 ## Etapa 05 — Operação administrativa e comercial
-**Status: FUNDAÇÃO IMPLEMENTADA; CONTINUIDADE EM DESENVOLVIMENTO**
+**Status: EM DESENVOLVIMENTO CONTÍNUO**
 
-Implementado:
-- painel administrativo existente para estoque, preços/financiamento, mídia e auditoria;
-- API protegida `/admin/crm/api` para atendimento de leads;
-- interface `/admin/crm` para consulta e atualização de leads;
-- API protegida `/admin/commercial/api` para avaliações, negociações, reservas, vendas e financiamento;
-- central `/admin/operacao` para visualização dessas operações;
-- API protegida `/admin/settings/api` para configurações comerciais;
-- API protegida `/admin/reports/api` para indicadores operacionais;
-- interface `/admin/relatorios` para relatórios consolidados;
-- interface `/admin/configuracoes` para parâmetros comerciais;
+Implementado e validado no código:
+- painel administrativo para estoque, preços/financiamento, mídia e auditoria;
+- API protegida `/admin/crm/api` e interface `/admin/crm`;
+- API protegida `/admin/commercial/api` e central `/admin/operacao`;
+- API protegida `/admin/settings/api` e interface `/admin/configuracoes`;
+- API protegida `/admin/reports/api` e interface `/admin/relatorios`;
 - coleta pública `/api/analytics` com whitelist de eventos e persistência no D1;
-- navegação do painel principal integrada às áreas de Leads/CRM, Operação comercial, Relatórios e Configurações, preservando os módulos administrativos existentes de Dashboard, Estoque, Preços/Financiamento, Mídia e Auditoria.
+- navegação administrativa integrada às áreas comerciais;
+- edição completa de veículos em `/admin/editar-veiculo/:id`;
+- gerenciamento dedicado de galeria em `/admin/galeria/:id`, com upload, exclusão, ordem, imagem principal e texto alternativo;
+- preview administrativo em `/admin/preview/:id`, inclusive para veículos não publicados;
+- formulário público de atendimento integrado a `/api/leads` e ao CRM através da página `/contato`;
+- analytics de intenção comercial após envio do formulário.
 
-### Continuidade da Etapa 05
+### Bloco atual — continuidade
 
-Concluído neste bloco:
-1. Integração da navegação do painel principal às novas áreas comerciais.
+Concluído neste ciclo:
+1. Correção da tipagem do patch da galeria e validação de build.
+2. Gerenciamento dedicado da galeria.
+3. Preview administrativo conectado à galeria.
+4. Formulário público de leads integrado ao endpoint `/api/leads`.
+5. Registro de intenção comercial no analytics.
 
 Próximos blocos:
-2. Integrar criação de leads aos pontos públicos de intenção/contato.
-3. Completar formulários de criação/edição na Central de Operação.
-4. Revisar atomicidade e regras de transição de reserva/venda.
-5. Integrar analytics aos principais eventos reais do frontend.
-6. Consolidar autenticação/permissões administrativas e proteção das rotas de UI.
-7. Fechar documentação operacional e checklist de produção.
-8. Depois do bloco de código, executar validação remota do D1/R2 e rodada final de testes do catálogo/admin.
+6. Integrar o formulário de lead aos pontos públicos de intenção relacionados a veículos, financiamento e serviços, preservando a experiência atual.
+7. Revisar atomicidade e regras de transição de reserva/venda.
+8. Consolidar autenticação/permissões administrativas e proteção das rotas de UI.
+9. Revisar analytics, deduplicação e proteção contra abuso.
+10. Fechar documentação operacional e checklist de produção.
+11. Depois do bloco de código, executar validação remota do D1/R2 e rodada final de testes do catálogo/admin.
+
+## Validações de build
+
+- Build validado com sucesso no fluxo de GitHub Actions após as correções recentes de tipagem.
+- O último build em andamento deste ciclo deve ser considerado pendente até sua conclusão; não registrar sucesso antecipadamente.
 
 ## Regra de continuidade
 
