@@ -3,8 +3,8 @@ import {
   Outlet,
   Link,
   createRootRouteWithContext,
-  useLocation,
   useRouter,
+  useLocation,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
@@ -131,19 +131,20 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-  const { pathname } = useLocation();
+  const location = useLocation();
 
   useEffect(() => {
-    if (pathname.startsWith("/admin") || pathname.startsWith("/api")) return;
+    const path = location.pathname;
+    if (path.startsWith("/admin") || path.startsWith("/api")) return;
 
     trackAnalytics({
       eventName: "page_view",
-      metadata: { path: pathname, title: document.title },
+      metadata: { path, title: document.title },
     });
-  }, [pathname]);
+  }, [location.pathname]);
 
   useEffect(() => {
-    if (pathname !== "/admin") return;
+    if (window.location.pathname !== "/admin") return;
 
     const handleEditClick = (event: MouseEvent) => {
       const target = event.target;
@@ -164,7 +165,7 @@ function RootComponent() {
 
     document.addEventListener("click", handleEditClick);
     return () => document.removeEventListener("click", handleEditClick);
-  }, [pathname]);
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
