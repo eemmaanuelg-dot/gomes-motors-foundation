@@ -7,14 +7,16 @@ type WhatsAppLinkProps = Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href" | 
   message: string;
   vehicleId?: string;
   intent?: string;
+  metadata?: Record<string, unknown>;
 };
 
-export function WhatsAppLink({ message, vehicleId, intent, children, ...props }: WhatsAppLinkProps) {
+export function WhatsAppLink({ message, vehicleId, intent, metadata, children, ...props }: WhatsAppLinkProps) {
   const handleClick: MouseEventHandler<HTMLAnchorElement> = () => {
     trackAnalytics({
       eventName: "whatsapp_click",
       ...(vehicleId ? { vehicleId } : {}),
       metadata: {
+        ...metadata,
         ...(intent ? { intent } : {}),
       },
     });
