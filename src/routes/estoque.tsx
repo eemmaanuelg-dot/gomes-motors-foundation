@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import {
   ArrowLeftRight,
@@ -239,13 +239,17 @@ function CardVeiculo({ veiculo, favorito, onAlternarFavorito }: { veiculo: Veicu
 
 function EstoquePage() {
   const veiculosDisponiveis = Route.useLoaderData();
-  const { favoritos, alternarFavorito } = useFavoritos();
+  const { favoritos, alternarFavorito, removerFavoritosInvalidos, limparFavoritos } = useFavoritos();
   const { favoritos: favoritosNaUrl } = Route.useSearch();
   const [categoria, setCategoria] = useState<Categoria>("todos");
   const [filtrosAbertos, setFiltrosAbertos] = useState(false);
   const [filtros, setFiltros] = useState<Filtros>(FILTROS_VAZIOS);
   const [busca, setBusca] = useState("");
   const [ordenacao, setOrdenacao] = useState<Ordenacao>("relevantes");
+
+  useEffect(() => {
+    removerFavoritosInvalidos(veiculosDisponiveis.map((veiculo) => veiculo.id));
+  }, [veiculosDisponiveis, removerFavoritosInvalidos]);
 
   const alterarCategoria = (novaCategoria: Categoria) => {
     setCategoria(novaCategoria);
@@ -294,6 +298,9 @@ function EstoquePage() {
 
   const possuiFiltrosAtivos = Object.values(filtros).some(Boolean) || busca.trim().length > 0 || ordenacao !== "relevantes";
   const limparFiltros = () => { setFiltros(FILTROS_VAZIOS); setBusca(""); setOrdenacao("relevantes"); };
+  const confirmarLimpezaFavoritos = () => {
+    if (window.confirm("Tem certeza que deseja limpar todos os favoritos?")) limparFavoritos();
+  };
   const textoResultados = veiculos.length === 1 ? "1 veículo encontrado" : `${veiculos.length} veículos encontrados`;
 
   return (
@@ -337,6 +344,7 @@ function EstoquePage() {
             <p className="text-sm text-muted-foreground">{textoResultados}</p>
             <div className="flex items-center gap-4">
               {!favoritosNaUrl && favoritos.size > 0 && <Link to="/estoque" search={{ favoritos: true }} className="inline-flex items-center gap-1.5 text-sm font-medium text-gold hover:text-foreground"><Heart className="h-4 w-4" />Favoritos ({favoritos.size})</Link>}
+              {favoritosNaUrl && favoritos.size > 0 && <button type="button" onClick={confirmarLimpezaFavoritos} className="inline-flex items-center gap-1.5 text-sm font-medium text-brand-red hover:underline">Limpar favoritos</button>}
               {favoritosNaUrl && <a href="/estoque" className="text-sm font-medium text-gold hover:text-foreground">Voltar ao estoque</a>}
               {possuiFiltrosAtivos && !favoritosNaUrl && <button type="button" onClick={limparFiltros} className="text-sm font-medium text-gold hover:text-foreground">Limpar filtros</button>}
             </div>
