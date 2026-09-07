@@ -17,6 +17,7 @@ import {
 import { publicVehicleCatalog } from "@/application/vehicles/public-catalog";
 import type { Vehicle as Veiculo } from "@/domain/vehicles/types";
 import { useFavoritos } from "@/lib/favorites";
+import { trackAnalytics } from "@/lib/analytics";
 import {
   criarWhatsAppUrl,
   formatarKm,
@@ -251,9 +252,17 @@ function EstoquePage() {
     removerFavoritosInvalidos(veiculosDisponiveis.map((veiculo) => veiculo.id));
   }, [veiculosDisponiveis, removerFavoritosInvalidos]);
 
+  const registrarFiltro = (filter: string, value: string) => {
+    trackAnalytics({
+      eventName: "filter_use",
+      metadata: { filter, value },
+    });
+  };
+
   const alterarCategoria = (novaCategoria: Categoria) => {
     setCategoria(novaCategoria);
     setFiltros(FILTROS_VAZIOS);
+    registrarFiltro("categoria", novaCategoria);
   };
   const alterarFiltro = (chave: keyof Filtros, valor: string) => {
     setFiltros((atual) => {
@@ -262,6 +271,12 @@ function EstoquePage() {
       if (chave === "modelo") proximo.versao = "";
       return proximo;
     });
+    if (valor) registrarFiltro(chave, valor);
+  };
+
+  const alterarOrdenacao = (novaOrdenacao: Ordenacao) => {
+    setOrdenacao(novaOrdenacao);
+    if (novaOrdenacao !== "relevantes") registrarFiltro("ordenacao", novaOrdenacao);
   };
 
   const veiculos = useMemo(() => {
@@ -297,7 +312,12 @@ function EstoquePage() {
   }, [veiculosDisponiveis, busca, categoria, favoritos, favoritosNaUrl, filtros, ordenacao]);
 
   const possuiFiltrosAtivos = Object.values(filtros).some(Boolean) || busca.trim().length > 0 || ordenacao !== "relevantes";
-  const limparFiltros = () => { setFiltros(FILTROS_VAZIOS); setBusca(""); setOrdenacao("relevantes"); };
+  const limparFiltros = () => {
+    setFiltros(FILTROS_VAZIOS);
+    setBusca("");
+    setOrdenacao("relevantes");
+    registrarFiltro("limpar", "todos");
+  };
   const confirmarLimpezaFavoritos = () => {
     if (window.confirm("Tem certeza que deseja limpar todos os favoritos?")) limparFavoritos();
   };
@@ -320,7 +340,7 @@ function EstoquePage() {
 
       {!favoritosNaUrl && <div className="mt-8 grid gap-3 md:grid-cols-[minmax(0,1fr)_220px]">
         <label className="relative block"><span className="sr-only">Buscar no estoque</span><Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" /><input type="search" value={busca} onChange={(event) => setBusca(event.target.value)} placeholder="Buscar por marca, modelo, ano ou característica..." className="w-full rounded-sm border border-border bg-secondary py-2.5 pl-10 pr-4 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-gold" /></label>
-        <label className="relative block"><span className="sr-only">Ordenar veículos</span><select value={ordenacao} onChange={(event) => setOrdenacao(event.target.value as Ordenacao)} className="w-full appearance-none rounded-sm border border-border bg-secondary px-3 py-2.5 pr-9 text-sm text-foreground outline-none transition-colors focus:border-gold"><option value="relevantes">Mais relevantes</option><option value="menor-preco">Menor preço</option><option value="maior-preco">Maior preço</option><option value="menor-km">Menor quilometragem</option><option value="maior-km">Maior quilometragem</option><option value="mais-novo">Mais novos</option><option value="mais-antigo">Mais antigos</option></select><ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" /></label>
+        <label className="relative block"><span className="sr-only">Ordenar veículos</span><select value={ordenacao} onChange={(event) => alterarOrdenacao(event.target.value as Ordenacao)} className="w-full appearance-none rounded-sm border border-border bg-secondary px-3 py-2.5 pr-9 text-sm text-foreground outline-none transition-colors focus:border-gold"><option value="relevantes">Mais relevantes</option><option value="menor-preco">Menor preço</option><option value="maior-preco">Maior preço</option><option value="menor-km">Menor quilometragem</option><option value="maior-km">Maior quilometragem</option><option value="mais-novo">Mais novos</option><option value="mais-antigo">Mais antigos</option></select><ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" /></label>
       </div>}
 
       <div className="mt-10 grid gap-10 lg:grid-cols-[240px_minmax(0,1fr)]">
