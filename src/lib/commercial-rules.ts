@@ -16,11 +16,11 @@ export const isEvaluationDecision = (value: string): value is EvaluationDecision
 export const isFinancingStatus = (value: string): value is FinancingStatus => hasValue(FINANCING_STATUSES, value);
 
 export function canReleaseVehicleFromReservation(status: ReservationStatus): boolean {
-  return status !== "ativa" && status !== "convertida";
+  return status !== "ativa";
 }
 
 export function canCreateSale(vehicleStatus: string): boolean {
-  return vehicleStatus !== "vendido";
+  return vehicleStatus === "disponivel";
 }
 
 export function validateSaleAmounts(finalPriceCents: number, downPaymentCents: number, tradeInValueCents: number): boolean {
