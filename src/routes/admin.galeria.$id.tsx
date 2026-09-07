@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, Check, Eye, ImagePlus, Save, Star, Trash2, Upload } from "lucide-react";
+import { ArrowLeft, Check, Eye, ImagePlus, Star, Trash2, Upload } from "lucide-react";
 
 export const Route = createFileRoute("/admin/galeria/$id")({ component: AdminGalleryPage });
 
@@ -37,7 +37,6 @@ function AdminGalleryPage() {
 
   const vehicle = data?.vehicles.find((item) => item.id === id);
   const media = useMemo(() => [...(data?.media ?? [])].filter((item) => item.vehicle_id === id).sort((a, b) => a.display_order - b.display_order), [data?.media, id]);
-  const primaryId = media[0]?.id ?? "";
 
   const patch = async (mediaId: string, action: "setPrimary" | "setOrder" | "setAlt", value?: number | string) => {
     setSavingId(mediaId); setMessage("");
