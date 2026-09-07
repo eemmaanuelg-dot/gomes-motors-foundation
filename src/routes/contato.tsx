@@ -2,6 +2,7 @@ import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { ArrowUpRight, Clock, Mail, MapPin, MessageCircle, Phone, X } from "lucide-react";
 
+import { PublicLeadForm } from "@/components/site/PublicLeadForm";
 import { dealershipConfig } from "@/config/dealership";
 import {
   WHATSAPP_DISPLAY,
@@ -99,6 +100,10 @@ function ContatoPage() {
               <div className="flex gap-4"><MapPin className="mt-0.5 h-5 w-5 shrink-0 text-gold" /><div><h3 className="font-semibold text-foreground">Região</h3><p className="mt-1 text-sm text-muted-foreground">{locationLabel}</p></div></div>
             </div>
           </section>
+        </div>
+
+        <div className="mt-8">
+          <PublicLeadForm source="contato" title="Envie uma solicitação" description="Preencha seus dados e escolha o assunto. O registro ficará disponível para a equipe comercial no CRM." />
         </div>
 
         <div className="mt-8 rounded-sm border border-dashed border-border bg-card/50 px-6 py-8 text-center">
