@@ -10,6 +10,13 @@ type AdminData = { vehicles: Vehicle[]; media: Media[] };
 
 type PatchResult = { ok?: boolean; error?: string };
 
+type PatchBody = {
+  action: "setPrimary" | "setOrder" | "setAlt";
+  mediaId: string;
+  displayOrder?: number;
+  altText?: string;
+};
+
 const mediaUrl = (objectKey: string) => `/media?key=${encodeURIComponent(objectKey)}`;
 
 function AdminGalleryPage() {
@@ -38,10 +45,10 @@ function AdminGalleryPage() {
   const vehicle = data?.vehicles.find((item) => item.id === id);
   const media = useMemo(() => [...(data?.media ?? [])].filter((item) => item.vehicle_id === id).sort((a, b) => a.display_order - b.display_order), [data?.media, id]);
 
-  const patch = async (mediaId: string, action: "setPrimary" | "setOrder" | "setAlt", value?: number | string) => {
+  const patch = async (mediaId: string, action: PatchBody["action"], value?: number | string) => {
     setSavingId(mediaId); setMessage("");
     try {
-      const body: Record<string, unknown> = { action, mediaId };
+      const body: PatchBody = { action, mediaId };
       if (action === "setOrder") body.displayOrder = Number(value);
       if (action === "setAlt") body.altText = String(value ?? "");
       const response = await fetch("/admin/media", { method: "PATCH", headers: { "Content-Type": "application/json", Accept: "application/json" }, credentials: "include", body: JSON.stringify(body) });
@@ -64,7 +71,7 @@ function AdminGalleryPage() {
       setMessage("Imagem removida.");
       await load();
     } catch (reason) {
-      setMessage(reason instanceof Error ? reason.message : "Não foi possível remover a mídia.");
+      setMessage(reason instanceof Error ? reason.message : "Não foi possível remover a imagem.");
     } finally { setSavingId(""); }
   };
 
