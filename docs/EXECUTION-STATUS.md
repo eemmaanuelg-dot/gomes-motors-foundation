@@ -59,11 +59,15 @@ Implementado:
 - API protegida `/admin/reports/api` para indicadores operacionais;
 - interface `/admin/relatorios` para relatórios consolidados;
 - interface `/admin/configuracoes` para parâmetros comerciais;
-- coleta pública `/api/analytics` com whitelist de eventos e persistência no D1.
+- coleta pública `/api/analytics` com whitelist de eventos e persistência no D1;
+- navegação do painel principal integrada às áreas de Leads/CRM, Operação comercial, Relatórios e Configurações, preservando os módulos administrativos existentes de Dashboard, Estoque, Preços/Financiamento, Mídia e Auditoria.
 
-## Próximos blocos de implementação
+### Continuidade da Etapa 05
 
-1. Integrar navegação do painel principal às novas áreas comerciais.
+Concluído neste bloco:
+1. Integração da navegação do painel principal às novas áreas comerciais.
+
+Próximos blocos:
 2. Integrar criação de leads aos pontos públicos de intenção/contato.
 3. Completar formulários de criação/edição na Central de Operação.
 4. Revisar atomicidade e regras de transição de reserva/venda.
