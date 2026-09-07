@@ -12,6 +12,7 @@ type ReportData = {
   sales: { total: number; gross_cents: number };
   financing: { status: string; total: number }[];
   analyticsLast30Days: { event_name: string; total: number }[];
+  reviews: { status: string; total: number }[];
 };
 
 export const Route = createFileRoute("/admin/relatorios")({ component: ReportsPage });
@@ -21,7 +22,7 @@ const labels: Record<string, string> = {
   disponivel: "Disponível", reservado: "Reservado", vendido: "Vendido",
   novo: "Novo", em_atendimento: "Em atendimento", aguardando_cliente: "Aguardando cliente", proposta_enviada: "Proposta enviada", negociacao: "Negociação", convertido: "Convertido", perdido: "Perdido",
   comprar: "Comprar", trocar: "Trocar", financiar: "Financiar", vender: "Vender", consignar: "Consignar", contato: "Contato",
-  pendente: "Pendente", aprovada: "Aprovada", recusada: "Recusada", convertida: "Convertida",
+  pendente: "Pendente", aprovada: "Aprovada", rejeitada: "Rejeitada", recusada: "Recusada", convertida: "Convertida",
   aberta: "Aberta", proposta: "Proposta", contraproposta: "Contraproposta", fechada: "Fechada", perdida: "Perdida",
   ativa: "Ativa", liberada: "Liberada", expirada: "Expirada", cancelada: "Cancelada",
   simulacao_interna: "Simulação interna", em_analise: "Em análise", aprovado: "Aprovado", recusado: "Recusado", contratado: "Contratado",
@@ -74,17 +75,19 @@ function ReportsPage() {
         <header>
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-gold">Painel administrativo</p>
           <h1 className="mt-1 text-3xl font-bold tracking-tight">Relatórios operacionais</h1>
-          <p className="mt-2 text-sm text-muted-foreground">Indicadores consolidados do estoque, funil comercial, financiamento e comportamento do site.</p>
+          <p className="mt-2 text-sm text-muted-foreground">Indicadores consolidados do estoque, funil comercial, financiamento, avaliações e comportamento do site.</p>
         </header>
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-3">
           <Stat title="Vendas registradas" value={String(data.sales.total)} />
           <Stat title="Faturamento bruto" value={money(data.sales.gross_cents)} />
+          <Stat title="Avaliações aprovadas" value={String(data.reviews.find((row) => row.status === "aprovada")?.total ?? 0)} />
         </div>
         <div className="grid gap-6 lg:grid-cols-2">
           {section("Estoque por status", data.stock.map((r) => ({ label: labels[r.status] ?? r.status, value: r.total })))}
           {section("Leads por status", data.leadsByStatus.map((r) => ({ label: labels[r.status] ?? r.status, value: r.total })))}
           {section("Leads por intenção", data.leadsByIntent.map((r) => ({ label: labels[r.intent] ?? r.intent, value: r.total })))}
           {section("Avaliações de veículos", data.evaluations.map((r) => ({ label: labels[r.decision] ?? r.decision, value: r.total })))}
+          {section("Avaliações públicas", data.reviews.map((r) => ({ label: labels[r.status] ?? r.status, value: r.total })))}
           {section("Negociações", data.negotiations.map((r) => ({ label: labels[r.stage] ?? r.stage, value: r.total })))}
           {section("Reservas", data.reservations.map((r) => ({ label: labels[r.status] ?? r.status, value: r.total })))}
           {section("Financiamento", data.financing.map((r) => ({ label: labels[r.status] ?? r.status, value: r.total })))}
