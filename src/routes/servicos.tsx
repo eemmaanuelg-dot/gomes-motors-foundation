@@ -44,6 +44,34 @@ const SERVICOS = [
 const inputClass = "w-full rounded-sm border border-border bg-secondary px-3 py-2.5 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-gold";
 const labelClass = "mb-1.5 block text-sm font-semibold text-foreground";
 
+type LeadIntent = "comprar" | "trocar" | "financiar" | "vender" | "consignar";
+type LeadRequest = {
+  customerName: string;
+  phone?: string;
+  email?: string;
+  intent: LeadIntent;
+  vehicleId?: string;
+  source: string;
+  message?: string;
+  simulation?: {
+    vehicleId?: string;
+    entrada?: number;
+    prazo?: number;
+    taxaIndicativa?: number;
+    parcelaEstimada?: number;
+  };
+};
+
+function registrarLead(payload: LeadRequest) {
+  void fetch("/api/leads", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    credentials: "include",
+    body: JSON.stringify(payload),
+    keepalive: true,
+  }).catch(() => undefined);
+}
+
 function Campo({ label, name, type = "text", required = false, placeholder, min, step }: { label: string; name: string; type?: string; required?: boolean; placeholder?: string; min?: number; step?: number }) {
   return <label className="block"><span className={labelClass}>{label}{required && " *"}</span><input className={inputClass} name={name} type={type} required={required} placeholder={placeholder} min={min} step={step} /></label>;
 }
@@ -96,10 +124,16 @@ function FormularioComprar() {
     event.preventDefault();
     const dados = new FormData(event.currentTarget);
     if (!veiculo) return;
-    const mensagem = ["Olá! Tenho interesse em comprar este veículo na Gomes Motors.", "", `Veículo: ${obterTituloVeiculo(veiculo)} ${veiculo.ano}`, `Preço anunciado: ${formatarPreco(veiculo.preco)}`, `Nome: ${String(dados.get("nome") ?? "")}`, `Cidade: ${String(dados.get("cidade") ?? "")}`, `Forma de pagamento: ${String(dados.get("pagamento") ?? "")}`, `Observações: ${String(dados.get("observacoes") || "Não informado")}`].join("\n");
+    const nome = String(dados.get("nome") ?? "");
+    const whatsapp = String(dados.get("whatsapp") ?? "");
+    const cidade = String(dados.get("cidade") ?? "");
+    const pagamento = String(dados.get("pagamento") ?? "");
+    const observacoes = String(dados.get("observacoes") || "Não informado");
+    const mensagem = ["Olá! Tenho interesse em comprar este veículo na Gomes Motors.", "", `Veículo: ${obterTituloVeiculo(veiculo)} ${veiculo.ano}`, `Preço anunciado: ${formatarPreco(veiculo.preco)}`, `Nome: ${nome}`, `WhatsApp: ${whatsapp}`, `Cidade: ${cidade}`, `Forma de pagamento: ${pagamento}`, `Observações: ${observacoes}`].join("\n");
     window.open(criarWhatsAppUrl(mensagem), "_blank", "noopener,noreferrer");
+    registrarLead({ customerName: nome, phone: whatsapp, intent: "comprar", vehicleId: veiculo.id, source: "servicos-comprar", message: mensagem });
   };
-  return <form onSubmit={enviar} className="space-y-6"><VeiculoSelector value={veiculoId} onChange={setVeiculoId} /><input type="hidden" name="veiculo" value={veiculoId} /><div className="grid gap-4 sm:grid-cols-2"><Campo label="Nome" name="nome" required placeholder="Seu nome" /><Campo label="Cidade" name="cidade" required placeholder="Sua cidade" /><SelectCampo label="Forma de pagamento" name="pagamento" required options={["À vista", "Financiamento", "Consórcio", "Ainda não decidi"]} /><TextareaCampo label="Observações" name="observacoes" placeholder="Conte algo que possa ajudar no atendimento." /></div><BotaoWhatsApp disabled={!veiculo} texto="Enviar interesse pelo WhatsApp" /></form>;
+  return <form onSubmit={enviar} className="space-y-6"><VeiculoSelector value={veiculoId} onChange={setVeiculoId} /><input type="hidden" name="veiculo" value={veiculoId} /><div className="grid gap-4 sm:grid-cols-2"><Campo label="Nome" name="nome" required placeholder="Seu nome" /><Campo label="WhatsApp" name="whatsapp" required type="tel" placeholder="(22) 99999-9999" /><Campo label="Cidade" name="cidade" required placeholder="Sua cidade" /><SelectCampo label="Forma de pagamento" name="pagamento" required options={["À vista", "Financiamento", "Consórcio", "Ainda não decidi"]} /><TextareaCampo label="Observações" name="observacoes" placeholder="Conte algo que possa ajudar no atendimento." /></div><BotaoWhatsApp disabled={!veiculo} texto="Enviar interesse pelo WhatsApp" /></form>;
 }
 
 function FormularioVeiculo({ tipo }: { tipo: "vender" | "consignar" }) {
@@ -107,9 +141,13 @@ function FormularioVeiculo({ tipo }: { tipo: "vender" | "consignar" }) {
     event.preventDefault();
     const dados = new FormData(event.currentTarget);
     const fotos = dados.get("fotos") as FileList | null;
+    const nome = String(dados.get("nome") ?? "");
+    const whatsapp = String(dados.get("whatsapp") ?? "");
+    const cidade = String(dados.get("cidade") ?? "");
     const nomeServico = tipo === "vender" ? "avaliação para venda" : "consignação";
-    const mensagem = [`Olá! Quero solicitar ${nomeServico} de um veículo na Gomes Motors.`, "", "DADOS DO VEÍCULO", `Marca: ${String(dados.get("marca") ?? "")}`, `Modelo: ${String(dados.get("modelo") ?? "")}`, `Versão: ${String(dados.get("versao") || "Não informado")}`, `Ano: ${String(dados.get("ano") ?? "")}`, `Quilometragem: ${String(dados.get("km") ?? "")} km`, `Combustível: ${String(dados.get("combustivel") ?? "")}`, `Câmbio: ${String(dados.get("cambio") ?? "")}`, `Estado de conservação: ${String(dados.get("conservacao") ?? "")}`, `Valor desejado: ${String(dados.get("valor") || "Não informado")}`, "", "COMERCIAL / DOCUMENTAÇÃO", `Financiado?: ${String(dados.get("financiado") ?? "")}`, `Quitado?: ${String(dados.get("quitado") ?? "")}`, `Documento em dia?: ${String(dados.get("documento") ?? "")}`, `Pendências: ${String(dados.get("pendencias") || "Nenhuma informada")}`, `Observações: ${String(dados.get("observacoes") || "Nenhuma")}`, "", "CONTATO", `Nome: ${String(dados.get("nome") ?? "")}`, `WhatsApp: ${String(dados.get("whatsapp") ?? "")}`, `Cidade: ${String(dados.get("cidade") ?? "")}`, `Fotos selecionadas: ${fotos?.length ? `${fotos.length} arquivo(s)` : "Nenhuma"}`, "", tipo === "vender" ? "Gostaria de receber uma avaliação e saber os próximos passos." : "Gostaria de saber as condições e os próximos passos para consignação."].join("\n");
+    const mensagem = [`Olá! Quero solicitar ${nomeServico} de um veículo na Gomes Motors.`, "", "DADOS DO VEÍCULO", `Marca: ${String(dados.get("marca") ?? "")}`, `Modelo: ${String(dados.get("modelo") ?? "")}`, `Versão: ${String(dados.get("versao") || "Não informado")}`, `Ano: ${String(dados.get("ano") ?? "")}`, `Quilometragem: ${String(dados.get("km") ?? "")} km`, `Combustível: ${String(dados.get("combustivel") ?? "")}`, `Câmbio: ${String(dados.get("cambio") ?? "")}`, `Estado de conservação: ${String(dados.get("conservacao") ?? "")}`, `Valor desejado: ${String(dados.get("valor") || "Não informado")}`, "", "COMERCIAL / DOCUMENTAÇÃO", `Financiado?: ${String(dados.get("financiado") ?? "")}`, `Quitado?: ${String(dados.get("quitado") ?? "")}`, `Documento em dia?: ${String(dados.get("documento") ?? "")}`, `Pendências: ${String(dados.get("pendencias") || "Nenhuma informada")}`, `Observações: ${String(dados.get("observacoes") || "Nenhuma")}`, "", "CONTATO", `Nome: ${nome}`, `WhatsApp: ${whatsapp}`, `Cidade: ${cidade}`, `Fotos selecionadas: ${fotos?.length ? `${fotos.length} arquivo(s)` : "Nenhuma"}`, "", tipo === "vender" ? "Gostaria de receber uma avaliação e saber os próximos passos." : "Gostaria de saber as condições e os próximos passos para consignação."].join("\n");
     window.open(criarWhatsAppUrl(mensagem), "_blank", "noopener,noreferrer");
+    registrarLead({ customerName: nome, phone: whatsapp, intent: tipo, source: `servicos-${tipo}`, message: mensagem });
   };
   return <form onSubmit={enviar} className="space-y-6"><div className="grid gap-4 sm:grid-cols-2"><Campo label="Marca" name="marca" required placeholder="Ex.: Honda" /><Campo label="Modelo" name="modelo" required placeholder="Ex.: Civic" /><Campo label="Versão" name="versao" placeholder="Ex.: EXL" /><Campo label="Ano" name="ano" type="number" required min={1950} placeholder="2022" /><Campo label="Quilometragem" name="km" type="number" required min={0} placeholder="50000" /><SelectCampo label="Combustível" name="combustivel" required options={["Flex", "Gasolina", "Etanol", "Diesel", "Híbrido", "Elétrico"]} /><SelectCampo label="Câmbio" name="cambio" required options={["Manual", "Automático", "Automático CVT", "Automatizado", "Outro"]} /><SelectCampo label="Estado de conservação" name="conservacao" required options={["Excelente", "Bom", "Regular", "Precisa de reparos"]} /><Campo label="Valor desejado" name="valor" placeholder="Ex.: R$ 80.000" /><SelectCampo label="Está financiado?" name="financiado" required options={["Não", "Sim"]} /><SelectCampo label="Está quitado?" name="quitado" required options={["Sim", "Não", "Não se aplica"]} /><SelectCampo label="Documento em dia?" name="documento" required options={["Sim", "Não", "Preciso verificar"]} /><TextareaCampo label="Pendências / documentação" name="pendencias" placeholder="IPVA, multas, gravame ou qualquer pendência conhecida." /><FotosCampo /><TextareaCampo label="Observações" name="observacoes" placeholder="Conte detalhes importantes sobre o veículo." /></div><div className="grid gap-4 border-t border-border pt-6 sm:grid-cols-3"><Campo label="Nome" name="nome" required placeholder="Seu nome" /><Campo label="WhatsApp" name="whatsapp" required type="tel" placeholder="(22) 99999-9999" /><Campo label="Cidade" name="cidade" required placeholder="Campos dos Goytacazes" /></div><BotaoWhatsApp texto={tipo === "vender" ? "Enviar veículo para avaliação" : "Quero colocar meu veículo em consignação"} /></form>;
 }
@@ -121,8 +159,12 @@ function FormularioTroca() {
     event.preventDefault();
     const dados = new FormData(event.currentTarget);
     if (!veiculo) return;
-    const mensagem = ["Olá! Quero avaliar uma troca com a Gomes Motors.", "", "VEÍCULO QUE TENHO INTERESSE", `Veículo desejado: ${obterTituloVeiculo(veiculo)} ${veiculo.ano}`, `Preço anunciado: ${formatarPreco(veiculo.preco)}`, "", "MEU VEÍCULO ATUAL", `Marca: ${String(dados.get("marca") ?? "")}`, `Modelo: ${String(dados.get("modelo") ?? "")}`, `Versão: ${String(dados.get("versao") || "Não informado")}`, `Ano: ${String(dados.get("ano") ?? "")}`, `Quilometragem: ${String(dados.get("km") ?? "")} km`, `Condição: ${String(dados.get("condicao") ?? "")}`, `Valor estimado/desejado: ${String(dados.get("valor") || "Não informado")}`, `Financiamento: ${String(dados.get("financiamento") ?? "")}`, `Observações: ${String(dados.get("observacoes") || "Nenhuma")}`, "", "CONTATO", `Nome: ${String(dados.get("nome") ?? "")}`, `WhatsApp: ${String(dados.get("whatsapp") ?? "")}`, `Cidade: ${String(dados.get("cidade") ?? "")}`, "Fotos do veículo atual serão enviadas na conversa."].join("\n");
+    const nome = String(dados.get("nome") ?? "");
+    const whatsapp = String(dados.get("whatsapp") ?? "");
+    const cidade = String(dados.get("cidade") ?? "");
+    const mensagem = ["Olá! Quero avaliar uma troca com a Gomes Motors.", "", "VEÍCULO QUE TENHO INTERESSE", `Veículo desejado: ${obterTituloVeiculo(veiculo)} ${veiculo.ano}`, `Preço anunciado: ${formatarPreco(veiculo.preco)}`, "", "MEU VEÍCULO ATUAL", `Marca: ${String(dados.get("marca") ?? "")}`, `Modelo: ${String(dados.get("modelo") ?? "")}`, `Versão: ${String(dados.get("versao") || "Não informado")}`, `Ano: ${String(dados.get("ano") ?? "")}`, `Quilometragem: ${String(dados.get("km") ?? "")} km`, `Condição: ${String(dados.get("condicao") ?? "")}`, `Valor estimado/desejado: ${String(dados.get("valor") || "Não informado")}`, `Financiamento: ${String(dados.get("financiamento") ?? "")}`, `Observações: ${String(dados.get("observacoes") || "Nenhuma")}`, "", "CONTATO", `Nome: ${nome}`, `WhatsApp: ${whatsapp}`, `Cidade: ${cidade}`, "Fotos do veículo atual serão enviadas na conversa."].join("\n");
     window.open(criarWhatsAppUrl(mensagem), "_blank", "noopener,noreferrer");
+    registrarLead({ customerName: nome, phone: whatsapp, intent: "trocar", vehicleId: veiculo.id, source: "servicos-trocar", message: mensagem });
   };
   return <form onSubmit={enviar} className="space-y-6"><VeiculoSelector value={veiculoId} onChange={setVeiculoId} label="1. Escolha o veículo que deseja" /><div className="border-t border-border pt-6"><p className="mb-4 text-sm font-semibold uppercase tracking-wider text-gold">2. Informe seu veículo atual</p><div className="grid gap-4 sm:grid-cols-2"><Campo label="Marca" name="marca" required placeholder="Ex.: Chevrolet" /><Campo label="Modelo" name="modelo" required placeholder="Ex.: Onix" /><Campo label="Versão" name="versao" placeholder="Ex.: LTZ" /><Campo label="Ano" name="ano" type="number" required min={1950} placeholder="2020" /><Campo label="Quilometragem" name="km" type="number" required min={0} placeholder="60000" /><SelectCampo label="Condição" name="condicao" required options={["Excelente", "Bom", "Regular", "Precisa de reparos"]} /><Campo label="Valor estimado/desejado" name="valor" placeholder="Ex.: R$ 55.000" /><SelectCampo label="Está financiado?" name="financiamento" required options={["Não", "Sim", "Não sei informar"]} /><TextareaCampo label="Observações" name="observacoes" placeholder="Detalhes, acessórios, reparos ou outras informações." /><FotosCampo /></div></div><div className="grid gap-4 border-t border-border pt-6 sm:grid-cols-3"><Campo label="Nome" name="nome" required placeholder="Seu nome" /><Campo label="WhatsApp" name="whatsapp" required type="tel" placeholder="(22) 99999-9999" /><Campo label="Cidade" name="cidade" required placeholder="Campos dos Goytacazes" /></div><BotaoWhatsApp disabled={!veiculo} texto="Enviar proposta de troca pelo WhatsApp" /></form>;
 }
@@ -145,8 +187,13 @@ function FormularioFinanciar() {
     event.preventDefault();
     const dados = new FormData(event.currentTarget);
     if (!veiculo || !simulacao) return;
-    const mensagem = ["Olá! Quero uma proposta real de financiamento pela Gomes Motors.", "", `Veículo: ${obterTituloVeiculo(veiculo)} ${veiculo.ano}`, `Preço anunciado: ${formatarPreco(veiculo.preco)}`, `Entrada simulada: ${formatarPreco(simulacao.entrada)}`, `Prazo: ${simulacao.meses}x`, `Parcela estimada: ${formatarPreco(simulacao.parcela)}/mês`, `Nome: ${String(dados.get("nome") ?? "")}`, `WhatsApp: ${String(dados.get("whatsapp") ?? "")}`, `Cidade: ${String(dados.get("cidade") ?? "")}`, `Observações: ${String(dados.get("observacoes") || "Nenhuma")}`, "", "A simulação é demonstrativa. Entendo que a proposta e as condições finais dependem de análise de crédito e da instituição financeira."].join("\n");
+    const nome = String(dados.get("nome") ?? "");
+    const whatsapp = String(dados.get("whatsapp") ?? "");
+    const cidade = String(dados.get("cidade") ?? "");
+    const observacoes = String(dados.get("observacoes") || "Nenhuma");
+    const mensagem = ["Olá! Quero uma proposta real de financiamento pela Gomes Motors.", "", `Veículo: ${obterTituloVeiculo(veiculo)} ${veiculo.ano}`, `Preço anunciado: ${formatarPreco(veiculo.preco)}`, `Entrada simulada: ${formatarPreco(simulacao.entrada)}`, `Prazo: ${simulacao.meses}x`, `Parcela estimada: ${formatarPreco(simulacao.parcela)}/mês`, `Nome: ${nome}`, `WhatsApp: ${whatsapp}`, `Cidade: ${cidade}`, `Observações: ${observacoes}`, "", "A simulação é demonstrativa. Entendo que a proposta e as condições finais dependem de análise de crédito e da instituição financeira."].join("\n");
     window.open(criarWhatsAppUrl(mensagem), "_blank", "noopener,noreferrer");
+    registrarLead({ customerName: nome, phone: whatsapp, intent: "financiar", vehicleId: veiculo.id, source: "servicos-financiar", message: mensagem, simulation: { vehicleId: veiculo.id, entrada: simulacao.entrada, prazo: simulacao.meses, taxaIndicativa: veiculo.financiamento.taxaIndicativa, parcelaEstimada: simulacao.parcela } });
   };
   return <form onSubmit={enviar} className="space-y-6"><VeiculoSelector value={veiculoId} onChange={setVeiculoId} /><div className="grid gap-4 sm:grid-cols-2"><label className="block"><span className={labelClass}>Entrada *</span><input className={inputClass} name="entrada" type="number" min={veiculo?.financiamento.entradaMinima ?? 0} max={veiculo?.preco} step={500} required value={entrada} onChange={(event) => setEntrada(event.target.value)} placeholder={veiculo ? String(veiculo.financiamento.entradaMinima) : "Selecione o veículo"} />{veiculo && <span className="mt-1 block text-xs text-muted-foreground">Mínimo sugerido: {formatarPreco(veiculo.financiamento.entradaMinima)}</span>}</label><label className="block"><span className={labelClass}>Prazo *</span><select className={inputClass} name="prazo" required value={prazo} onChange={(event) => setPrazo(event.target.value)}><option value="">Selecione</option>{(veiculo?.financiamento.parcelas ?? []).map((opcao) => <option key={opcao} value={opcao}>{opcao}x</option>)}</select></label></div>{simulacao && <div className="rounded-sm border border-gold/40 bg-gold/5 p-5"><p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Parcela estimada</p><p className="mt-1 text-3xl font-bold text-gold">{formatarPreco(simulacao.parcela)} <span className="text-sm font-medium text-muted-foreground">/ mês</span></p><p className="mt-2 text-xs leading-relaxed text-muted-foreground">Estimativa educativa com taxa indicativa. Não representa aprovação de crédito nem proposta definitiva.</p></div>}<div className="grid gap-4 sm:grid-cols-3"><Campo label="Nome" name="nome" required placeholder="Seu nome" /><Campo label="WhatsApp" name="whatsapp" required type="tel" placeholder="(22) 99999-9999" /><Campo label="Cidade" name="cidade" required placeholder="Campos dos Goytacazes" /><TextareaCampo label="Observações" name="observacoes" placeholder="Conte se já possui uma entrada definida ou outra informação relevante." /></div><BotaoWhatsApp disabled={!simulacao} texto="Quero uma proposta real" /></form>;
 }
