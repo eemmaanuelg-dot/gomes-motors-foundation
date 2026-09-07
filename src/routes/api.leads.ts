@@ -18,6 +18,7 @@ type LeadPayload = {
 const database = () => (env as unknown as RuntimeEnv).DB;
 const ALLOWED_INTENTS = new Set(["comprar", "trocar", "financiar", "vender", "consignar", "contato"]);
 const MAX_TEXT = 2000;
+const MAX_SOURCE = 100;
 
 function json(data: unknown, status = 200) {
   return Response.json(data, { status, headers: { "Cache-Control": "no-store" } });
@@ -84,12 +85,23 @@ export const Route = createFileRoute("/api/leads")({
           const now = new Date().toISOString();
           const leadId = crypto.randomUUID();
           const simulation = safeSimulation(body.simulation);
-          const note = simulation ? `Simulação pública: ${JSON.stringify(simulation)}` : null;
+          const simulationVehicleId = typeof simulation?.vehicleId === "string" ? simulation.vehicleId.trim() : "";
+
+          if (simulationVehicleId) {
+            const vehicle = await db.prepare(`SELECT id FROM vehicles WHERE id = ? LIMIT 1`).bind(simulationVehicleId).first<{ id: string }>();
+            if (!vehicle) throw new Error("Veículo da simulação não encontrado.");
+          }
+
+          if (simulationVehicleId && vehicleId && simulationVehicleId !== vehicleId) {
+            throw new Error("O veículo da simulação não corresponde ao veículo informado.");
+          }
+
+          const note = simulation ? `Simulação pública: ${JSON.stringify(simulation).slice(0, 1200)}` : null;
 
           await db.batch([
-            db.prepare(`INSERT INTO leads (id, customer_name, customer_phone, customer_email, source, intent, status, assigned_to, vehicle_id, message, notes, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, 'novo', NULL, ?, ?, ?, ?, ?)`).bind(leadId, customerName, phone, email, source.slice(0, 100), intent, vehicleId || null, message || null, note, now, now),
+            db.prepare(`INSERT INTO leads (id, customer_name, customer_phone, customer_email, source, intent, status, assigned_to, vehicle_id, message, notes, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, 'novo', NULL, ?, ?, ?, ?, ?)`).bind(leadId, customerName, phone, email, source.slice(0, MAX_SOURCE), intent, vehicleId || simulationVehicleId || null, message || null, note, now, now),
             db.prepare(`INSERT INTO lead_events (id, lead_id, event_type, from_status, to_status, actor_id, note, occurred_at) VALUES (?, ?, 'created', NULL, 'novo', 'public-site', ?, ?)`).bind(crypto.randomUUID(), leadId, note, now),
-            db.prepare(`INSERT INTO audit_logs (id, actor_id, action, entity_type, entity_id, result, occurred_at, metadata_json) VALUES (?, 'public-site', 'lead.create', 'lead', ?, 'success', ?, ?)`).bind(crypto.randomUUID(), leadId, now, JSON.stringify({ intent, source })),
+            db.prepare(`INSERT INTO audit_logs (id, actor_id, action, entity_type, entity_id, result, occurred_at, metadata_json) VALUES (?, 'public-site', 'lead.create', 'lead', ?, 'success', ?, ?)`).bind(crypto.randomUUID(), leadId, now, JSON.stringify({ intent, source: source.slice(0, MAX_SOURCE), hasSimulation: Boolean(simulation) })),
           ]);
 
           return json({ ok: true, leadId });
