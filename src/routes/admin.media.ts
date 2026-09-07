@@ -129,7 +129,7 @@ export const Route = createFileRoute("/admin/media")({
 
           if (action === "setPrimary") {
             await runtimeEnv.DB.batch([
-              runtimeEnv.DB.prepare(`UPDATE vehicle_media SET display_order = display_order + 1, updated_at = ? WHERE vehicle_id = ? AND id <> ? AND display_order <= 0`).bind(now, media.vehicle_id, mediaId),
+              runtimeEnv.DB.prepare(`UPDATE vehicle_media SET display_order = display_order + 1, updated_at = ? WHERE vehicle_id = ? AND id <> ?`).bind(now, media.vehicle_id, mediaId),
               runtimeEnv.DB.prepare(`UPDATE vehicle_media SET display_order = 0, updated_at = ? WHERE id = ?`).bind(now, mediaId),
             ]);
             await audit(runtimeEnv.DB, request, "vehicle.media.primary.update", media.vehicle_id, "success", { mediaId });
