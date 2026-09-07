@@ -43,7 +43,8 @@ export function PublicLeadForm({ intent, vehicleId, source = "site", title = "Fa
       });
       const result = await response.json() as { ok?: boolean; error?: string };
       if (!response.ok || !result.ok) throw new Error(result.error ?? "Não foi possível enviar seu contato.");
-      trackAnalytics({ eventName: "lead_intent", vehicleId, metadata: { intent: selectedIntent, source } });
+      if (vehicleId) trackAnalytics({ eventName: "lead_intent", vehicleId, metadata: { intent: selectedIntent, source } });
+      else trackAnalytics({ eventName: "lead_intent", metadata: { intent: selectedIntent, source } });
       setFeedback({ ok: true, text: "Recebemos seu contato. Nossa equipe dará continuidade em breve." });
       setName(""); setPhone(""); setEmail(""); setMessage("");
     } catch (error) {
