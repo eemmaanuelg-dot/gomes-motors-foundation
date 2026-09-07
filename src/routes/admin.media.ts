@@ -3,11 +3,13 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { mediaObjectKey, mediaPublicUrl, requireR2Bucket, type R2BucketLike } from "@/infrastructure/storage/r2-storage";
 import type { D1DatabaseLike } from "@/infrastructure/repositories/d1/d1-types";
+import { exceedsBodyLimit, hasAcceptableJsonContentType, isSameOriginRequest } from "@/lib/server-security";
 
 type RuntimeEnv = { DB: D1DatabaseLike; MEDIA_BUCKET?: R2BucketLike };
 const runtimeEnv = env as unknown as RuntimeEnv;
 
 const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
+const MAX_MULTIPART_BYTES = MAX_IMAGE_BYTES + 64 * 1024;
 const MIME_TO_EXTENSION: Record<string, string> = {
   "image/jpeg": "jpg",
   "image/png": "png",
@@ -17,6 +19,11 @@ const MIME_TO_EXTENSION: Record<string, string> = {
 
 function authorized(request: Request) {
   return Boolean(request.headers.get("cf-access-authenticated-user-email"));
+}
+
+function originError(request: Request) {
+  if (!isSameOriginRequest(request)) return json({ error: "Origem da requisição não permitida." }, 403);
+  return null;
 }
 
 function json(data: unknown, status = 200) {
@@ -35,12 +42,15 @@ export const Route = createFileRoute("/admin/media")({
     handlers: {
       POST: async ({ request }) => {
         if (!authorized(request)) return json({ error: "Acesso administrativo não autenticado." }, 401);
+        const crossOriginError = originError(request);
+        if (crossOriginError) return crossOriginError;
+        if (exceedsBodyLimit(request, MAX_MULTIPART_BYTES)) return json({ error: "Arquivo excede o limite permitido de 10 MB." }, 413);
 
         let objectKey = "";
         try {
           const form = await request.formData();
           const vehicleId = String(form.get("vehicleId") ?? "").trim();
-          const altText = String(form.get("altText") ?? "").trim();
+          const altText = String(form.get("altText") ?? "").trim().slice(0, 300);
           const orderValue = Number(form.get("order") ?? 0);
           const file = form.get("file");
 
@@ -86,10 +96,14 @@ export const Route = createFileRoute("/admin/media")({
       },
       DELETE: async ({ request }) => {
         if (!authorized(request)) return json({ error: "Acesso administrativo não autenticado." }, 401);
+        const crossOriginError = originError(request);
+        if (crossOriginError) return crossOriginError;
+        if (!hasAcceptableJsonContentType(request)) return json({ error: "Content-Type inválido." }, 415);
+        if (exceedsBodyLimit(request, 16 * 1024)) return json({ error: "Payload excede o limite permitido." }, 413);
 
         try {
           const body = await request.json() as { mediaId?: string };
-          const mediaId = String(body.mediaId ?? "").trim();
+          const mediaId = String(body.mediaId ?? "").trim().slice(0, 120);
           if (!mediaId) throw new Error("Mídia é obrigatória.");
 
           const media = await runtimeEnv.DB.prepare(`SELECT id, vehicle_id, object_key FROM vehicle_media WHERE id = ? LIMIT 1`).bind(mediaId).first<{ id: string; vehicle_id: string; object_key: string }>();
