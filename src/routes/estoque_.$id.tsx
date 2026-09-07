@@ -20,6 +20,7 @@ import { publicVehicleCatalog } from "@/application/vehicles/public-catalog";
 import type { Vehicle } from "@/domain/vehicles/types";
 import { VEICULOS, obterTituloVeiculo } from "@/data/vehicles";
 import { useFavoritos } from "@/lib/favorites";
+import { trackAnalytics } from "@/lib/analytics";
 import { WhatsAppLink } from "@/components/site/WhatsAppLink";
 import {
   formatarKm,
@@ -192,6 +193,28 @@ function SimulacaoFinanciamento({ veiculo }: { veiculo: Vehicle }) {
     "Gostaria de receber uma proposta real de financiamento com as condições disponíveis.",
   ].join("\n");
 
+  const registrarSimulacao = () => {
+    if (!entradaValida) return;
+    trackAnalytics({
+      eventName: "simulation_complete",
+      vehicleId: veiculo.id,
+      metadata: {
+        entrada: entradaEfetiva,
+        percentualEntrada,
+        prazo: parcelas,
+        taxaIndicativa: veiculo.financiamento.taxaIndicativa,
+        parcelaEstimada: parcela,
+        totalParcelas,
+        totalEstimado,
+      },
+    });
+    trackAnalytics({
+      eventName: "simulation_cta",
+      vehicleId: veiculo.id,
+      metadata: { prazo: parcelas, entrada: entradaEfetiva, parcelaEstimada: parcela },
+    });
+  };
+
   return (
     <section className="rounded-sm border border-border bg-card p-6 sm:p-8" aria-labelledby="financiamento">
       <div className="flex items-center gap-3">
@@ -241,7 +264,7 @@ function SimulacaoFinanciamento({ veiculo }: { veiculo: Vehicle }) {
         <p className="mt-2 text-xs leading-relaxed text-muted-foreground">Taxa indicativa de {taxaFormatada} % a.m. Esta é uma estimativa educativa; condições reais dependem da análise de crédito e da instituição financeira. O valor apresentado não representa uma proposta ou aprovação de crédito.</p>
       </div>
 
-      <WhatsAppLink message={mensagemFinanciamento} vehicleId={veiculo.id} intent="financiar" className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-sm bg-brand-red px-5 py-3 text-sm font-semibold text-brand-red-foreground transition-opacity hover:opacity-90">
+      <WhatsAppLink message={mensagemFinanciamento} vehicleId={veiculo.id} intent="financiar" onClick={registrarSimulacao} metadata={{ simulation: true }} className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-sm bg-brand-red px-5 py-3 text-sm font-semibold text-brand-red-foreground transition-opacity hover:opacity-90">
         <MessageCircle className="h-4 w-4" />
         Quero uma proposta real
       </WhatsAppLink>
