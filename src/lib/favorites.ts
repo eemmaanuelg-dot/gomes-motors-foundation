@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 
+import { trackAnalytics } from "@/lib/analytics";
+
 const STORAGE_KEY = "gomes-motors-favoritos";
 const FAVORITOS_EVENT = "gomes-motors:favoritos";
 
@@ -53,9 +55,14 @@ export function useFavoritos() {
 
   const alternarFavorito = useCallback((id: string) => {
     setFavoritos((atual) => {
+      const estavaFavorito = atual.has(id);
       const novo = new Set(atual);
-      if (novo.has(id)) novo.delete(id);
+      if (estavaFavorito) novo.delete(id);
       else novo.add(id);
+      trackAnalytics({
+        eventName: estavaFavorito ? "favorite_remove" : "favorite_add",
+        vehicleId: id,
+      });
       return novo;
     });
     window.setTimeout(notificarFavoritos, 0);
@@ -72,7 +79,12 @@ export function useFavoritos() {
 
   const limparFavoritos = useCallback(() => {
     const vazios = new Set<string>();
-    setFavoritos(vazios);
+    setFavoritos((atual) => {
+      for (const id of atual) {
+        trackAnalytics({ eventName: "favorite_remove", vehicleId: id, metadata: { source: "clear_all" } });
+      }
+      return vazios;
+    });
     salvarFavoritos(vazios);
   }, []);
 
