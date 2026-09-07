@@ -4,12 +4,22 @@ import { trackAnalytics } from "@/lib/analytics";
 
 type Intent = "comprar" | "trocar" | "financiar" | "vender" | "consignar" | "contato";
 
+type SimulationData = {
+  vehicleId?: string;
+  entrada?: string | number;
+  prazo?: string | number;
+  taxaIndicativa?: string | number;
+  parcelaEstimada?: string | number;
+};
+
 type Props = {
   intent?: Intent;
   vehicleId?: string;
   source?: string;
   title?: string;
   description?: string;
+  initialMessage?: string;
+  simulation?: SimulationData;
 };
 
 const intents: Array<{ value: Intent; label: string }> = [
@@ -21,17 +31,18 @@ const intents: Array<{ value: Intent; label: string }> = [
   { value: "contato", label: "Outro assunto" },
 ];
 
-export function PublicLeadForm({ intent, vehicleId, source = "site", title = "Fale com a Gomes Motors", description = "Deixe seus dados e nossa equipe dará continuidade ao atendimento." }: Props) {
+export function PublicLeadForm({ intent, vehicleId, source = "site", title = "Fale com a Gomes Motors", description = "Deixe seus dados e nossa equipe dará continuidade ao atendimento.", initialMessage = "", simulation }: Props) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [selectedIntent, setSelectedIntent] = useState<Intent>(intent ?? "contato");
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState(initialMessage);
   const [sending, setSending] = useState(false);
   const [feedback, setFeedback] = useState<{ ok: boolean; text: string } | null>(null);
 
   const submit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (sending) return;
     setSending(true);
     setFeedback(null);
     try {
@@ -39,14 +50,25 @@ export function PublicLeadForm({ intent, vehicleId, source = "site", title = "Fa
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         credentials: "include",
-        body: JSON.stringify({ customerName: name, phone, email, intent: selectedIntent, vehicleId, source, message }),
+        body: JSON.stringify({
+          customerName: name,
+          phone,
+          email,
+          intent: selectedIntent,
+          vehicleId,
+          source,
+          message,
+          simulation,
+        }),
       });
       const result = await response.json() as { ok?: boolean; error?: string };
       if (!response.ok || !result.ok) throw new Error(result.error ?? "Não foi possível enviar seu contato.");
-      if (vehicleId) trackAnalytics({ eventName: "lead_intent", vehicleId, metadata: { intent: selectedIntent, source } });
-      else trackAnalytics({ eventName: "lead_intent", metadata: { intent: selectedIntent, source } });
+      trackAnalytics({ eventName: "lead_intent", ...(vehicleId ? { vehicleId } : {}), metadata: { intent: selectedIntent, source } });
       setFeedback({ ok: true, text: "Recebemos seu contato. Nossa equipe dará continuidade em breve." });
-      setName(""); setPhone(""); setEmail(""); setMessage("");
+      setName("");
+      setPhone("");
+      setEmail("");
+      setMessage("");
     } catch (error) {
       setFeedback({ ok: false, text: error instanceof Error ? error.message : "Não foi possível enviar seu contato." });
     } finally {
@@ -69,6 +91,7 @@ export function PublicLeadForm({ intent, vehicleId, source = "site", title = "Fa
           <label className="block"><span className="mb-1.5 block text-sm font-semibold">Como podemos ajudar?</span><select value={selectedIntent} onChange={(event) => setSelectedIntent(event.target.value as Intent)} disabled={Boolean(intent)} className="w-full rounded-sm border border-border bg-secondary px-3 py-2.5 text-sm outline-none focus:border-gold disabled:opacity-70">{intents.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
         </div>
         <label className="block"><span className="mb-1.5 block text-sm font-semibold">Mensagem <span className="font-normal text-muted-foreground">(opcional)</span></span><textarea value={message} onChange={(event) => setMessage(event.target.value)} maxLength={2000} rows={4} className="w-full resize-y rounded-sm border border-border bg-secondary px-3 py-2.5 text-sm outline-none focus:border-gold" placeholder="Conte brevemente o que você precisa." /></label>
+        {simulation && <p className="rounded-sm border border-gold/20 bg-gold/5 px-4 py-3 text-xs leading-5 text-muted-foreground">Os dados da sua simulação serão enviados junto com o atendimento para facilitar a continuidade da proposta.</p>}
         {feedback && <div role={feedback.ok ? "status" : "alert"} className={`rounded-sm border px-4 py-3 text-sm ${feedback.ok ? "border-gold/30 bg-gold/5 text-foreground" : "border-brand-red/30 bg-brand-red/5 text-brand-red"}`}>{feedback.ok && <Check className="mr-2 inline h-4 w-4" />}{feedback.text}</div>}
         <button type="submit" disabled={sending} className="inline-flex w-full items-center justify-center gap-2 rounded-sm bg-brand-red px-5 py-3 text-sm font-semibold text-brand-red-foreground transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60">{sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}{sending ? "Enviando…" : "Enviar solicitação"}</button>
       </form>
