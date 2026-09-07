@@ -17,7 +17,17 @@ export const Route = createFileRoute("/admin/settings/api")({ server: { handlers
     if (!authorized(request)) return json({ error: "Acesso administrativo não autenticado." }, 401);
     if (!isSameOriginRequest(request)) return json({ error: "Origem da requisição não permitida." }, 403);
     const result = await database().prepare(`SELECT key, value_json, updated_by, updated_at FROM commercial_settings ORDER BY key`).all();
-    return json({ settings: result.results ?? [] });
+    const settings = Object.fromEntries(
+      (result.results ?? []).map((row) => {
+        const item = row as { key: string; value_json: string };
+        try {
+          return [item.key, JSON.parse(item.value_json)];
+        } catch {
+          return [item.key, item.value_json];
+        }
+      }),
+    );
+    return json({ settings });
   },
   POST: async ({ request }) => {
     if (!authorized(request)) return json({ error: "Acesso administrativo não autenticado." }, 401);
