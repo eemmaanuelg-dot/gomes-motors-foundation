@@ -40,6 +40,9 @@ jobs:
       - name: Smoke test public catalog locally
         run: node scripts/validate-local-catalog.mjs
 
+      - name: Run automated tests
+        run: npm test
+
       - name: Build application
         run: npm run build
 
