@@ -36,10 +36,10 @@ function getSessionId() {
 export function trackAnalytics(payload: AnalyticsPayload) {
   if (typeof window === "undefined") return;
 
-  const body: AnalyticsPayload = {
-    ...payload,
-    sessionId: payload.sessionId ?? getSessionId(),
-  };
+  const sessionId = payload.sessionId ?? getSessionId();
+  const body: AnalyticsPayload = sessionId
+    ? { ...payload, sessionId }
+    : { ...payload };
 
   void fetch("/api/analytics", {
     method: "POST",
