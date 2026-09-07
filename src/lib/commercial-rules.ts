@@ -1,7 +1,7 @@
 export const RESERVATION_STATUSES = ["ativa", "liberada", "convertida", "expirada", "cancelada"] as const;
 export const NEGOTIATION_STAGES = ["aberta", "proposta", "contraproposta", "fechada", "perdida"] as const;
 export const EVALUATION_DECISIONS = ["pendente", "aprovada", "recusada", "convertida"] as const;
-export const FINANCING_STATUSES = ["simulacao_interna", "em_analise", "proposta", "aprovado", "recusado", "contratado"] as const;
+export const FINANCING_STATUSES = ["simulacao_interna", "em_analise", "proposta", "aprovado", "recusado", "contratado", "cancelado"] as const;
 
 export type ReservationStatus = (typeof RESERVATION_STATUSES)[number];
 export type NegotiationStage = (typeof NEGOTIATION_STAGES)[number];
