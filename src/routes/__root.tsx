@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import favicon from "../assets/gomes-motors-mark.svg";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { trackAnalytics } from "../lib/analytics";
 import { Header } from "../components/site/Header";
 import { Footer } from "../components/site/Footer";
 
@@ -65,7 +66,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
           </button>
           <a
             href="/"
-            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground hover:bg-accent"
           >
             Voltar ao início
           </a>
@@ -129,6 +130,16 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+
+  useEffect(() => {
+    const path = window.location.pathname;
+    if (path.startsWith("/admin") || path.startsWith("/api")) return;
+
+    trackAnalytics({
+      eventName: "page_view",
+      metadata: { path, title: document.title },
+    });
+  }, []);
 
   useEffect(() => {
     if (window.location.pathname !== "/admin") return;
