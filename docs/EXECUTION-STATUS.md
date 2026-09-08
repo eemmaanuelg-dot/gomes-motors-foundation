@@ -22,8 +22,8 @@ Builds, testes e workflows não interrompem o fluxo de trabalho. Se uma validaç
 | 02 | CONCLUÍDA | 08/09/2026 | `6efc3f3` | Workflow `34239873330`: cadeia local de migrations, seed, catálogo, testes e build | Correções versionadas em migration; sincronização runtime frágil removida. |
 | 03 | CONCLUÍDA | 08/09/2026 | `4978e09` | Workflow `34245476532`: validação remota de autenticação, D1 e histórico de migrations concluída com sucesso | D1 remoto validado operacionalmente pelo pipeline. |
 | 04 | CONCLUÍDA | 08/09/2026 | `4978e09` | Workflow `34245476532`: migração definitiva, validação R2 e manifestação exata de 18 objetos concluídas | 18 mídias demo em R2; objetos obsoletos `primary.jpg` conhecidos foram removidos; associação D1/R2 validada. |
-| 05 | EM CONSOLIDAÇÃO | 08/09/2026 | `20a0189` | Testes de contrato do resolver adicionados; workflow de validação em execução | R2 está priorizado e referências `vehicle_media` são `r2://`; fechamento aguarda validação final do contrato. |
-| 06 | PENDENTE | — | — | — | Regressão completa do catálogo ainda não fechada. |
+| 05 | CONCLUÍDA | 08/09/2026 | `30010f4` | Workflow `34246744306`: contrato do resolver e regressão associada validados; R2 é prioridade e `vehicle_media` fornece referências `r2://` | Resolver definitivo D1/R2 fechado; legado permanece somente como compatibilidade explícita. |
+| 06 | EM EXECUÇÃO | 08/09/2026 | `30010f4` | Contrato de regressão do catálogo criado e validado no workflow `34246744306` | Prosseguir para cobertura das integrações/fluxos públicos do catálogo sem refazer fases já fechadas. |
 | 07 | PENDENTE | — | — | — | Regressão completa do site público ainda não fechada. |
 | 08 | PENDENTE | — | — | — | Fluxo comercial público ainda precisa fechamento dedicado. |
 | 09 | PENDENTE | — | — | — | QA responsivo ainda não fechado. |
@@ -99,11 +99,11 @@ Builds, testes e workflows não interrompem o fluxo de trabalho. Se uma validaç
 - Resultado: R2 passa a conter exatamente as 18 mídias previstas para os seis veículos demo, com associação persistida em `vehicle_media`.
 
 ### Fase 05 — Resolver definitivo D1/R2
-- Status: EM CONSOLIDAÇÃO
+- Status: CONCLUÍDA
 - Data: 08/09/2026
-- Referência: `20a0189258074017053c00be3f3b158e58c9288e`
-- Evidência: teste de contrato `tests/media-resolver-contract.test.mjs` cobre prioridade R2, compatibilidade legada e rejeição de namespace/traversal; `d1-vehicle-repository.ts` monta referências públicas a partir de `vehicle_media` como `r2://`.
-- Resultado parcial: R2 está no caminho normal do catálogo; legado permanece explicitamente como compatibilidade. O fechamento definitivo depende da validação final do contrato e da confirmação de ausência de dependências legadas na rota normal.
+- Referência: `30010f48bde3dd92f8346a5004564e8063996114`
+- Evidência: workflow `34246744306` validou o contrato do resolver. O repositório D1 carrega `vehicle_media`, converte `object_key` em `r2://`, e o resolver trata R2 antes da compatibilidade legada, rejeitando referências fora do namespace permitido/traversal.
+- Resultado: o caminho normal de mídia do catálogo está consolidado em D1/R2; `legacy://` permanece apenas como fallback de compatibilidade explícita.
 
 ## Regra de continuidade
 
