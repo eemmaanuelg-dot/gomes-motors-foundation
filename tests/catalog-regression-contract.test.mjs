@@ -85,9 +85,9 @@ test("serviços usa o catálogo público para os fluxos comerciais com veículo"
   assert.match(source, /loader: \(\) => publicVehicleCatalog\.listar\(\)/);
   assert.match(source, /const vehicles = Route\.useLoaderData\(\)/);
   assert.match(source, /<VeiculoSelector vehicles=\{vehicles\}/);
-  assert.match(source, /FormularioComprar \{ vehicles \}/);
-  assert.match(source, /FormularioTroca \{ vehicles \}/);
-  assert.match(source, /FormularioFinanciar \{ vehicles \}/);
+  assert.match(source, /function FormularioComprar\(\{ vehicles \}/);
+  assert.match(source, /function FormularioTroca\(\{ vehicles \}/);
+  assert.match(source, /function FormularioFinanciar\(\{ vehicles \}/);
 });
 
 test("detalhe do veículo gera metadados a partir do veículo carregado", async () => {
