@@ -21,7 +21,7 @@ test("checklist de produção mantém os gates críticos de D1, R2 e segurança"
 test("checklist de produção preserva a regra de retorno após falha", async () => {
   const checklist = await read("docs/PRODUCTION-CHECKLIST.md");
 
-  assert.match(checklist, /falha.*retorna|retorna.*falha/i);
+  assert.match(checklist, /falh\S*[\s\S]{0,160}(?:correção|corrigida|corrigir)/i);
   assert.match(checklist, /fix|corrig/i);
   assert.match(checklist, /revalid/i);
 });
