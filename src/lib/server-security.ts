@@ -3,6 +3,9 @@ const DEFAULT_SECURITY_HEADERS: Record<string, string> = {
   "Referrer-Policy": "strict-origin-when-cross-origin",
   "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
   "X-Frame-Options": "DENY",
+  "Strict-Transport-Security": "max-age=31536000",
+  "Cross-Origin-Opener-Policy": "same-origin",
+  "X-Permitted-Cross-Domain-Policies": "none",
 };
 
 export function applySecurityHeadersToHeaders(headers: Headers): Headers {
