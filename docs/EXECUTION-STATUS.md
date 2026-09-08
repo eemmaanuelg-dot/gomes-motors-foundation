@@ -14,23 +14,15 @@ O estado de execução é registrado neste arquivo. Os critérios das fases são
 
 Builds, testes e workflows não interrompem o fluxo de trabalho. Se uma validação falhar, a causa deve ser investigada e corrigida antes de declarar a etapa concluída, sem interromper o restante do trabalho que puder continuar com segurança.
 
-## Classificação
-
-- `CONCLUÍDA` — objetivo atendido e evidência suficiente registrada.
-- `EM CONSOLIDAÇÃO` — implementação existente com alguma lacuna ainda aberta.
-- `PENDÊNCIA OPERACIONAL` — depende de validação remota/infraestrutura.
-- `PENDENTE` — capacidade ou correção necessária ainda não fechada.
-- `REABERTA` — fase fechada anteriormente e reaberta por causa objetiva.
-
 ## Matriz oficial de fechamento
 
 | Fase | Status | Data | Referência | Evidência | Observação |
 |---:|---|---|---|---|---|
-| 01 | CONCLUÍDA | 08/09/2026 | `6efc3f3` | Workflow #34239873330: migrations, seed, smoke catalog, testes (55/55), build verde | Catálogo público deixou de executar sincronização/mutação implícita; D1 permanece fonte operacional. |
-| 02 | CONCLUÍDA | 08/09/2026 | `6efc3f3` | Workflow #34239873330: migrations, seed, smoke catalog, testes (55/55), build verde | Correções de dados permanecem versionadas em migration; sincronização runtime frágil foi removida. |
-| 03 | PENDÊNCIA OPERACIONAL | — | — | — | Validação do D1 remoto ainda precisa de evidência operacional. |
-| 04 | PENDENTE | — | — | — | Migração definitiva das 18 imagens para R2 ainda precisa ser comprovada. |
-| 05 | PENDENTE | — | — | — | Resolver ainda contém compatibilidade histórica e precisa ser fechado após 04. |
+| 01 | CONCLUÍDA | 08/09/2026 | `6efc3f3` | Workflow `34239873330`: migrations, seed, smoke catalog, testes 55/55 e build verde | Catálogo público sem sincronização/mutação implícita; D1 permanece fonte operacional. |
+| 02 | CONCLUÍDA | 08/09/2026 | `6efc3f3` | Workflow `34239873330`: cadeia local de migrations, seed, catálogo, testes e build | Correções versionadas em migration; sincronização runtime frágil removida. |
+| 03 | CONCLUÍDA | 08/09/2026 | `4978e09` | Workflow `34245476532`: validação remota de autenticação, D1 e histórico de migrations concluída com sucesso | D1 remoto validado operacionalmente pelo pipeline. |
+| 04 | CONCLUÍDA | 08/09/2026 | `4978e09` | Workflow `34245476532`: migração definitiva, validação R2 e manifestação exata de 18 objetos concluídas | 18 mídias demo em R2; objetos obsoletos `primary.jpg` conhecidos foram removidos; associação D1/R2 validada. |
+| 05 | EM CONSOLIDAÇÃO | 08/09/2026 | `20a0189` | Testes de contrato do resolver adicionados; workflow de validação em execução | R2 está priorizado e referências `vehicle_media` são `r2://`; fechamento aguarda validação final do contrato. |
 | 06 | PENDENTE | — | — | — | Regressão completa do catálogo ainda não fechada. |
 | 07 | PENDENTE | — | — | — | Regressão completa do site público ainda não fechada. |
 | 08 | PENDENTE | — | — | — | Fluxo comercial público ainda precisa fechamento dedicado. |
@@ -82,19 +74,36 @@ Builds, testes e workflows não interrompem o fluxo de trabalho. Se uma validaç
 - Status: CONCLUÍDA
 - Data: 08/09/2026
 - Referência: `6efc3f3e7363019c0f8c930de52bdf416b13df56`
-- Evidência: GitHub Actions workflow `34239873330`, com migrations locais, seed local, smoke do catálogo, 55/55 testes automatizados e build verde.
-- Resultado: o catálogo público não executa mais sincronização/mutação automática antes da leitura. A aplicação consulta a fonte operacional configurada, mantendo D1 como fonte de verdade.
+- Evidência: GitHub Actions `34239873330`, com migrations locais, seed local, smoke do catálogo, 55/55 testes automatizados e build verde.
+- Resultado: catálogo público sem sincronização/mutação automática antes da leitura; D1 como fonte operacional.
 
 ### Fase 02 — Integridade dos dados
 - Status: CONCLUÍDA
 - Data: 08/09/2026
 - Referência: `6efc3f3e7363019c0f8c930de52bdf416b13df56`
-- Evidência: mesma execução validou toda a cadeia local de migrations, seed, catálogo, testes e build.
-- Resultado: correções de dados permanecem na cadeia de migrations; foi removida a dependência de sincronização runtime para corrigir dados a cada leitura.
+- Evidência: mesma execução validou migrations, seed, catálogo, testes e build.
+- Resultado: correções de dados permanecem na cadeia de migrations; dependência de sincronização runtime removida.
 
-## Falhas conhecidas corrigidas durante a execução
+### Fase 03 — D1 operacional
+- Status: CONCLUÍDA
+- Data: 08/09/2026
+- Referência: `4978e092bbe7886b2c8f3b5a098651aca2a5f636`
+- Evidência: workflow `34245476532` executou com sucesso a autenticação Cloudflare, acesso remoto ao D1 e inspeção/reconciliação da cadeia de migrations.
+- Resultado: D1 remoto comprovado como infraestrutura operacional do projeto.
 
-O workflow anterior `34183750628` falhou porque o teste do checklist procurava `/revalid/i`, enquanto o documento já usava a expressão equivalente em português. A versão atual do teste foi corrigida e a execução posterior relevante ficou verde.
+### Fase 04 — Migração definitiva de mídia para R2
+- Status: CONCLUÍDA
+- Data: 08/09/2026
+- Referência: `4978e092bbe7886b2c8f3b5a098651aca2a5f636`
+- Evidência: workflow `34245476532` migrou as mídias demo, validou acesso ao R2 e fechou o manifesto definitivo em 18 objetos; os seis objetos obsoletos `primary.jpg` foram removidos.
+- Resultado: R2 passa a conter exatamente as 18 mídias previstas para os seis veículos demo, com associação persistida em `vehicle_media`.
+
+### Fase 05 — Resolver definitivo D1/R2
+- Status: EM CONSOLIDAÇÃO
+- Data: 08/09/2026
+- Referência: `20a0189258074017053c00be3f3b158e58c9288e`
+- Evidência: teste de contrato `tests/media-resolver-contract.test.mjs` cobre prioridade R2, compatibilidade legada e rejeição de namespace/traversal; `d1-vehicle-repository.ts` monta referências públicas a partir de `vehicle_media` como `r2://`.
+- Resultado parcial: R2 está no caminho normal do catálogo; legado permanece explicitamente como compatibilidade. O fechamento definitivo depende da validação final do contrato e da confirmação de ausência de dependências legadas na rota normal.
 
 ## Regra de continuidade
 
