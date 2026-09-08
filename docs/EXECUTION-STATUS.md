@@ -75,19 +75,23 @@ Concluído neste ciclo:
 4. Formulário público de leads integrado ao endpoint `/api/leads`.
 5. Registro de intenção comercial no analytics.
 6. Contrato automatizado da fundação D1 e cadeia de migrations.
+7. Cobertura automatizada dos fluxos comerciais públicos e do contrato de financiamento demonstrativo.
+8. Ampliação do smoke test das rotas públicas, incluindo detalhe de veículo e contato.
 
 Próximos blocos:
-7. Integrar o formulário de lead aos pontos públicos de intenção relacionados a veículos, financiamento e serviços, preservando a experiência atual.
-8. Revisar atomicidade e regras de transição de reserva/venda.
-9. Consolidar autenticação/permissões administrativas e proteção das rotas de UI.
-10. Revisar analytics, deduplicação e proteção contra abuso.
-11. Fechar documentação operacional e checklist de produção.
-12. Depois do bloco de código, executar validação remota do D1/R2 e rodada final de testes do catálogo/admin.
+9. Integrar e validar os demais pontos públicos de intenção relacionados a veículos, financiamento e serviços, preservando a experiência atual.
+10. Revisar atomicidade e regras de transição de reserva/venda.
+11. Consolidar autenticação/permissões administrativas e proteção das rotas de UI.
+12. Revisar analytics, deduplicação e proteção contra abuso.
+13. Fechar documentação operacional e checklist de produção.
+14. Depois do bloco de código, executar validação remota do D1/R2 e rodada final de testes do catálogo/admin.
 
 ## Validações de build
 
 - Build validation #314 — **SUCESSO** em 08/09/2026.
-- Testes automatizados, validação local de migrations/seed, smoke test do catálogo público, scripts operacionais e build da aplicação concluídos com sucesso.
+- Build validation #316 — **FALHOU somente no novo teste da fundação D1** por uma asserção de texto excessivamente específica; a implementação não apresentou erro.
+- Correção do teste realizada em seguida.
+- O build disparado pela correção deve ser considerado a validação corrente.
 
 ## Regra de continuidade
 
