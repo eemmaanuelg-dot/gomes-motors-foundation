@@ -60,5 +60,6 @@ test("estoque mantém estados vazios, busca e paginação visual do catálogo", 
   assert.match(source, /VISIVEIS_INICIAL/);
   assert.match(source, /Mais filtros/);
   assert.match(source, /FILTROS_VAZIOS/);
-  assert.match(source, /Nenhum veículo/);
+  assert.match(source, /Não encontramos veículos com esses critérios/);
+  assert.match(source, /Limpar filtros/);
 });
