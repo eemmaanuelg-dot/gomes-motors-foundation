@@ -13,11 +13,11 @@ test("contrato R2 mantém bucket, binding e prefixo de mídia alinhados", async 
 
   assert.match(wrangler, /"binding": "MEDIA_BUCKET"/);
   assert.match(wrangler, /"bucket_name": "gomes-motors-media-2026"/);
-  assert.match(resolver, /const R2_MEDIA_PREFIX = "vehicles\/"/);
-  assert.match(resolver, /normalized\.startsWith\("r2:\\/\\/"\)/);
-  assert.match(migration, /const bucket = "gomes-motors-media-2026"/);
-  assert.match(migration, /const key = `vehicles\/\$\{vehicleId\}\/\$\{index \+ 1\}\.\$\{extension\}`/);
-  assert.match(migration, /const reference = `r2:\/\/\$\{key\}`/);
+  assert.ok(resolver.includes('const R2_MEDIA_PREFIX = "vehicles/"'));
+  assert.ok(resolver.includes('normalized.startsWith("r2://")'));
+  assert.ok(migration.includes('const bucket = "gomes-motors-media-2026"'));
+  assert.ok(migration.includes('const key = `vehicles/${vehicleId}/${index + 1}.${extension}`'));
+  assert.ok(migration.includes('const reference = `r2://${key}`'));
 });
 
 test("migração R2 preserva exatamente três imagens por veículo e recria a galeria no D1", async () => {
