@@ -5,11 +5,16 @@ const DEFAULT_SECURITY_HEADERS: Record<string, string> = {
   "X-Frame-Options": "DENY",
 };
 
-export function applySecurityHeaders(response: Response): Response {
-  const headers = new Headers(response.headers);
+export function applySecurityHeadersToHeaders(headers: Headers): Headers {
   for (const [name, value] of Object.entries(DEFAULT_SECURITY_HEADERS)) {
     headers.set(name, value);
   }
+  return headers;
+}
+
+export function applySecurityHeaders(response: Response): Response {
+  const headers = new Headers(response.headers);
+  applySecurityHeadersToHeaders(headers);
   return new Response(response.body, {
     status: response.status,
     statusText: response.statusText,
