@@ -5,6 +5,8 @@ import {
   applySecurityHeaders,
   exceedsBodyLimit,
   hasAcceptableJsonContentType,
+  isAdminPath,
+  isCloudflareAccessAuthenticated,
   isSameOriginRequest,
 } from "../src/lib/server-security.ts";
 
@@ -90,4 +92,26 @@ test("bloqueia Content-Length inválido ou acima do limite", () => {
     ),
     true,
   );
+});
+
+test("identifica a superfície administrativa e exige identidade + assertion do Cloudflare Access", () => {
+  assert.equal(isAdminPath(new Request("https://gomes.example/admin")), true);
+  assert.equal(isAdminPath(new Request("https://gomes.example/admin/estoque")), true);
+  assert.equal(isAdminPath(new Request("https://gomes.example/estoque")), false);
+
+  const noHeaders = new Request("https://gomes.example/admin");
+  assert.equal(isCloudflareAccessAuthenticated(noHeaders), false);
+
+  const identityOnly = new Request("https://gomes.example/admin", {
+    headers: { "cf-access-authenticated-user-email": "admin@example.com" },
+  });
+  assert.equal(isCloudflareAccessAuthenticated(identityOnly), false);
+
+  const authenticated = new Request("https://gomes.example/admin", {
+    headers: {
+      "cf-access-authenticated-user-email": "admin@example.com",
+      "cf-access-jwt-assertion": "signed-access-assertion",
+    },
+  });
+  assert.equal(isCloudflareAccessAuthenticated(authenticated), true);
 });
