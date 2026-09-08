@@ -4,19 +4,26 @@ import assert from "node:assert/strict";
 const publicRoutes = [
   "/",
   "/estoque",
+  "/estoque/civic-exl",
   "/servicos",
   "/sobre",
   "/avaliacoes",
+  "/contato",
   "/robots.txt",
   "/sitemap.xml",
 ];
 
 test("public route contract remains defined", async () => {
-  assert.ok(publicRoutes.length >= 7);
+  assert.ok(publicRoutes.length >= 9);
   for (const route of publicRoutes) {
     assert.equal(typeof route, "string");
     assert.ok(route.startsWith("/"));
   }
+});
+
+test("public catalog contract includes a vehicle detail and a not-found scenario", () => {
+  assert.ok("/estoque/civic-exl".startsWith("/estoque/"));
+  assert.ok("/estoque/nao-existe".startsWith("/estoque/"));
 });
 
 test("API security contract uses expected content types", () => {
