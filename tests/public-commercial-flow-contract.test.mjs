@@ -69,6 +69,15 @@ test("API pública confirma veículos e persiste o lead com evento e auditoria",
   assert.match(source, /return json\(\{ ok: true, leadId \}\)/);
 });
 
+test("API mantém coerência entre veículo do lead e veículo da simulação", async () => {
+  const source = await readProjectFile("src/routes/api.leads.ts");
+
+  assert.match(source, /const simulation = safeSimulation\(body\.simulation\)/);
+  assert.match(source, /simulationVehicleId/);
+  assert.match(source, /if \(simulationVehicleId && vehicleId && simulationVehicleId !== vehicleId\)/);
+  assert.match(source, /O veículo da simulação não corresponde ao veículo informado/);
+});
+
 test("formulário público somente confirma sucesso após a API aceitar o lead", async () => {
   const source = await readProjectFile("src/components/site/PublicLeadForm.tsx");
 
