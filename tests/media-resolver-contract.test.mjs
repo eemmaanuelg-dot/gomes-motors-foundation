@@ -24,3 +24,12 @@ test("resolver rejeita referências R2 fora do namespace de veículos e traversa
   assert.match(source, /objectKey\.includes\("\.\."\)/);
   assert.match(source, /if \(!objectKey \|\| !objectKey\.startsWith\(R2_MEDIA_PREFIX\) \|\| objectKey\.includes\("\.\."\)\) return "";/);
 });
+
+test("repositório D1 prioriza vehicle_media e transforma object_key em referência R2", async () => {
+  const source = await read("src/infrastructure/repositories/d1/d1-vehicle-repository.ts");
+
+  assert.match(source, /FROM vehicle_media/);
+  assert.match(source, /references\.push\(`r2:\/\/\$\{media\.object_key\}`\)/);
+  assert.match(source, /const imageReferences = mediaReferences\.length > 0 \? mediaReferences : legacyReferences;/);
+  assert.match(source, /const primaryReference = mediaReferences\[0\] \?\? row\.image_url;/);
+});
