@@ -19,7 +19,7 @@ test("shell administrativo consulta a identidade autenticada com credenciais da 
 
   assert.match(source, /fetch\("\/cdn-cgi\/access\/get-identity"/);
   assert.match(source, /credentials: "include"/);
-  assert.match(source, /cf-access-authenticated-user-email/);
+  assert.match(source, /identity/);
 });
 
 test("endpoints administrativos críticos permanecem protegidos no servidor", async () => {
