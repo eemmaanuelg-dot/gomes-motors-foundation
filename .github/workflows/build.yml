@@ -52,6 +52,7 @@ jobs:
       - name: Build application
         run: npm run build
 
+      # Controlled infrastructure reconciliation; reruns are idempotent.
       - name: Reconcile remote D1 migrations once
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && env.CLOUDFLARE_API_TOKEN != '' && contains(github.event.head_commit.message, '[reconcile-infra]') }}
         run: >-
