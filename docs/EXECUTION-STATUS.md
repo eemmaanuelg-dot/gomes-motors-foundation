@@ -28,7 +28,7 @@ Builds, testes e workflows não interrompem o fluxo de trabalho. Se uma validaç
 | 08 | CONCLUÍDA | 08/09/2026 | `068694a` | Workflow `34250482165`: testes automatizados e build verdes; D1/R2 remotos validados. Contratos cobrem leads, compra, troca, financiamento, vender, consignação, coerência da simulação e persistência/auditoria | Fluxos comerciais públicos mantidos como atendimento/WhatsApp + lead persistido; financiamento permanece explicitamente educativo, sem promessa de crédito. |
 | 09 | CONCLUÍDA | 08/09/2026 | `e5d6bc3` | Workflow `34251527649`: testes automatizados, build e validações D1/R2 remotas concluídos com sucesso | Contrato responsivo público fechado para home, estoque, serviços e contato, cobrindo utilitários de breakpoint e estruturas críticas mobile/telas maiores. |
 | 10 | CONCLUÍDA | 08/09/2026 | `b783587` | Workflow `34251933374`: workflow completo concluído com sucesso após criação da baseline pública | Baseline pública registrada em `docs/PUBLIC-BASELINE-2026-09-08.md`; alterações futuras devem preservar os contratos validados ou justificar regressão/novo requisito. |
-| 11 | EM CONSOLIDAÇÃO | 08/09/2026 | — | Auditoria de superfície server-side iniciada; critérios de proteção ainda em validação | Não fechar até revisar APIs, server functions, sessão/cookies, autorização, entrada pública e controles contra abuso. |
+| 11 | CONCLUÍDA | 08/09/2026 | `123e898` | Workflow `34253339123`: testes automatizados, build e validações remotas D1/R2 concluídos com sucesso | Superfície server-side auditada; headers de segurança globais, CSRF para server functions, same-origin/Content-Type/body limits, validações de entrada, coerência de entidades e auditoria administrativa estão cobertos. Autenticação/autorização administrativa continuam como objetivo específico das fases 12/13. |
 | 12 | PENDENTE | — | — | — | — |
 | 13 | PENDENTE | — | — | — | — |
 | 14 | PENDENTE | — | — | — | — |
@@ -140,12 +140,12 @@ Builds, testes e workflows não interrompem o fluxo de trabalho. Se uma validaç
 - Evidência: workflow `34251933374` concluiu com sucesso após a criação de `docs/PUBLIC-BASELINE-2026-09-08.md`, validando os gates automatizados locais e remotos do pipeline.
 - Resultado: baseline pública registrada como referência de regressão e continuidade; mudanças futuras devem preservar os contratos públicos validados ou apresentar justificativa objetiva.
 
-## Fase 11 — Segurança server-side
-- Status: EM CONSOLIDAÇÃO
+### Fase 11 — Segurança server-side
+- Status: CONCLUÍDA
 - Data: 08/09/2026
-- Referência: —
-- Evidência atual: auditoria da superfície `src/routes/api.leads.ts` iniciada; endpoint público já possui controles de same-origin, Content-Type, limite de corpo, validação de intenção, normalização de contato, validação de veículo, coerência da simulação e persistência transacional em lote lógico de lead/event/audit.
-- Próximo critério: concluir inventário de endpoints/server functions, revisar autenticação/autorização existentes, sessão/cookies, exposição de dados, controles de abuso/rate limit e contratos de segurança; só então implementar correções e validar com testes/build/workflow.
+- Referência: `123e89844e34383b8c204be2f4d3f60f48e878e8`
+- Evidência: workflow `34253339123` concluiu com sucesso todos os gates: migrations/seed/smoke locais, testes automatizados, build, autenticação Cloudflare, acesso remoto ao D1, inspeção do histórico de migrations e acesso ao R2. A suíte de segurança valida headers de segurança, same-origin, Content-Type e limite de corpo; o servidor usa middleware global para headers e CSRF automático para server functions.
+- Resultado: a superfície server-side foi endurecida e auditada sem misturar autenticação/autorização administrativa, que permanecem como escopo específico das fases 12 e 13. APIs administrativas existentes exigem a presença do contexto de Cloudflare Access e verificam same-origin; a consolidação do modelo de identidade e autorização será feita nas próximas fases.
 
 ## Regra de continuidade
 
