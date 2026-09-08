@@ -23,8 +23,8 @@ Builds, testes e workflows não interrompem o fluxo de trabalho. Se uma validaç
 | 03 | CONCLUÍDA | 08/09/2026 | `4978e09` | Workflow `34245476532`: validação remota de autenticação, D1 e histórico de migrations concluída com sucesso | D1 remoto validado operacionalmente pelo pipeline. |
 | 04 | CONCLUÍDA | 08/09/2026 | `4978e09` | Workflow `34245476532`: migração definitiva, validação R2 e manifestação exata de 18 objetos concluídas | 18 mídias demo em R2; objetos obsoletos `primary.jpg` conhecidos foram removidos; associação D1/R2 validada. |
 | 05 | CONCLUÍDA | 08/09/2026 | `30010f4` | Workflow `34246744306`: contrato do resolver e regressão associada validados; R2 é prioridade e `vehicle_media` fornece referências `r2://` | Resolver definitivo D1/R2 fechado; legado permanece somente como compatibilidade explícita. |
-| 06 | EM EXECUÇÃO | 08/09/2026 | `30010f4` | Contrato de regressão do catálogo criado e validado no workflow `34246744306` | Prosseguir para cobertura das integrações/fluxos públicos do catálogo sem refazer fases já fechadas. |
-| 07 | PENDENTE | — | — | — | Regressão completa do site público ainda não fechada. |
+| 06 | CONCLUÍDA | 08/09/2026 | `30010f4` | Workflow `34246744306`: contrato de regressão do catálogo validado com carregamento público, navegação de detalhes, categorias, filtros, ordenações, favoritos, WhatsApp e estados vazios | Regressão estrutural do catálogo público fechada; não reabrir sem regressão/critério objetivo. |
+| 07 | EM EXECUÇÃO | 08/09/2026 | `e81b4cb` | Auditoria estrutural das rotas públicas iniciada; home, sobre e contato revisados | Próximo foco: garantir que todas as superfícies públicas consumam a fonte operacional e que integrações públicas não dependam de catálogo estático legado. |
 | 08 | PENDENTE | — | — | — | Fluxo comercial público ainda precisa fechamento dedicado. |
 | 09 | PENDENTE | — | — | — | QA responsivo ainda não fechado. |
 | 10 | PENDENTE | — | — | — | Baseline pública depende de 01–09. |
@@ -104,6 +104,13 @@ Builds, testes e workflows não interrompem o fluxo de trabalho. Se uma validaç
 - Referência: `30010f48bde3dd92f8346a5004564e8063996114`
 - Evidência: workflow `34246744306` validou o contrato do resolver. O repositório D1 carrega `vehicle_media`, converte `object_key` em `r2://`, e o resolver trata R2 antes da compatibilidade legada, rejeitando referências fora do namespace permitido/traversal.
 - Resultado: o caminho normal de mídia do catálogo está consolidado em D1/R2; `legacy://` permanece apenas como fallback de compatibilidade explícita.
+
+### Fase 06 — Regressão do catálogo público
+- Status: CONCLUÍDA
+- Data: 08/09/2026
+- Referência: `30010f48bde3dd92f8346a5004564e8063996114`
+- Evidência: workflow `34246744306` validou o contrato de regressão de `estoque.tsx`, cobrindo carregamento do catálogo público, links de detalhes, status, categorias, filtros, ordenações, favoritos, interesse via WhatsApp, busca e estados vazios.
+- Resultado: o contrato estrutural do catálogo público foi fechado sem alteração de comportamento comercial existente.
 
 ## Regra de continuidade
 
