@@ -38,6 +38,63 @@ A principal dívida atual não é ausência de uma grande funcionalidade isolada
 10. Toda fase deve terminar com evidência compatível com o risco: código, teste, validação remota ou aceite manual.
 11. Uma pendência encontrada em fase anterior deve ser corrigida na origem antes de avançar quando ela puder contaminar fases posteriores.
 12. Documentação antiga será atualizada ou explicitamente marcada como histórica; não haverá múltiplas fontes concorrentes de verdade.
+13. **Toda tarefa, subtarefa ou fase concluída deve ser registrada imediatamente no documento de status oficial, com data, commit/referência técnica e evidência da validação.**
+14. **Uma tarefa marcada como concluída não deve ser auditada novamente por rotina. Ela só será reaberta se surgir evidência objetiva de regressão, mudança de requisito, alteração de arquitetura ou falha posterior que afete seu critério de fechamento.**
+15. **O registro de conclusão é parte obrigatória da própria entrega. Uma tarefa não é considerada definitivamente encerrada enquanto a implementação estiver pronta mas sua conclusão ainda não estiver registrada.**
+16. **O status oficial deve permitir identificar rapidamente o que está concluído, o que está em execução, o que está bloqueado e o que foi reaberto, evitando novas auditorias gerais desnecessárias.**
+
+---
+
+# REGRA PERMANENTE DE REGISTRO DE CONCLUSÃO
+
+A partir do rebaseline de 08/09/2026, o projeto passa a adotar um **registro permanente de execução**.
+
+Isso significa que o fluxo obrigatório de qualquer tarefa relevante será:
+
+`EXECUTAR → VALIDAR → CORRIGIR SE NECESSÁRIO → VALIDAR NOVAMENTE → REGISTRAR COMO CONCLUÍDA → AVANÇAR`
+
+Ao concluir uma tarefa, devem ser registrados, no mínimo:
+
+- **Identificação:** fase e tarefa concluída.
+- **Status:** `CONCLUÍDA`.
+- **Data:** data efetiva da conclusão.
+- **Referência técnica:** commit, PR, arquivo(s) ou outro identificador verificável.
+- **Validação:** testes, build, workflow, validação manual ou evidência remota utilizada.
+- **Observação:** somente se houver alguma ressalva que permaneça válida sem impedir o fechamento.
+
+### Regra de não regressão da auditoria
+
+O objetivo desta regra é impedir que o projeto entre novamente em um ciclo no qual cada nova etapa obrigue a revisar tudo o que já foi feito.
+
+Depois que uma tarefa for registrada como `CONCLUÍDA`, ela passa a ser tratada como **fechada**. As etapas seguintes devem confiar nesse registro e trabalhar sobre ele, sem repetir a auditoria completa daquela tarefa.
+
+Uma tarefa já concluída só volta para `REABERTA` quando houver uma causa concreta, como:
+
+- regressão comprovada;
+- alteração de requisito ou decisão de produto;
+- mudança arquitetural que invalide sua implementação;
+- falha descoberta em uma etapa posterior que tenha relação direta com ela;
+- evidência de que o critério de fechamento original não era suficiente.
+
+Quando uma tarefa for reaberta, o motivo e a nova validação também devem ser registrados. **Não se apaga o histórico anterior.** O registro deve mostrar que a tarefa foi concluída, por que foi reaberta e quando voltou a ser concluída.
+
+### Registro das fases
+
+O status das fases 01–49 será mantido em `docs/EXECUTION-STATUS.md`. O rebaseline define os critérios; o status registra a execução real.
+
+O formato mínimo por fase será:
+
+| Fase | Status | Data de fechamento | Referência | Evidência | Observação |
+|---|---|---|---|---|---|
+| 01 | PENDENTE | — | — | — | — |
+| 02 | PENDENTE | — | — | — | — |
+| 03 | PENDENTE | — | — | — | — |
+| ... | ... | ... | ... | ... | ... |
+| 41 | PENDENTE | — | — | — | — |
+| 42 | PENDENTE | — | — | — | — |
+| 49 | PENDENTE | — | — | — | — |
+
+Além do status da fase, tarefas internas importantes devem ser registradas no histórico de execução para que o trabalho já validado não precise ser redescoberto em uma auditoria futura.
 
 ---
 
@@ -254,7 +311,7 @@ A execução não começa novamente do zero e também não continua cegamente da
 
 A sequência correta é:
 
-`ESTADO ATUAL → REBASELINE → AUDITORIA 01–41 → CORREÇÕES DE ORIGEM → VALIDAÇÃO → FECHAMENTO DOS GATES → FASE 41 PERFORMANCE → 42–49`
+`ESTADO ATUAL → REBASELINE → AUDITORIA 01–41 → CORREÇÕES DE ORIGEM → VALIDAÇÃO → REGISTRO DE CONCLUSÃO → FECHAMENTO DOS GATES → FASE 41 PERFORMANCE → 42–49`
 
 Enquanto 01–41 são consolidadas, não devem ser introduzidas funcionalidades novas que criem dependências desnecessárias.
 
@@ -283,3 +340,5 @@ Enquanto 01–41 são consolidadas, não devem ser introduzidas funcionalidades 
 ## Regra final
 
 A partir deste documento, o projeto deve evoluir por **consolidação**, não por acumulação. Cada correção deve deixar o sistema mais simples de entender, mais coerente com o domínio e mais fácil de validar na próxima etapa.
+
+**Regra permanente adicional:** nenhuma tarefa concluída deve permanecer apenas na memória da execução ou em mensagens de conversa. Sua conclusão deve ser registrada no controle oficial do projeto no mesmo ciclo em que foi validada. Dessa forma, o histórico de execução se torna a referência para continuidade e evita que auditorias completas sejam repetidas sem motivo objetivo.
