@@ -1,6 +1,6 @@
 # Gomes Motors — Execution Status
 
-Atualizado em 07/09/2026.
+Atualizado em 08/09/2026.
 
 ## Etapas 01–03 — Fundação de dados
 
@@ -10,7 +10,7 @@ Atualizado em 07/09/2026.
 Auditoria dos seis veículos e das camadas estática, D1 e pública realizada. As divergências encontradas foram direcionadas para a etapa 02.
 
 ### 02 — Correções de dados
-**Status: CONCLUÍDA — aguardando validação remota do D1**
+**Status: CONCLUÍDA — validação local e build aprovados; aguardando validação remota do D1**
 
 Correções consolidadas:
 - catálogo estático alinhado às galerias aprovadas;
@@ -19,19 +19,22 @@ Correções consolidadas:
 - Onix com SEO coerente com o câmbio corrigido;
 - entrada mínima demonstrativa de financiamento padronizada em R$ 1.000,00;
 - migration `0006_catalog_data_corrections.sql` criada para normalizar o D1 existente sem reescrever migrations históricas;
-- seletor de veículos em Serviços passou a utilizar o mesmo resolver de imagens do catálogo.
+- seletor de veículos em Serviços passou a utilizar o mesmo resolver de imagens do catálogo;
+- teste automatizado protege as correções críticas do catálogo e da migration 0006.
 
 ### 03 — Fechamento D1
-**Status: EM VALIDAÇÃO TÉCNICA**
+**Status: VALIDAÇÃO LOCAL CONCLUÍDA — validação remota pendente**
 
 Base e infraestrutura no repositório:
 - `wrangler.jsonc` aponta `DB` para `gomes-motors-db` e `MEDIA_BUCKET` para `gomes-motors-media-2026`;
-- migrations históricas `0001` a `0006` permanecem preservadas;
+- migrations históricas e operacionais permanecem preservadas e sequenciais até `0010_financing_sale_integrity.sql`;
 - migration `0007_commercial_operations.sql` adiciona a base operacional comercial: leads, eventos de lead, avaliações, negociações, reservas, vendas, financiamento, configurações comerciais e analytics;
+- migrations `0009` e `0010` reforçam integridade das operações comerciais e de financiamento/venda;
 - leitura pública usa D1 como fonte configurada;
-- mídia possui camada de resolução D1/R2 e suporte administrativo para upload/delete no R2.
+- mídia possui camada de resolução D1/R2 e suporte administrativo para upload/delete no R2;
+- teste automatizado protege a configuração do D1, a cadeia sequencial de migrations e a presença da base comercial.
 
-**Pendente:** confirmar no ambiente remoto Cloudflare/D1 que todas as migrations estão aplicadas e que o banco remoto contém exatamente o estado esperado. A conexão disponível nesta sessão permite validar código e GitHub, mas não expõe ferramenta operacional para executar consultas no D1 remoto.
+**Pendente:** confirmar no ambiente remoto Cloudflare/D1 que todas as migrations estão aplicadas e que o banco remoto contém exatamente o estado esperado. A conexão disponível nesta sessão permite validar código, testes e GitHub, mas não expõe ferramenta operacional para executar consultas no D1 remoto.
 
 ## Etapa 04 — Migração R2
 **Status: IMPLEMENTAÇÃO DE CÓDIGO CONCLUÍDA; EXECUÇÃO REMOTA PENDENTE**
@@ -71,19 +74,20 @@ Concluído neste ciclo:
 3. Preview administrativo conectado à galeria.
 4. Formulário público de leads integrado ao endpoint `/api/leads`.
 5. Registro de intenção comercial no analytics.
+6. Contrato automatizado da fundação D1 e cadeia de migrations.
 
 Próximos blocos:
-6. Integrar o formulário de lead aos pontos públicos de intenção relacionados a veículos, financiamento e serviços, preservando a experiência atual.
-7. Revisar atomicidade e regras de transição de reserva/venda.
-8. Consolidar autenticação/permissões administrativas e proteção das rotas de UI.
-9. Revisar analytics, deduplicação e proteção contra abuso.
-10. Fechar documentação operacional e checklist de produção.
-11. Depois do bloco de código, executar validação remota do D1/R2 e rodada final de testes do catálogo/admin.
+7. Integrar o formulário de lead aos pontos públicos de intenção relacionados a veículos, financiamento e serviços, preservando a experiência atual.
+8. Revisar atomicidade e regras de transição de reserva/venda.
+9. Consolidar autenticação/permissões administrativas e proteção das rotas de UI.
+10. Revisar analytics, deduplicação e proteção contra abuso.
+11. Fechar documentação operacional e checklist de produção.
+12. Depois do bloco de código, executar validação remota do D1/R2 e rodada final de testes do catálogo/admin.
 
 ## Validações de build
 
-- Build validado com sucesso no fluxo de GitHub Actions após as correções recentes de tipagem.
-- O último build em andamento deste ciclo deve ser considerado pendente até sua conclusão; não registrar sucesso antecipadamente.
+- Build validation #314 — **SUCESSO** em 08/09/2026.
+- Testes automatizados, validação local de migrations/seed, smoke test do catálogo público, scripts operacionais e build da aplicação concluídos com sucesso.
 
 ## Regra de continuidade
 
