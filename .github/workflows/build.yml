@@ -67,8 +67,21 @@ jobs:
           (SELECT COUNT(*) FROM vehicle_prices) AS vehicle_prices,
           (SELECT COUNT(*) FROM vehicle_status_history) AS status_history;"
 
+      - name: Inspect remote D1 migration history
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && env.CLOUDFLARE_API_TOKEN != '' }}
+        run: >-
+          npx wrangler d1 execute gomes-motors-db --remote
+          --command "SELECT id, name, applied_at FROM d1_migrations ORDER BY id;"
+
       - name: Validate remote R2 access
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && env.CLOUDFLARE_API_TOKEN != '' }}
-        run: npx wrangler r2 object list gomes-motors-media-2026 --remote --prefix vehicles/
+        run: |
+          response="$(curl --fail-with-body --silent --show-error \
+            --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            "https://api.cloudflare.com/client/v4/accounts/032bf23dc3d216f45e90dbe254b3eb4e/r2/buckets/gomes-motors-media-2026/objects?prefix=vehicles/&per_page=1000")"
+          echo "$response" | jq -e '.success == true' >/dev/null
+          count="$(echo "$response" | jq '.result | length')"
+          echo "Remote R2 objects under vehicles/: ${count}"
+          test "$count" -eq 18
 
       # Phase 8.0 final validation rerun — TypeScript fixes applied.
