@@ -87,6 +87,20 @@ async function download(url, filePath) {
   await writeFileAsync(filePath, buffer);
 }
 
+function buildVehicleTransaction(vehicleId, references, mediaRows) {
+  const imagesJson = JSON.stringify(references);
+  const updateSql = `UPDATE vehicles SET image_url = ${sqlLiteral(references[0])}, images_json = ${sqlLiteral(imagesJson)}, updated_at = datetime('now') WHERE id = ${sqlLiteral(vehicleId)};`;
+  const deleteSql = `DELETE FROM vehicle_media WHERE vehicle_id = ${sqlLiteral(vehicleId)};`;
+  const insertSql = mediaRows
+    .map(
+      (row, index) =>
+        `INSERT INTO vehicle_media (id, vehicle_id, object_key, media_type, mime_type, display_order, alt_text, created_at, updated_at) VALUES (${sqlLiteral(row.mediaId)}, ${sqlLiteral(vehicleId)}, ${sqlLiteral(row.key)}, 'image', ${sqlLiteral(row.mime)}, ${index}, ${sqlLiteral(row.altText)}, ${sqlLiteral(row.now)}, ${sqlLiteral(row.now)});`,
+    )
+    .join("\n");
+
+  return `BEGIN;\n${updateSql}\n${deleteSql}\n${insertSql}\nCOMMIT;`;
+}
+
 async function main() {
   for (const [vehicleId, sources] of Object.entries(galleries)) {
     if (sources.length !== 3) {
@@ -132,19 +146,14 @@ async function main() {
         mediaRows.push({ mediaId, key, mime, altText, now: new Date().toISOString() });
       }
 
-      const imagesJson = JSON.stringify(references);
-      const updateSql = `UPDATE vehicles SET image_url = ${sqlLiteral(references[0])}, images_json = ${sqlLiteral(imagesJson)}, updated_at = datetime('now') WHERE id = ${sqlLiteral(vehicleId)};`;
-      const deleteSql = `DELETE FROM vehicle_media WHERE vehicle_id = ${sqlLiteral(vehicleId)};`;
-
-      console.log(`Atualizando vehicles e vehicle_media no D1 para ${vehicleId}`);
-      run(["d1", "execute", database, "--remote", `--command=${updateSql}`]);
-      run(["d1", "execute", database, "--remote", `--command=${deleteSql}`]);
-
-      for (let index = 0; index < mediaRows.length; index += 1) {
-        const row = mediaRows[index];
-        const insertSql = `INSERT INTO vehicle_media (id, vehicle_id, object_key, media_type, mime_type, display_order, alt_text, created_at, updated_at) VALUES (${sqlLiteral(row.mediaId)}, ${sqlLiteral(vehicleId)}, ${sqlLiteral(row.key)}, 'image', ${sqlLiteral(row.mime)}, ${index}, ${sqlLiteral(row.altText)}, ${sqlLiteral(row.now)}, ${sqlLiteral(row.now)});`;
-        run(["d1", "execute", database, "--remote", `--command=${insertSql}`]);
-      }
+      console.log(`Aplicando associação atômica no D1 para ${vehicleId}`);
+      run([
+        "d1",
+        "execute",
+        database,
+        "--remote",
+        `--command=${buildVehicleTransaction(vehicleId, references, mediaRows)}`,
+      ]);
     }
 
     console.log("\nMigração concluída: 18 imagens aprovadas foram enviadas para R2 e associadas aos seis veículos no D1.");
