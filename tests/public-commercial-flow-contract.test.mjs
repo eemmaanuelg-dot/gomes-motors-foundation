@@ -17,7 +17,7 @@ test("serviços mantém as cinco intenções comerciais persistidas como leads",
     assert.match(source, new RegExp(`\\"${intent}\\"`));
   }
   assert.match(source, /intent: tipo/);
-  assert.match(source, /fetch\\("\\/api\\/leads"/);
+  assert.ok(source.includes('fetch("/api/leads"'));
   assert.match(source, /credentials: "include"/);
 });
 
