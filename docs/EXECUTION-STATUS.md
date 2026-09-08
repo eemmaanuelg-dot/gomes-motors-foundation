@@ -68,7 +68,10 @@ Implementado e validado no código:
 - analytics de intenção comercial após envio do formulário;
 - integridade de reserva/venda reforçada no banco por triggers, além das validações server-side existentes;
 - cobertura automatizada do contrato das transições comerciais;
-- deduplicação server-side de eventos de analytics repetidos na mesma sessão em janela curta, com índice D1 dedicado.
+- deduplicação server-side de eventos de analytics repetidos na mesma sessão em janela curta, com índice D1 dedicado;
+- proteção das telas administrativas contra falhas de API e cobertura automatizada do contrato de autenticação da UI;
+- cobertura automatizada do dashboard administrativo, seus indicadores comerciais e seus gates de segurança;
+- checklist de produção protegido por teste de contrato para evitar perda dos gates de D1, R2 e segurança.
 
 ### Bloco atual — continuidade
 
@@ -83,15 +86,19 @@ Concluído neste ciclo:
 8. Ampliação do smoke test das rotas públicas, incluindo detalhe de veículo e contato.
 9. Reforço da integridade das transições de reserva e venda com a migration `0011_commercial_transition_integrity.sql` e teste de contrato correspondente.
 10. Revisão de analytics com deduplicação por sessão, janela de 5 segundos e índice D1 de suporte.
+11. Correção do contrato de identidade da UI administrativa após falha de teste, seguida de validação completa.
+12. Ampliação da cobertura automatizada das telas administrativas, dashboard e checklist de produção.
 
 Próximos blocos:
-11. Consolidar autenticação/permissões administrativas e proteção das rotas de UI.
-12. Fechar documentação operacional e checklist de produção.
-13. Depois do bloco de código, executar validação remota do D1/R2 e rodada final de testes do catálogo/admin.
+13. Consolidar autenticação/permissões administrativas e proteção das rotas de UI.
+14. Fechar documentação operacional e checklist de produção.
+15. Depois do bloco de código, executar validação remota do D1/R2 e rodada final de testes do catálogo/admin.
 
 ## Validações de build
 
 - Build validation #322 — **SUCESSO** em 08/09/2026.
+- Build validation #332 — **SUCESSO** em 08/09/2026, após correção do contrato de identidade da UI administrativa.
+- As novas coberturas de dashboard, autenticação das telas administrativas e checklist de produção estão sendo validadas pela cadeia automática do GitHub.
 - A correção do contrato público de leads foi validada integralmente no GitHub antes da continuidade.
 - As migrations `0011` e `0012`, a proteção de transições comerciais e a deduplicação de analytics foram enviadas ao `main` e estão em validação automática contínua.
 
