@@ -21,11 +21,11 @@ Builds, testes e workflows não interrompem o fluxo de trabalho. Se uma validaç
 | 01 | CONCLUÍDA | 08/09/2026 | `6efc3f3` | Workflow `34239873330`: migrations, seed, smoke catalog, testes 55/55 e build verde | Catálogo público sem sincronização/mutação implícita; D1 permanece fonte operacional. |
 | 02 | CONCLUÍDA | 08/09/2026 | `6efc3f3` | Workflow `34239873330`: cadeia local de migrations, seed, catálogo, testes e build | Correções versionadas em migration; sincronização runtime frágil removida. |
 | 03 | CONCLUÍDA | 08/09/2026 | `4978e09` | Workflow `34245476532`: validação remota de autenticação, D1 e histórico de migrations concluída com sucesso | D1 remoto validado operacionalmente pelo pipeline. |
-| 04 | CONCLUÍDA | 08/09/2026 | `4978e09` | Workflow `34245476532`: migração definitiva, validação R2 e manifestação exata de 18 objetos concluídas | 18 mídias demo em R2; objetos obsoletos `primary.jpg` conhecidos foram removidos; associação D1/R2 validada. |
+| 04 | CONCLUÍDA | 08/09/2026 | `4978e09` | Workflow `34245476532`: migração definitiva, validação R2 e manifesto exato de 18 objetos concluídos | 18 mídias demo em R2; objetos obsoletos `primary.jpg` conhecidos foram removidos; associação D1/R2 validada. |
 | 05 | CONCLUÍDA | 08/09/2026 | `30010f4` | Workflow `34246744306`: contrato do resolver e regressão associada validados; R2 é prioridade e `vehicle_media` fornece referências `r2://` | Resolver definitivo D1/R2 fechado; legado permanece somente como compatibilidade explícita. |
 | 06 | CONCLUÍDA | 08/09/2026 | `30010f4` | Workflow `34246744306`: contrato de regressão do catálogo validado com carregamento público, navegação de detalhes, categorias, filtros, ordenações, favoritos, WhatsApp e estados vazios | Regressão estrutural do catálogo público fechada; não reabrir sem regressão/critério objetivo. |
-| 07 | EM EXECUÇÃO | 08/09/2026 | `e81b4cb` | Auditoria estrutural das rotas públicas iniciada; home, sobre e contato revisados | Próximo foco: garantir que todas as superfícies públicas consumam a fonte operacional e que integrações públicas não dependam de catálogo estático legado. |
-| 08 | PENDENTE | — | — | — | Fluxo comercial público ainda precisa fechamento dedicado. |
+| 07 | CONCLUÍDA | 08/09/2026 | `2835882` | Workflow `34249548803`: 65/65 testes, build verde, catálogo público operacional e auditoria estrutural das superfícies públicas concluída | Rotas públicas e serviços não importam o catálogo estático legado; `/servicos` consome `publicVehicleCatalog` para comprar, trocar e financiar. |
+| 08 | EM EXECUÇÃO | 08/09/2026 | `2835882` | Transição iniciada após fechamento da Fase 07 | Fechamento dedicado dos fluxos comerciais públicos: leads, compra, troca, financiamento, vender e consignar. |
 | 09 | PENDENTE | — | — | — | QA responsivo ainda não fechado. |
 | 10 | PENDENTE | — | — | — | Baseline pública depende de 01–09. |
 | 11 | PENDENTE | — | — | — | — |
@@ -111,6 +111,13 @@ Builds, testes e workflows não interrompem o fluxo de trabalho. Se uma validaç
 - Referência: `30010f48bde3dd92f8346a5004564e8063996114`
 - Evidência: workflow `34246744306` validou o contrato de regressão de `estoque.tsx`, cobrindo carregamento do catálogo público, links de detalhes, status, categorias, filtros, ordenações, favoritos, interesse via WhatsApp, busca e estados vazios.
 - Resultado: o contrato estrutural do catálogo público foi fechado sem alteração de comportamento comercial existente.
+
+### Fase 07 — Regressão e integridade das superfícies públicas
+- Status: CONCLUÍDA
+- Data: 08/09/2026
+- Referência: `2835882859f26d061189c74e0bd8a1de5b992876`
+- Evidência: workflow `34249548803` concluiu com 65/65 testes, build verde, validação local do catálogo e validações remotas de D1/R2. O contrato público confirmou ausência de imports de `@/data/vehicles` e de `VEICULOS` nas rotas públicas auditadas; `servicos.tsx` passou a carregar veículos via `publicVehicleCatalog`.
+- Resultado: as superfícies públicas auditadas estão alinhadas ao D1 operacional e o fluxo de serviços deixou de depender do catálogo estático legado.
 
 ## Regra de continuidade
 
