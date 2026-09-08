@@ -25,8 +25,8 @@ Builds, testes e workflows não interrompem o fluxo de trabalho. Se uma validaç
 | 05 | CONCLUÍDA | 08/09/2026 | `30010f4` | Workflow `34246744306`: contrato do resolver e regressão associada validados; R2 é prioridade e `vehicle_media` fornece referências `r2://` | Resolver definitivo D1/R2 fechado; legado permanece somente como compatibilidade explícita. |
 | 06 | CONCLUÍDA | 08/09/2026 | `30010f4` | Workflow `34246744306`: contrato de regressão do catálogo validado com carregamento público, navegação de detalhes, categorias, filtros, ordenações, favoritos, WhatsApp e estados vazios | Regressão estrutural do catálogo público fechada; não reabrir sem regressão/critério objetivo. |
 | 07 | CONCLUÍDA | 08/09/2026 | `2835882` | Workflow `34249548803`: 65/65 testes, build verde, catálogo público operacional e auditoria estrutural das superfícies públicas concluída | Rotas públicas e serviços não importam o catálogo estático legado; `/servicos` consome `publicVehicleCatalog` para comprar, trocar e financiar. |
-| 08 | EM EXECUÇÃO | 08/09/2026 | `2835882` | Transição iniciada após fechamento da Fase 07 | Fechamento dedicado dos fluxos comerciais públicos: leads, compra, troca, financiamento, vender e consignar. |
-| 09 | PENDENTE | — | — | — | QA responsivo ainda não fechado. |
+| 08 | CONCLUÍDA | 08/09/2026 | `068694a` | Workflow `34250482165`: testes automatizados e build verdes; D1/R2 remotos validados. Contratos cobrem leads, compra, troca, financiamento, vender, consignação, coerência da simulação e persistência/auditoria | Fluxos comerciais públicos mantidos como atendimento/WhatsApp + lead persistido; financiamento permanece explicitamente educativo, sem promessa de crédito. |
+| 09 | EM EXECUÇÃO | 08/09/2026 | `068694a` | Transição iniciada após fechamento da Fase 08 | QA responsivo público será fechado por matriz estrutural e validação das superfícies críticas antes do baseline. |
 | 10 | PENDENTE | — | — | — | Baseline pública depende de 01–09. |
 | 11 | PENDENTE | — | — | — | — |
 | 12 | PENDENTE | — | — | — | — |
@@ -118,6 +118,13 @@ Builds, testes e workflows não interrompem o fluxo de trabalho. Se uma validaç
 - Referência: `2835882859f26d061189c74e0bd8a1de5b992876`
 - Evidência: workflow `34249548803` concluiu com 65/65 testes, build verde, validação local do catálogo e validações remotas de D1/R2. O contrato público confirmou ausência de imports de `@/data/vehicles` e de `VEICULOS` nas rotas públicas auditadas; `servicos.tsx` passou a carregar veículos via `publicVehicleCatalog`.
 - Resultado: as superfícies públicas auditadas estão alinhadas ao D1 operacional e o fluxo de serviços deixou de depender do catálogo estático legado.
+
+### Fase 08 — Fluxo comercial público
+- Status: CONCLUÍDA
+- Data: 08/09/2026
+- Referência: `068694ad99e190ee86340519d2bb94fad87a98bf`
+- Evidência: workflow `34250482165` concluiu todos os gates locais e remotos com sucesso. Os contratos automatizados cobrem as cinco intenções comerciais de `/servicos`, uso do catálogo operacional, envio de `vehicleId`, simulação educativa de financiamento, proteções da API pública, persistência em `leads`, `lead_events` e `audit_logs`, e coerência entre veículo do lead e veículo da simulação.
+- Resultado: compra, troca, financiamento, venda e consignação permanecem integrados ao atendimento via WhatsApp e ao registro persistente de leads; a simulação pública continua sem representar proposta ou aprovação de crédito.
 
 ## Regra de continuidade
 
