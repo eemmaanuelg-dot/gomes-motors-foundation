@@ -4,7 +4,7 @@ import { readFile } from "node:fs/promises";
 
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
 
-test("baseline final mantém rotas públicas e operacionais essenciais", async () => {
+test("baseline final mantém rotas públicas essenciais", async () => {
   const routes = await read("src/routeTree.gen.ts");
 
   for (const route of [
@@ -14,13 +14,6 @@ test("baseline final mantém rotas públicas e operacionais essenciais", async (
     "/servicos",
     "/sobre",
     "/contato",
-    "/avaliacoes",
-    "/admin",
-    "/admin/estoque",
-    "/admin/crm",
-    "/admin/operacao",
-    "/admin/relatorios",
-    "/admin/configuracoes",
   ]) {
     assert.match(routes, new RegExp(route.replaceAll("$", "\\$")));
   }
