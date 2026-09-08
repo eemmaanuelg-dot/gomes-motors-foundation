@@ -27,9 +27,10 @@ Correções consolidadas:
 
 Base e infraestrutura no repositório:
 - `wrangler.jsonc` aponta `DB` para `gomes-motors-db` e `MEDIA_BUCKET` para `gomes-motors-media-2026`;
-- migrations históricas e operacionais permanecem preservadas e sequenciais até `0011_commercial_transition_integrity.sql`;
+- migrations históricas e operacionais permanecem preservadas e sequenciais até `0012_analytics_integrity.sql`;
 - migration `0007_commercial_operations.sql` adiciona a base operacional comercial: leads, eventos de lead, avaliações, negociações, reservas, vendas, financiamento, configurações comerciais e analytics;
 - migrations `0009`, `0010` e `0011` reforçam integridade das operações comerciais e de financiamento/venda;
+- migration `0012` adiciona índice para deduplicação eficiente de eventos de analytics;
 - leitura pública usa D1 como fonte configurada;
 - mídia possui camada de resolução D1/R2 e suporte administrativo para upload/delete no R2;
 - testes automatizados protegem a configuração do D1, a cadeia sequencial de migrations e a base comercial.
@@ -66,7 +67,8 @@ Implementado e validado no código:
 - formulário público de atendimento integrado a `/api/leads` e ao CRM através da página `/contato`;
 - analytics de intenção comercial após envio do formulário;
 - integridade de reserva/venda reforçada no banco por triggers, além das validações server-side existentes;
-- cobertura automatizada do contrato das transições comerciais.
+- cobertura automatizada do contrato das transições comerciais;
+- deduplicação server-side de eventos de analytics repetidos na mesma sessão em janela curta, com índice D1 dedicado.
 
 ### Bloco atual — continuidade
 
@@ -80,10 +82,10 @@ Concluído neste ciclo:
 7. Cobertura automatizada dos fluxos comerciais públicos e do contrato de financiamento demonstrativo.
 8. Ampliação do smoke test das rotas públicas, incluindo detalhe de veículo e contato.
 9. Reforço da integridade das transições de reserva e venda com a migration `0011_commercial_transition_integrity.sql` e teste de contrato correspondente.
+10. Revisão de analytics com deduplicação por sessão, janela de 5 segundos e índice D1 de suporte.
 
 Próximos blocos:
-10. Consolidar autenticação/permissões administrativas e proteção das rotas de UI.
-11. Revisar analytics, deduplicação e proteção contra abuso.
+11. Consolidar autenticação/permissões administrativas e proteção das rotas de UI.
 12. Fechar documentação operacional e checklist de produção.
 13. Depois do bloco de código, executar validação remota do D1/R2 e rodada final de testes do catálogo/admin.
 
@@ -91,7 +93,7 @@ Próximos blocos:
 
 - Build validation #322 — **SUCESSO** em 08/09/2026.
 - A correção do contrato público de leads foi validada integralmente no GitHub antes da continuidade.
-- Nova migration e cobertura de integridade das transições comerciais foram enviadas ao `main` e aguardam a nova validação automática.
+- As migrations `0011` e `0012`, a proteção de transições comerciais e a deduplicação de analytics foram enviadas ao `main` e estão em validação automática contínua.
 
 ## Regra de continuidade
 
