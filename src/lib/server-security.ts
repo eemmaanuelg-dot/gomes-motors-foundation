@@ -46,3 +46,29 @@ export function exceedsBodyLimit(request: Request, maxBytes = 256 * 1024): boole
   const size = Number(contentLength);
   return !Number.isFinite(size) || size < 0 || size > maxBytes;
 }
+
+/**
+ * Administrative authentication is provided by Cloudflare Access.
+ *
+ * Access places both the authenticated identity and the signed application
+ * assertion on requests reaching the Worker. Requiring both prevents the
+ * application from treating a bare identity header as an authentication
+ * signal. Cryptographic JWT verification remains an infrastructure-specific
+ * deployment concern when an Access application is configured for origin
+ * validation; the production deployment must keep the admin surface behind
+ * Access and must never expose it through an unprotected origin.
+ */
+export function isCloudflareAccessAuthenticated(request: Request): boolean {
+  const email = request.headers.get("cf-access-authenticated-user-email")?.trim();
+  const assertion = request.headers.get("cf-access-jwt-assertion")?.trim();
+  return Boolean(email && assertion);
+}
+
+export function isAdminPath(request: Request): boolean {
+  try {
+    const pathname = new URL(request.url).pathname;
+    return pathname === "/admin" || pathname.startsWith("/admin/");
+  } catch {
+    return false;
+  }
+}
