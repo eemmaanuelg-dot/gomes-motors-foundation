@@ -55,14 +55,9 @@ jobs:
       # Controlled infrastructure reconciliation; reruns are idempotent.
       - name: Reconcile remote D1 migrations once
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && env.CLOUDFLARE_API_TOKEN != '' && contains(github.event.head_commit.message, '[reconcile-infra]') }}
-        run: >-
-          npx wrangler d1 execute gomes-motors-db --remote
-          --command "CREATE INDEX IF NOT EXISTS idx_analytics_dedupe
-          ON analytics_events(session_id, event_name, vehicle_id, lead_id, occurred_at);"
-          npx wrangler d1 execute gomes-motors-db --remote
-          --command "INSERT INTO d1_migrations (id, name, applied_at)
-          SELECT 12, '0012_analytics_integrity.sql', strftime('%s','now') * 1000
-          WHERE NOT EXISTS (SELECT 1 FROM d1_migrations WHERE id = 12);"
+        run: |
+          npx wrangler d1 execute gomes-motors-db --remote --command "CREATE INDEX IF NOT EXISTS idx_analytics_dedupe ON analytics_events(session_id, event_name, vehicle_id, lead_id, occurred_at);"
+          npx wrangler d1 execute gomes-motors-db --remote --command "INSERT INTO d1_migrations (id, name, applied_at) SELECT 12, '0012_analytics_integrity.sql', strftime('%s','now') * 1000 WHERE NOT EXISTS (SELECT 1 FROM d1_migrations WHERE id = 12);"
 
       - name: Migrate definitive demo media to R2 once
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && env.CLOUDFLARE_API_TOKEN != '' && contains(github.event.head_commit.message, '[reconcile-infra]') }}
