@@ -27,8 +27,8 @@ Builds, testes e workflows não interrompem o fluxo de trabalho. Se uma validaç
 | 07 | CONCLUÍDA | 08/09/2026 | `2835882` | Workflow `34249548803`: 65/65 testes, build verde, catálogo público operacional e auditoria estrutural das superfícies públicas concluída | Rotas públicas e serviços não importam o catálogo estático legado; `/servicos` consome `publicVehicleCatalog` para comprar, trocar e financiar. |
 | 08 | CONCLUÍDA | 08/09/2026 | `068694a` | Workflow `34250482165`: testes automatizados e build verdes; D1/R2 remotos validados. Contratos cobrem leads, compra, troca, financiamento, vender, consignação, coerência da simulação e persistência/auditoria | Fluxos comerciais públicos mantidos como atendimento/WhatsApp + lead persistido; financiamento permanece explicitamente educativo, sem promessa de crédito. |
 | 09 | CONCLUÍDA | 08/09/2026 | `e5d6bc3` | Workflow `34251527649`: testes automatizados, build e validações D1/R2 remotas concluídos com sucesso | Contrato responsivo público fechado para home, estoque, serviços e contato, cobrindo utilitários de breakpoint e estruturas críticas mobile/telas maiores. |
-| 10 | PENDENTE | — | — | — | Baseline pública depende de 01–09. |
-| 11 | PENDENTE | — | — | — | — |
+| 10 | CONCLUÍDA | 08/09/2026 | `b783587` | Workflow `34251933374`: workflow completo concluído com sucesso após criação da baseline pública | Baseline pública registrada em `docs/PUBLIC-BASELINE-2026-09-08.md`; alterações futuras devem preservar os contratos validados ou justificar regressão/novo requisito. |
+| 11 | EM CONSOLIDAÇÃO | 08/09/2026 | — | Auditoria de superfície server-side iniciada; critérios de proteção ainda em validação | Não fechar até revisar APIs, server functions, sessão/cookies, autorização, entrada pública e controles contra abuso. |
 | 12 | PENDENTE | — | — | — | — |
 | 13 | PENDENTE | — | — | — | — |
 | 14 | PENDENTE | — | — | — | — |
@@ -132,6 +132,20 @@ Builds, testes e workflows não interrompem o fluxo de trabalho. Se uma validaç
 - Referência: `e5d6bc36251d543e3ab3b01e0ddd571284676db5`
 - Evidência: workflow `34251527649` concluiu com sucesso testes automatizados, build, autenticação Cloudflare, acesso remoto ao D1, inspeção do histórico de migrations e acesso ao R2. O contrato adicionou cobertura das superfícies críticas `index`, `estoque`, `servicos` e `contato`, verificando utilitários responsivos e estruturas de grid/painéis para mobile e telas maiores.
 - Resultado: o contrato estrutural de responsividade pública foi fechado; as superfícies críticas possuem cobertura automatizada mínima contra regressões de breakpoint/layout.
+
+### Fase 10 — Baseline pública
+- Status: CONCLUÍDA
+- Data: 08/09/2026
+- Referência: `b7835877d3c6822646a06e8045a6b69ea66bcdc1`
+- Evidência: workflow `34251933374` concluiu com sucesso após a criação de `docs/PUBLIC-BASELINE-2026-09-08.md`, validando os gates automatizados locais e remotos do pipeline.
+- Resultado: baseline pública registrada como referência de regressão e continuidade; mudanças futuras devem preservar os contratos públicos validados ou apresentar justificativa objetiva.
+
+## Fase 11 — Segurança server-side
+- Status: EM CONSOLIDAÇÃO
+- Data: 08/09/2026
+- Referência: —
+- Evidência atual: auditoria da superfície `src/routes/api.leads.ts` iniciada; endpoint público já possui controles de same-origin, Content-Type, limite de corpo, validação de intenção, normalização de contato, validação de veículo, coerência da simulação e persistência transacional em lote lógico de lead/event/audit.
+- Próximo critério: concluir inventário de endpoints/server functions, revisar autenticação/autorização existentes, sessão/cookies, exposição de dados, controles de abuso/rate limit e contratos de segurança; só então implementar correções e validar com testes/build/workflow.
 
 ## Regra de continuidade
 
