@@ -2,7 +2,7 @@ import "./lib/error-capture";
 
 import { consumeLastCapturedError } from "./lib/error-capture";
 import { renderErrorPage } from "./lib/error-page";
-import { applySecurityHeaders } from "./lib/server-security";
+import { applySecurityHeaders, isAdminPath, isCloudflareAccessAuthenticated } from "./lib/server-security";
 
 type ServerEntry = {
   fetch: (request: Request, env: unknown, ctx: unknown) => Promise<Response> | Response;
@@ -22,10 +22,6 @@ async function getServerEntry(): Promise<ServerEntry> {
 function disableDynamicCaching(response: Response): Response {
   const contentType = response.headers.get("content-type") ?? "";
 
-  // HTML documents and server-function JSON contain live D1-backed catalog
-  // data. They must never be served from a stale browser/CDN cache after an
-  // inventory update or a new Worker deployment. Static JS/CSS/image assets
-  // keep their normal cache behavior.
   if (!contentType.includes("text/html") && !contentType.includes("application/json")) {
     return response;
   }
@@ -44,8 +40,6 @@ function disableDynamicCaching(response: Response): Response {
   });
 }
 
-// h3 swallows in-handler throws into a normal 500 Response with body
-// {"unhandled":true,"message":"HTTPError"} — try/catch alone never fires for those.
 async function normalizeCatastrophicSsrResponse(response: Response): Promise<Response> {
   if (response.status < 500) return response;
   const contentType = response.headers.get("content-type") ?? "";
@@ -73,6 +67,16 @@ function isH3SwallowedErrorBody(body: string): boolean {
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
+      if (isAdminPath(request) && !isCloudflareAccessAuthenticated(request)) {
+        return applySecurityHeaders(new Response(JSON.stringify({ error: "Acesso administrativo não autenticado." }), {
+          status: 401,
+          headers: {
+            "content-type": "application/json; charset=utf-8",
+            "Cache-Control": "no-store",
+          },
+        }));
+      }
+
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
       const normalized = await normalizeCatastrophicSsrResponse(response);
