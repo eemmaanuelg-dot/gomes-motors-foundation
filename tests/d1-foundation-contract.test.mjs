@@ -36,7 +36,7 @@ test("D1 foundation retains the commercial schema migration at the end of the cu
   assert.match(commercialMigration, /CREATE TABLE IF NOT EXISTS leads/);
   assert.match(commercialMigration, /CREATE TABLE IF NOT EXISTS sales/);
   assert.match(commercialMigration, /CREATE TABLE IF NOT EXISTS financing_operations/);
-  assert.match(migration, /CREATE INDEX IF NOT EXISTS/);
-  assert.match(migration, /financing/);
+  assert.match(migration, /CREATE UNIQUE INDEX IF NOT EXISTS/);
+  assert.match(migration, /financing_operations/);
   assert.match(migration, /sales/);
 });
