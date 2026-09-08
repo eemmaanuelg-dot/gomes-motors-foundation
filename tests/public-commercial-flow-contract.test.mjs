@@ -19,6 +19,18 @@ test("serviços mantém as cinco intenções comerciais persistidas como leads",
   assert.match(source, /intent: tipo/);
   assert.ok(source.includes('fetch("/api/leads"'));
   assert.match(source, /credentials: "include"/);
+  assert.match(source, /keepalive: true/);
+});
+
+test("fluxos públicos com veículo usam o catálogo operacional e enviam o identificador selecionado", async () => {
+  const source = await readProjectFile("src/routes/servicos.tsx");
+
+  assert.match(source, /publicVehicleCatalog\.listar\(\)/);
+  assert.doesNotMatch(source, /@\/data\/vehicles/);
+  assert.doesNotMatch(source, /\\bVEICULOS\\b/);
+  assert.match(source, /intent: "comprar", vehicleId: veiculo\.id/);
+  assert.match(source, /intent: "trocar", vehicleId: veiculo\.id/);
+  assert.match(source, /intent: "financiar", vehicleId: veiculo\.id/);
 });
 
 test("simulação pública de financiamento permanece educativa e leva o contexto estimado ao atendimento", async () => {
@@ -32,4 +44,36 @@ test("simulação pública de financiamento permanece educativa e leva o context
   assert.match(source, /Entrada pretendida/);
   assert.match(source, /Prazo:/);
   assert.match(source, /Parcela estimada/);
+});
+
+test("API pública de leads aplica as proteções básicas e restringe as intenções", async () => {
+  const source = await readProjectFile("src/routes/api.leads.ts");
+
+  assert.match(source, /isSameOriginRequest\(request\)/);
+  assert.match(source, /hasAcceptableJsonContentType\(request\)/);
+  assert.match(source, /exceedsBodyLimit\(request\)/);
+  assert.match(source, /ALLOWED_INTENTS/);
+  for (const intent of ["comprar", "trocar", "financiar", "vender", "consignar", "contato"]) {
+    assert.match(source, new RegExp(`\\"${intent}\\"`));
+  }
+  assert.match(source, /if \(!phone && !email\)/);
+});
+
+test("API pública confirma veículos e persiste o lead com evento e auditoria", async () => {
+  const source = await readProjectFile("src/routes/api.leads.ts");
+
+  assert.match(source, /SELECT id FROM vehicles WHERE id = \?/);
+  assert.match(source, /INSERT INTO leads/);
+  assert.match(source, /INSERT INTO lead_events/);
+  assert.match(source, /INSERT INTO audit_logs/);
+  assert.match(source, /return json\(\{ ok: true, leadId \}\)/);
+});
+
+test("formulário público somente confirma sucesso após a API aceitar o lead", async () => {
+  const source = await readProjectFile("src/components/site/PublicLeadForm.tsx");
+
+  assert.match(source, /await fetch\(\"\/api\/leads\"/);
+  assert.match(source, /if \(!response\.ok \|\| !result\.ok\)/);
+  assert.match(source, /setFeedback\(\{ ok: true/);
+  assert.match(source, /trackAnalytics\(\{ eventName: \"lead_intent\"/);
 });
