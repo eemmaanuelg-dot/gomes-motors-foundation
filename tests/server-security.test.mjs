@@ -21,6 +21,9 @@ test("aplica headers de segurança sem remover os headers existentes", () => {
     response.headers.get("Permissions-Policy"),
     "camera=(), microphone=(), geolocation=()",
   );
+  assert.equal(response.headers.get("Strict-Transport-Security"), "max-age=31536000");
+  assert.equal(response.headers.get("Cross-Origin-Opener-Policy"), "same-origin");
+  assert.equal(response.headers.get("X-Permitted-Cross-Domain-Policies"), "none");
 });
 
 test("aceita requisição same-origin e rejeita origin diferente", () => {
