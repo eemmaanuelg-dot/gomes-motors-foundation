@@ -52,6 +52,14 @@ jobs:
       - name: Build application
         run: npm run build
 
+      - name: Reconcile remote D1 migrations once
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && env.CLOUDFLARE_API_TOKEN != '' && contains(github.event.head_commit.message, '[reconcile-infra]') }}
+        run: npx wrangler d1 migrations apply gomes-motors-db --remote
+
+      - name: Migrate definitive demo media to R2 once
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && env.CLOUDFLARE_API_TOKEN != '' && contains(github.event.head_commit.message, '[reconcile-infra]') }}
+        run: node scripts/migrate-legacy-media.mjs
+
       - name: Validate remote Cloudflare authentication
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && env.CLOUDFLARE_API_TOKEN != '' }}
         run: npx wrangler whoami
@@ -82,6 +90,8 @@ jobs:
           echo "$response" | jq -e '.success == true' >/dev/null
           count="$(echo "$response" | jq '.result | length')"
           echo "Remote R2 objects under vehicles/: ${count}"
+          echo "Remote R2 keys under vehicles/:"
+          echo "$response" | jq -r '.result[].key' | sort
           test "$count" -ge 18
 
       # Phase 8.0 final validation rerun — TypeScript fixes applied.
