@@ -26,7 +26,7 @@ Builds, testes e workflows não interrompem o fluxo de trabalho. Se uma validaç
 | 06 | CONCLUÍDA | 08/09/2026 | `30010f4` | Workflow `34246744306`: contrato de regressão do catálogo validado com carregamento público, navegação de detalhes, categorias, filtros, ordenações, favoritos, WhatsApp e estados vazios | Regressão estrutural do catálogo público fechada; não reabrir sem regressão/critério objetivo. |
 | 07 | CONCLUÍDA | 08/09/2026 | `2835882` | Workflow `34249548803`: 65/65 testes, build verde, catálogo público operacional e auditoria estrutural das superfícies públicas concluída | Rotas públicas e serviços não importam o catálogo estático legado; `/servicos` consome `publicVehicleCatalog` para comprar, trocar e financiar. |
 | 08 | CONCLUÍDA | 08/09/2026 | `068694a` | Workflow `34250482165`: testes automatizados e build verdes; D1/R2 remotos validados. Contratos cobrem leads, compra, troca, financiamento, vender, consignação, coerência da simulação e persistência/auditoria | Fluxos comerciais públicos mantidos como atendimento/WhatsApp + lead persistido; financiamento permanece explicitamente educativo, sem promessa de crédito. |
-| 09 | EM EXECUÇÃO | 08/09/2026 | `068694a` | Transição iniciada após fechamento da Fase 08 | QA responsivo público será fechado por matriz estrutural e validação das superfícies críticas antes do baseline. |
+| 09 | CONCLUÍDA | 08/09/2026 | `e5d6bc3` | Workflow `34251527649`: testes automatizados, build e validações D1/R2 remotas concluídos com sucesso | Contrato responsivo público fechado para home, estoque, serviços e contato, cobrindo utilitários de breakpoint e estruturas críticas mobile/telas maiores. |
 | 10 | PENDENTE | — | — | — | Baseline pública depende de 01–09. |
 | 11 | PENDENTE | — | — | — | — |
 | 12 | PENDENTE | — | — | — | — |
@@ -125,6 +125,13 @@ Builds, testes e workflows não interrompem o fluxo de trabalho. Se uma validaç
 - Referência: `068694ad99e190ee86340519d2bb94fad87a98bf`
 - Evidência: workflow `34250482165` concluiu todos os gates locais e remotos com sucesso. Os contratos automatizados cobrem as cinco intenções comerciais de `/servicos`, uso do catálogo operacional, envio de `vehicleId`, simulação educativa de financiamento, proteções da API pública, persistência em `leads`, `lead_events` e `audit_logs`, e coerência entre veículo do lead e veículo da simulação.
 - Resultado: compra, troca, financiamento, venda e consignação permanecem integrados ao atendimento via WhatsApp e ao registro persistente de leads; a simulação pública continua sem representar proposta ou aprovação de crédito.
+
+### Fase 09 — QA responsivo público
+- Status: CONCLUÍDA
+- Data: 08/09/2026
+- Referência: `e5d6bc36251d543e3ab3b01e0ddd571284676db5`
+- Evidência: workflow `34251527649` concluiu com sucesso testes automatizados, build, autenticação Cloudflare, acesso remoto ao D1, inspeção do histórico de migrations e acesso ao R2. O contrato adicionou cobertura das superfícies críticas `index`, `estoque`, `servicos` e `contato`, verificando utilitários responsivos e estruturas de grid/painéis para mobile e telas maiores.
+- Resultado: o contrato estrutural de responsividade pública foi fechado; as superfícies críticas possuem cobertura automatizada mínima contra regressões de breakpoint/layout.
 
 ## Regra de continuidade
 
