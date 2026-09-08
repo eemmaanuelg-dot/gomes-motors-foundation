@@ -2,98 +2,40 @@
 
 Atualizado em 08/09/2026.
 
-## REBASELINE OFICIAL
+## Fonte de verdade
 
-O projeto foi rebaseado em 08/09/2026 a partir do estado real da implementação. O documento canônico é `docs/PROJECT-REBASELINE-2026-09-08.md`.
+O estado de execução é registrado neste arquivo. Os critérios das fases são definidos em `docs/PROJECT-REBASELINE-2026-09-08.md`.
 
-A execução anterior acumulou funcionalidades, testes e documentação em velocidades diferentes. Por isso, os números históricos de etapa não devem ser usados isoladamente para declarar conclusão.
+**Regra operacional definitiva:** concluído e registrado = fechado. Uma fase já concluída só volta para auditoria por causa objetiva de regressão, mudança de requisito, mudança arquitetural, falha posterior relacionada ou critério de fechamento insuficiente.
 
-## Estado técnico reconhecido
-
-### Existente e aproveitável
-- catálogo público e detalhe de veículo;
-- financiamento público demonstrativo;
-- leads e intenções comerciais;
-- painel administrativo;
-- estoque, edição, galeria e preview;
-- CRM e operações comerciais;
-- financiamento administrativo;
-- configurações e relatórios;
-- analytics com persistência/deduplicação;
-- D1 e R2 configurados;
-- proteção server-side e proteção de UI administrativa;
-- suíte de testes de contratos e regressão;
-- documentação operacional de produção e backup.
-
-### Fragmentação identificada
-- documentação antiga ainda descreve partes existentes como futuras;
-- alguns documentos históricos possuem objetivos diferentes do estado atual;
-- D1/R2 possuem implementação local/configuração, mas algumas validações remotas ainda não foram comprovadas;
-- mídia ainda possui caminho de legado/fallback que precisa deixar de ser dependência normal;
-- existência de testes não equivale automaticamente a validação completa do comportamento real;
-- a divisão anterior concentrava várias funcionalidades avançadas dentro da antiga etapa 05, enquanto o plano de 49 fases as tratava como etapas futuras.
-
-## Nova regra de status
-
-As fases 01–41 estão **reabertas para auditoria de consolidação**, sem apagar o que já existe.
-
-Isso não significa que tudo voltou a ser desenvolvido do zero. Significa que cada fase será confrontada com o produto atual e somente receberá `CONCLUÍDA` quando seu objetivo revisado estiver comprovado.
-
-Classificação usada:
-
-- `CONCLUÍDA` — objetivo atendido + evidência suficiente.
-- `EM CONSOLIDAÇÃO` — implementação existe, mas há lacuna de integração, teste, documentação ou validação.
-- `PENDÊNCIA OPERACIONAL` — código preparado, mas depende de validação remota/infraestrutura.
-- `PENDENTE` — capacidade necessária ainda não existe ou não atende ao objetivo.
-- `REABERTA` — fase anteriormente registrada como concluída que precisou voltar para correção por causa objetiva.
-
-## REGRA PERMANENTE DE REGISTRO
-
-**Nenhuma tarefa ou fase é considerada definitivamente encerrada apenas porque o código foi alterado ou porque a validação passou. A conclusão precisa ser registrada neste arquivo no mesmo ciclo de execução.**
-
-Fluxo obrigatório:
+## Fluxo obrigatório
 
 `EXECUTAR → VALIDAR → CORRIGIR SE NECESSÁRIO → VALIDAR NOVAMENTE → REGISTRAR CONCLUSÃO → AVANÇAR`
 
-Para cada fase concluída, este arquivo deve registrar:
+Builds, testes e workflows não interrompem o fluxo de trabalho. Se uma validação falhar, a causa deve ser investigada e corrigida antes de declarar a etapa concluída, sem interromper o restante do trabalho que puder continuar com segurança.
 
-- fase/tarefa;
-- status `CONCLUÍDA`;
-- data de fechamento;
-- commit ou referência técnica verificável;
-- evidência utilizada (teste, build, workflow, validação manual ou validação remota);
-- observação, quando houver.
+## Classificação
 
-### Regra de fechamento e não repetição
+- `CONCLUÍDA` — objetivo atendido e evidência suficiente registrada.
+- `EM CONSOLIDAÇÃO` — implementação existente com alguma lacuna ainda aberta.
+- `PENDÊNCIA OPERACIONAL` — depende de validação remota/infraestrutura.
+- `PENDENTE` — capacidade ou correção necessária ainda não fechada.
+- `REABERTA` — fase fechada anteriormente e reaberta por causa objetiva.
 
-Depois de registrada como `CONCLUÍDA`, a fase é considerada fechada e **não deve voltar automaticamente para a fila de auditoria** nas etapas seguintes.
+## Matriz oficial de fechamento
 
-Uma fase concluída só pode ser reaberta por evidência objetiva de:
-
-- regressão;
-- mudança de requisito ou decisão de produto;
-- mudança arquitetural que invalide a solução;
-- falha posterior diretamente relacionada à fase;
-- critério de fechamento originalmente insuficiente.
-
-Quando houver reabertura, o histórico não será apagado. Deve-se registrar o motivo da reabertura, a correção e a nova validação. Assim, o projeto preserva rastreabilidade sem obrigar uma nova auditoria geral.
-
-## MATRIZ OFICIAL DE FECHAMENTO DAS FASES
-
-Esta matriz é o controle rápido de continuidade. Ela deve ser atualizada imediatamente após o fechamento de cada fase.
-
-| Fase | Status | Data de fechamento | Referência | Evidência | Observação |
+| Fase | Status | Data | Referência | Evidência | Observação |
 |---:|---|---|---|---|---|
-| 01 | PENDENTE | — | — | — | — |
-| 02 | PENDENTE | — | — | — | — |
-| 03 | PENDENTE | — | — | — | — |
-| 04 | PENDENTE | — | — | — | — |
-| 05 | PENDENTE | — | — | — | — |
-| 06 | PENDENTE | — | — | — | — |
-| 07 | PENDENTE | — | — | — | — |
-| 08 | PENDENTE | — | — | — | — |
-| 09 | PENDENTE | — | — | — | — |
-| 10 | PENDENTE | — | — | — | — |
+| 01 | CONCLUÍDA | 08/09/2026 | `6efc3f3` | Workflow #34239873330: migrations, seed, smoke catalog, testes (55/55), build verde | Catálogo público deixou de executar sincronização/mutação implícita; D1 permanece fonte operacional. |
+| 02 | CONCLUÍDA | 08/09/2026 | `6efc3f3` | Workflow #34239873330: migrations, seed, smoke catalog, testes (55/55), build verde | Correções de dados permanecem versionadas em migration; sincronização runtime frágil foi removida. |
+| 03 | PENDÊNCIA OPERACIONAL | — | — | — | Validação do D1 remoto ainda precisa de evidência operacional. |
+| 04 | PENDENTE | — | — | — | Migração definitiva das 18 imagens para R2 ainda precisa ser comprovada. |
+| 05 | PENDENTE | — | — | — | Resolver ainda contém compatibilidade histórica e precisa ser fechado após 04. |
+| 06 | PENDENTE | — | — | — | Regressão completa do catálogo ainda não fechada. |
+| 07 | PENDENTE | — | — | — | Regressão completa do site público ainda não fechada. |
+| 08 | PENDENTE | — | — | — | Fluxo comercial público ainda precisa fechamento dedicado. |
+| 09 | PENDENTE | — | — | — | QA responsivo ainda não fechado. |
+| 10 | PENDENTE | — | — | — | Baseline pública depende de 01–09. |
 | 11 | PENDENTE | — | — | — | — |
 | 12 | PENDENTE | — | — | — | — |
 | 13 | PENDENTE | — | — | — | — |
@@ -134,56 +76,28 @@ Esta matriz é o controle rápido de continuidade. Ela deve ser atualizada imedi
 | 48 | PENDENTE | — | — | — | — |
 | 49 | PENDENTE | — | — | — | — |
 
-## Histórico de encerramento e reabertura
+## Histórico de encerramento
 
-Quando uma fase for concluída, deve ser acrescentada uma entrada neste histórico. Se ela for reaberta futuramente, a nova ocorrência será adicionada abaixo sem apagar a anterior.
-
-### Formato obrigatório
-
-```text
-### Fase XX — [nome]
+### Fase 01 — Contrato e auditoria do catálogo
 - Status: CONCLUÍDA
-- Data: DD/MM/AAAA
-- Referência: [commit/PR/arquivo/identificador]
-- Evidência: [testes/build/workflow/validação manual/remota]
-- Resultado: [o que foi efetivamente fechado]
-- Observação: [se necessário]
-```
+- Data: 08/09/2026
+- Referência: `6efc3f3e7363019c0f8c930de52bdf416b13df56`
+- Evidência: GitHub Actions workflow `34239873330`, com migrations locais, seed local, smoke do catálogo, 55/55 testes automatizados e build verde.
+- Resultado: o catálogo público não executa mais sincronização/mutação automática antes da leitura. A aplicação consulta a fonte operacional configurada, mantendo D1 como fonte de verdade.
 
-Para reabertura:
+### Fase 02 — Integridade dos dados
+- Status: CONCLUÍDA
+- Data: 08/09/2026
+- Referência: `6efc3f3e7363019c0f8c930de52bdf416b13df56`
+- Evidência: mesma execução validou toda a cadeia local de migrations, seed, catálogo, testes e build.
+- Resultado: correções de dados permanecem na cadeia de migrations; foi removida a dependência de sincronização runtime para corrigir dados a cada leitura.
 
-```text
-### Fase XX — REABERTURA
-- Data: DD/MM/AAAA
-- Motivo objetivo: [regressão/mudança/falha relacionada/etc.]
-- Impacto: [o que deixou de estar válido]
-- Correção: [o que foi alterado]
-- Nova referência: [commit/PR/arquivo]
-- Nova validação: [evidência]
-- Status atual: CONCLUÍDA / EM CONSOLIDAÇÃO / PENDENTE
-```
+## Falhas conhecidas corrigidas durante a execução
 
-## Rota de execução
-
-`REBASELINE → AUDITAR 01–41 → CORRIGIR NA ORIGEM → VALIDAR → REGISTRAR CONCLUSÃO → FECHAR GATES → RETOMAR 41 → 42 → 43 → 44 → 45 → 46 → 47 → 48 → 49`
-
-## Foco imediato
-
-1. Não adicionar escopo novo desnecessário.
-2. Mapear cada uma das 41 fases contra código, banco, mídia, testes e documentação.
-3. Eliminar divergências e dependências históricas.
-4. Consolidar documentação para que exista uma única interpretação do projeto.
-5. Fechar as pendências de D1/R2 quando houver capacidade operacional para isso.
-6. Reexecutar a suíte automatizada após cada correção relevante.
-7. Registrar cada conclusão no mesmo ciclo em que ela for validada.
-8. Somente depois tratar a Fase 41 como fechamento real de performance.
-
-## Evidências já existentes
-
-O projeto possui testes específicos para catálogo, D1, regras comerciais, transições comerciais, analytics, dashboard, segurança administrativa, proteção da UI, acessibilidade, performance e checklist de produção. Eles devem ser tratados como base de regressão e ampliados quando uma lacuna real for encontrada.
+O workflow anterior `34183750628` falhou porque o teste do checklist procurava `/revalid/i`, enquanto o documento já usava a expressão equivalente em português. A versão atual do teste foi corrigida e a execução posterior relevante ficou verde.
 
 ## Regra de continuidade
 
-O trabalho deve ser contínuo. Não parar para pedir autorização após build, commit ou teste. Quando uma validação falhar, corrigir a causa, revalidar e continuar. Não declarar validação remota, produção ou conclusão sem evidência real.
+O trabalho deve prosseguir sem pausas artificiais após commit, build ou teste. Uma falha deve gerar investigação e correção; depois da validação, o fluxo retoma automaticamente a próxima atividade possível.
 
-**Regra operacional definitiva:** concluído e registrado = fechado. Só se audita novamente quando existir motivo objetivo para reabrir.
+**Não declarar validação remota, produção ou conclusão sem evidência real.**
