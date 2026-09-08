@@ -63,3 +63,38 @@ test("estoque mantém estados vazios, busca e paginação visual do catálogo", 
   assert.match(source, /Não encontramos veículos com esses critérios/);
   assert.match(source, /Limpar filtros/);
 });
+
+test("superfícies públicas não importam o catálogo estático legado", async () => {
+  for (const path of [
+    "src/routes/index.tsx",
+    "src/routes/estoque.tsx",
+    "src/routes/estoque_.$id.tsx",
+    "src/routes/servicos.tsx",
+    "src/routes/sobre.tsx",
+    "src/routes/contato.tsx",
+  ]) {
+    const source = await read(path);
+    assert.doesNotMatch(source, /@\/data\/vehicles/);
+    assert.doesNotMatch(source, /\bVEICULOS\b/);
+  }
+});
+
+test("serviços usa o catálogo público para os fluxos comerciais com veículo", async () => {
+  const source = await read("src/routes/servicos.tsx");
+
+  assert.match(source, /loader: \(\) => publicVehicleCatalog\.listar\(\)/);
+  assert.match(source, /const vehicles = Route\.useLoaderData\(\)/);
+  assert.match(source, /<VeiculoSelector vehicles=\{vehicles\}/);
+  assert.match(source, /FormularioComprar \{ vehicles \}/);
+  assert.match(source, /FormularioTroca \{ vehicles \}/);
+  assert.match(source, /FormularioFinanciar \{ vehicles \}/);
+});
+
+test("detalhe do veículo gera metadados a partir do veículo carregado", async () => {
+  const source = await read("src/routes/estoque_.$id.tsx");
+
+  assert.match(source, /head: \(\{ loaderData \}\)/);
+  assert.match(source, /const veiculo = loaderData\?\.veiculo/);
+  assert.doesNotMatch(source, /VEICULOS\.find/);
+  assert.doesNotMatch(source, /obterTituloVeiculo\(/);
+});
