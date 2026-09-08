@@ -45,6 +45,13 @@ const SLIDES: readonly HeroSlide[] = [
 ];
 
 const AUTO_ADVANCE_MS = 6500;
+const HERO_IMAGE_WIDTHS = [640, 1024, 1440, 1920] as const;
+
+function buildHeroSrcSet(image: string) {
+  return HERO_IMAGE_WIDTHS.map((width) =>
+    image.replace(/w=1920(?:&|$)/, `w=${width}&`),
+  ).join(", ");
+}
 
 export function HomeHeroSlider() {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -126,6 +133,8 @@ export function HomeHeroSlider() {
           >
             <img
               src={slide.image}
+              srcSet={buildHeroSrcSet(slide.image)}
+              sizes="100vw"
               alt={slide.alt}
               width={1920}
               height={1080}
