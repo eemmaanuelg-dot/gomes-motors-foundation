@@ -23,5 +23,5 @@ test("checklist de produção preserva a regra de retorno após falha", async ()
 
   assert.match(checklist, /falh\S*[\s\S]{0,160}(?:correção|corrigida|corrigir)/i);
   assert.match(checklist, /correção|corrigida|corrigir/i);
-  assert.match(checklist, /validada novamente|revalid/i);
+  assert.match(checklist, /ser validada novamente/i);
 });
