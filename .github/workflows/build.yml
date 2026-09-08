@@ -84,6 +84,19 @@ jobs:
           npx wrangler d1 execute gomes-motors-db --remote
           --command "SELECT id, name, applied_at FROM d1_migrations ORDER BY id;"
 
+      - name: Clean known obsolete R2 primary objects
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && env.CLOUDFLARE_API_TOKEN != '' && contains(github.event.head_commit.message, '[reconcile-infra]') }}
+        run: |
+          for key in \
+            vehicles/civic-exl/primary.jpg \
+            vehicles/corolla-gli/primary.jpg \
+            vehicles/polo/primary.jpg \
+            vehicles/onix/primary.jpg \
+            vehicles/cb500f/primary.jpg \
+            vehicles/mt03/primary.jpg; do
+            npx wrangler r2 object delete "gomes-motors-media-2026/${key}" --remote
+          done
+
       - name: Validate remote R2 access
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && env.CLOUDFLARE_API_TOKEN != '' }}
         run: |
@@ -95,6 +108,6 @@ jobs:
           echo "Remote R2 objects under vehicles/: ${count}"
           echo "Remote R2 keys under vehicles/:"
           echo "$response" | jq -r '.result[].key' | sort
-          test "$count" -ge 18
+          test "$count" -eq 18
 
       # Phase 8.0 final validation rerun — TypeScript fixes applied.
