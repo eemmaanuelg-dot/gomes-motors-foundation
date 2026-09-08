@@ -87,7 +87,7 @@ async function download(url, filePath) {
   await writeFileAsync(filePath, buffer);
 }
 
-function buildVehicleTransaction(vehicleId, references, mediaRows) {
+function buildVehicleStatements(vehicleId, references, mediaRows) {
   const imagesJson = JSON.stringify(references);
   const updateSql = `UPDATE vehicles SET image_url = ${sqlLiteral(references[0])}, images_json = ${sqlLiteral(imagesJson)}, updated_at = datetime('now') WHERE id = ${sqlLiteral(vehicleId)};`;
   const deleteSql = `DELETE FROM vehicle_media WHERE vehicle_id = ${sqlLiteral(vehicleId)};`;
@@ -98,7 +98,7 @@ function buildVehicleTransaction(vehicleId, references, mediaRows) {
     )
     .join("\n");
 
-  return `BEGIN;\n${updateSql}\n${deleteSql}\n${insertSql}\nCOMMIT;`;
+  return `${updateSql}\n${deleteSql}\n${insertSql}`;
 }
 
 async function main() {
@@ -146,13 +146,13 @@ async function main() {
         mediaRows.push({ mediaId, key, mime, altText, now: new Date().toISOString() });
       }
 
-      console.log(`Aplicando associação atômica no D1 para ${vehicleId}`);
+      console.log(`Aplicando associação idempotente no D1 para ${vehicleId}`);
       run([
         "d1",
         "execute",
         database,
         "--remote",
-        `--command=${buildVehicleTransaction(vehicleId, references, mediaRows)}`,
+        `--command=${buildVehicleStatements(vehicleId, references, mediaRows)}`,
       ]);
     }
 
