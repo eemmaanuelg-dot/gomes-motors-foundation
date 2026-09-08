@@ -27,12 +27,12 @@ Correções consolidadas:
 
 Base e infraestrutura no repositório:
 - `wrangler.jsonc` aponta `DB` para `gomes-motors-db` e `MEDIA_BUCKET` para `gomes-motors-media-2026`;
-- migrations históricas e operacionais permanecem preservadas e sequenciais até `0010_financing_sale_integrity.sql`;
+- migrations históricas e operacionais permanecem preservadas e sequenciais até `0011_commercial_transition_integrity.sql`;
 - migration `0007_commercial_operations.sql` adiciona a base operacional comercial: leads, eventos de lead, avaliações, negociações, reservas, vendas, financiamento, configurações comerciais e analytics;
-- migrations `0009` e `0010` reforçam integridade das operações comerciais e de financiamento/venda;
+- migrations `0009`, `0010` e `0011` reforçam integridade das operações comerciais e de financiamento/venda;
 - leitura pública usa D1 como fonte configurada;
 - mídia possui camada de resolução D1/R2 e suporte administrativo para upload/delete no R2;
-- teste automatizado protege a configuração do D1, a cadeia sequencial de migrations e a presença da base comercial.
+- testes automatizados protegem a configuração do D1, a cadeia sequencial de migrations e a base comercial.
 
 **Pendente:** confirmar no ambiente remoto Cloudflare/D1 que todas as migrations estão aplicadas e que o banco remoto contém exatamente o estado esperado. A conexão disponível nesta sessão permite validar código, testes e GitHub, mas não expõe ferramenta operacional para executar consultas no D1 remoto.
 
@@ -64,7 +64,9 @@ Implementado e validado no código:
 - gerenciamento dedicado de galeria em `/admin/galeria/:id`, com upload, exclusão, ordem, imagem principal e texto alternativo;
 - preview administrativo em `/admin/preview/:id`, inclusive para veículos não publicados;
 - formulário público de atendimento integrado a `/api/leads` e ao CRM através da página `/contato`;
-- analytics de intenção comercial após envio do formulário.
+- analytics de intenção comercial após envio do formulário;
+- integridade de reserva/venda reforçada no banco por triggers, além das validações server-side existentes;
+- cobertura automatizada do contrato das transições comerciais.
 
 ### Bloco atual — continuidade
 
@@ -77,21 +79,19 @@ Concluído neste ciclo:
 6. Contrato automatizado da fundação D1 e cadeia de migrations.
 7. Cobertura automatizada dos fluxos comerciais públicos e do contrato de financiamento demonstrativo.
 8. Ampliação do smoke test das rotas públicas, incluindo detalhe de veículo e contato.
+9. Reforço da integridade das transições de reserva e venda com a migration `0011_commercial_transition_integrity.sql` e teste de contrato correspondente.
 
 Próximos blocos:
-9. Integrar e validar os demais pontos públicos de intenção relacionados a veículos, financiamento e serviços, preservando a experiência atual.
-10. Revisar atomicidade e regras de transição de reserva/venda.
-11. Consolidar autenticação/permissões administrativas e proteção das rotas de UI.
-12. Revisar analytics, deduplicação e proteção contra abuso.
-13. Fechar documentação operacional e checklist de produção.
-14. Depois do bloco de código, executar validação remota do D1/R2 e rodada final de testes do catálogo/admin.
+10. Consolidar autenticação/permissões administrativas e proteção das rotas de UI.
+11. Revisar analytics, deduplicação e proteção contra abuso.
+12. Fechar documentação operacional e checklist de produção.
+13. Depois do bloco de código, executar validação remota do D1/R2 e rodada final de testes do catálogo/admin.
 
 ## Validações de build
 
-- Build validation #314 — **SUCESSO** em 08/09/2026.
-- Build validation #316 — **FALHOU somente no novo teste da fundação D1** por uma asserção de texto excessivamente específica; a implementação não apresentou erro.
-- Correção do teste realizada em seguida.
-- O build disparado pela correção deve ser considerado a validação corrente.
+- Build validation #322 — **SUCESSO** em 08/09/2026.
+- A correção do contrato público de leads foi validada integralmente no GitHub antes da continuidade.
+- Nova migration e cobertura de integridade das transições comerciais foram enviadas ao `main` e aguardam a nova validação automática.
 
 ## Regra de continuidade
 
