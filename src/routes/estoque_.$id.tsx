@@ -18,7 +18,6 @@ import {
 
 import { publicVehicleCatalog } from "@/application/vehicles/public-catalog";
 import type { Vehicle } from "@/domain/vehicles/types";
-import { VEICULOS, obterTituloVeiculo } from "@/data/vehicles";
 import { useFavoritos } from "@/lib/favorites";
 import { trackAnalytics } from "@/lib/analytics";
 import { WhatsAppLink } from "@/components/site/WhatsAppLink";
@@ -42,8 +41,8 @@ export const Route = createFileRoute("/estoque/$id")({
       relacionados: veiculo ? obterVeiculosRelacionados(veiculos, veiculo) : [],
     };
   },
-  head: ({ params }) => {
-    const veiculo = VEICULOS.find((item) => item.id === params.id);
+  head: ({ loaderData }) => {
+    const veiculo = loaderData?.veiculo;
     if (!veiculo) {
       return {
         meta: [
@@ -53,7 +52,7 @@ export const Route = createFileRoute("/estoque/$id")({
       };
     }
 
-    const titulo = `${obterTituloVeiculo(veiculo)} ${veiculo.ano} — Gomes Motors`;
+    const titulo = `${veiculo.marca} ${veiculo.modelo}${veiculo.versao ? ` ${veiculo.versao}` : ""} ${veiculo.ano} — Gomes Motors`;
     return {
       meta: [
         { title: titulo },
