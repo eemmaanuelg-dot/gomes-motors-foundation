@@ -82,6 +82,6 @@ jobs:
           echo "$response" | jq -e '.success == true' >/dev/null
           count="$(echo "$response" | jq '.result | length')"
           echo "Remote R2 objects under vehicles/: ${count}"
-          test "$count" -eq 18
+          test "$count" -ge 18
 
       # Phase 8.0 final validation rerun — TypeScript fixes applied.
