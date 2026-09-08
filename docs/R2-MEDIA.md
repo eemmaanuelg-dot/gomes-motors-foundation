@@ -36,7 +36,7 @@ Referências `r2://vehicles/...` são convertidas em URLs internas `/media?key=.
 
 ## Migração da instalação de referência
 
-O script envia as seis imagens demo atuais para o R2 remoto, atualiza `vehicles.image_url` e `vehicles.images_json` para referências `r2://` e cria/atualiza a associação correspondente em `vehicle_media`.
+O script envia as 18 imagens demo atuais — três por veículo, para os seis veículos — para o R2 remoto, atualiza `vehicles.image_url` e `vehicles.images_json` para referências `r2://` e recria as associações correspondentes em `vehicle_media`.
 
 Execute a partir da raiz do repositório:
 
@@ -44,7 +44,7 @@ Execute a partir da raiz do repositório:
 node scripts/migrate-legacy-media.mjs
 ```
 
-A migração usa chaves determinísticas (`vehicles/<vehicleId>/primary.<ext>`) e remove eventual associação anterior com a mesma chave antes de inserir a nova. Isso permite repetir a operação sem criar duplicatas em `vehicle_media`.
+A migração usa chaves determinísticas no formato `vehicles/<vehicleId>/<1|2|3>.<ext>` e IDs determinísticos `catalog-<vehicleId>-<1|2|3>`. Antes de inserir as três associações de cada veículo, remove as associações anteriores desse veículo, permitindo repetir a operação sem acumular duplicatas em `vehicle_media`.
 
 ### Pré-requisitos
 
