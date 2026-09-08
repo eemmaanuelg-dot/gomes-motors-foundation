@@ -43,10 +43,14 @@ A Gomes Motors atual é a instalação de referência/homologação. O produto d
 
 ### Access
 
-1. Criar a aplicação/proteção para o ambiente de produção.
-2. Proteger `/admin*`.
-3. Autorizar os usuários administrativos do cliente.
-4. Validar que o site público continua acessível sem autenticação.
+1. Criar uma aplicação/proteção Cloudflare Access para o ambiente de produção.
+2. Proteger `/admin*` em **todas as formas públicas de acesso ao Worker** que permanecerem habilitadas (domínio de produção, `workers.dev` ou preview).
+3. Autorizar somente os usuários/grupos administrativos do cliente na política do Access.
+4. Manter o site público fora da política de autenticação.
+5. Não considerar o header `cf-access-authenticated-user-email` isoladamente como prova de autenticação: a aplicação exige também a presença da asserção `cf-access-jwt-assertion`.
+6. O acesso administrativo deve chegar ao Worker por uma proteção Access válida; não publicar uma rota/origem administrativa alternativa sem Access.
+7. Quando a implantação exigir validação de origem independente do Access, configurar validação criptográfica da asserção JWT usando o domínio da equipe e o AUD da aplicação, sem armazenar credenciais no repositório.
+8. Após configurar o Access, validar: `/` público sem login, `/admin` bloqueado sem autenticação e `/admin` acessível somente após autenticação autorizada.
 
 ## 4. Configuração comercial
 
@@ -149,7 +153,7 @@ Uma instalação é considerada transferível quando:
 - D1 pode ser recriado por migrations;
 - dados podem ser importados;
 - R2 pode ser recriado e populado;
-- Access pode ser recriado;
+- Access pode ser recriado com política administrativa restrita;
 - domínio pode ser substituído;
 - identidade comercial pode ser alterada sem reescrever a aplicação;
 - backup e restauração estão documentados;
