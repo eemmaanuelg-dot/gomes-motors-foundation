@@ -1,10 +1,12 @@
 import { createStart, createCsrfMiddleware, createMiddleware } from "@tanstack/react-start";
 
-import { applySecurityHeaders } from "./lib/server-security";
+import { applySecurityHeadersToHeaders } from "./lib/server-security";
 import { renderErrorPage } from "./lib/error-page";
 
 const securityMiddleware = createMiddleware().server(async ({ next }) => {
-  return applySecurityHeaders(await next());
+  const result = await next();
+  applySecurityHeadersToHeaders(result.response.headers);
+  return result;
 });
 
 const errorMiddleware = createMiddleware().server(async ({ next }) => {
