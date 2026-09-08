@@ -86,3 +86,31 @@ test("formulário público somente confirma sucesso após a API aceitar o lead",
   assert.match(source, /setFeedback\(\{ ok: true/);
   assert.match(source, /trackAnalytics\(\{ eventName: \"lead_intent\"/);
 });
+
+test("superfícies públicas críticas possuem contrato responsivo para mobile e telas maiores", async () => {
+  const routes = [
+    "src/routes/index.tsx",
+    "src/routes/estoque.tsx",
+    "src/routes/servicos.tsx",
+    "src/routes/contato.tsx",
+  ];
+
+  for (const route of routes) {
+    const source = await readProjectFile(route);
+    assert.match(source, /(?:sm|md|lg):[A-Za-z0-9\-\[\]/.%]+/, `${route} deve possuir utilitários responsivos`);
+  }
+
+  const home = await readProjectFile("src/routes/index.tsx");
+  const stock = await readProjectFile("src/routes/estoque.tsx");
+  const services = await readProjectFile("src/routes/servicos.tsx");
+  const contact = await readProjectFile("src/routes/contato.tsx");
+
+  assert.match(home, /grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5/);
+  assert.match(home, /grid gap-5 sm:grid-cols-2 lg:grid-cols-3/);
+  assert.match(stock, /grid-cols-2 gap-2/);
+  assert.match(stock, /sm:grid-cols-3/);
+  assert.match(services, /grid gap-4 sm:grid-cols-2/);
+  assert.match(services, /sm:grid-cols-3/);
+  assert.match(contact, /w-full max-w-md/);
+  assert.match(contact, /sm:p-8/);
+});
